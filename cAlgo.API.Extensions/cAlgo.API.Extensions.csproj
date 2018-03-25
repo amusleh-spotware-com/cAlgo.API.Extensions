@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Divergence.cs" />
+    <Compile Include="Enums\DivergenceType.cs" />
+    <Compile Include="MarketSeriesExtensions.cs" />
     <Compile Include="DataSeriesExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

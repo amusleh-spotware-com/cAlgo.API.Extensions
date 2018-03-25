@@ -67,48 +67,52 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Checks if the index value is higher than x (periods) previous values in a dataseries
+        /// Checks if the index value is higher than x previous and future values in a dataseries
         /// </summary>
         /// <param name="dataSeries"></param>
         /// <param name="index">Dataseries value index</param>
-        /// <param name="periods">The number of index previous values to check</param>
-        /// <param name="bothSides">Check both previous and next values (by default it checks only previous values)</param>
+        /// <param name="previousValues">The number of index previous values to check</param>
+        /// <param name="futureValues">The number of index future values to check</param>
+        /// <param name="equal">Check for equality</param>
         /// <returns>bool</returns>
-        public static bool IsHigherHigh(this DataSeries dataSeries, int index, int periods, bool bothSides = false)
+        public static bool IsHigherHigh(
+            this DataSeries dataSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
-            if (!bothSides)
+            double previousBarsHighest = previousValues > 0 ? dataSeries.Maximum(index - previousValues, index - 1) : double.NegativeInfinity;
+            double futureBarsHighest = futureValues > 0 ? dataSeries.Maximum(index + 1, index + futureValues) : double.NegativeInfinity;
+
+            if (equal)
             {
-                return dataSeries[index] > dataSeries.Maximum(index - periods, index - 1);
+                return dataSeries[index] >= previousBarsHighest && dataSeries[index] >= futureBarsHighest;
             }
             else
             {
-                bool leftSideResult = dataSeries[index] > dataSeries.Maximum(index - periods, index - 1);
-                bool rightSideResult = dataSeries[index] > dataSeries.Maximum(index + 1, index + periods);
-
-                return leftSideResult && rightSideResult;
+                return dataSeries[index] > previousBarsHighest && dataSeries[index] > futureBarsHighest;
             }
         }
 
         /// <summary>
-        /// Checks if the index value is lower than x (periods) previous values in a dataseries
+        /// Checks if the index value is lower than x previous and future values in a dataseries
         /// </summary>
         /// <param name="dataSeries"></param>
         /// <param name="index">Dataseries value index</param>
-        /// <param name="periods">The number of index previous values to check</param>
-        /// <param name="bothSides">Check both previous and next values (by default it checks only previous values)</param>
+        /// <param name="previousValues">The number of index previous values to check</param>
+        /// <param name="futureValues">The number of index future values to check</param>
+        /// <param name="equal">Check for equality</param>
         /// <returns>bool</returns>
-        public static bool IsLowerLow(this DataSeries dataSeries, int index, int periods, bool bothSides = false)
+        public static bool IsLowerLow(
+            this DataSeries dataSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
-            if (!bothSides)
+            double previousBarsLowest = previousValues > 0 ? dataSeries.Minimum(index - previousValues, index - 1) : double.NegativeInfinity;
+            double futureBarsLowest = futureValues > 0 ? dataSeries.Minimum(index + 1, index + futureValues) : double.NegativeInfinity;
+
+            if (equal)
             {
-                return dataSeries[index] < dataSeries.Minimum(index - periods, index - 1);
+                return dataSeries[index] <= previousBarsLowest && dataSeries[index] <= futureBarsLowest;
             }
             else
             {
-                bool leftSideResult = dataSeries[index] < dataSeries.Minimum(index - periods, index - 1);
-                bool rightSideResult = dataSeries[index] < dataSeries.Minimum(index + 1, index + periods);
-
-                return leftSideResult && rightSideResult;
+                return dataSeries[index] < previousBarsLowest && dataSeries[index] < futureBarsLowest;
             }
         }
 
@@ -138,6 +142,48 @@ namespace cAlgo.API.Extensions
             double lowValue = dataSeries.Minimum(index - periods, index - 1);
 
             return dataSeries[index] - lowValue;
+        }
+
+        public static List<Divergence> GetDivergence(
+            this DataSeries firstSeries, int index, DataSeries secondSeries, int periods = 20, int lag = 3, int maxValuesToScan = 100)
+        {
+            List<Divergence> result = new List<Divergence>();
+
+            index = index - lag;
+
+            bool isHigherHigh = firstSeries.IsHigherHigh(index, periods, lag);
+
+            if (isHigherHigh)
+            {
+                for (int i = index - 1; i >= index - maxValuesToScan; i--)
+                {
+                    bool isThisValueHigherHigh = firstSeries.IsHigherHigh(i, periods, periods);
+                    bool isThisValueHigherThanAllValuesInBetween = firstSeries[i] > firstSeries.Maximum(i + 1, index);
+
+                    if (isThisValueHigherHigh && isThisValueHigherThanAllValuesInBetween)
+                    {
+                        bool isSecondSeriesThisValueHigherHighToo = secondSeries.IsHigherHigh(index, periods, lag, equal: false);
+                        bool isSecondSeriesCurrentValueHigherThanThisValue = secondSeries[index] > secondSeries[i];
+                        bool IsSecondSeriesThisValueLowerThanAllValuesInBetween = secondSeries[i] < secondSeries.Maximum(i + 1, index);
+
+                        if (isSecondSeriesThisValueHigherHighToo &&
+                            isSecondSeriesCurrentValueHigherThanThisValue &&
+                            IsSecondSeriesThisValueLowerThanAllValuesInBetween)
+                        {
+                            Divergence divergence = new Divergence
+                            {
+                                StartIndex = i,
+                                EndIndex = index,
+                                Type = DivergenceType.Down
+                            };
+
+                            result.Add(divergence);
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }
