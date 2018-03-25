@@ -238,5 +238,83 @@ namespace cAlgo.API.Extensions
 
             return result;
         }
+
+        /// <summary>
+        /// Returns sorted values of a dataseries in ascending order
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <returns>List<double></returns>
+        public static List<double> Sort(this DataSeries dataSeries)
+        {
+            return dataSeries.ToList().OrderBy(value => value).ToList();
+        }
+
+        /// <summary>
+        /// Returns a percentile value in a dataseries
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="percent">Percent (1-100)</param>
+        /// <returns>double</returns>
+        public static double GetPercentile(this DataSeries dataSeries, double percent)
+        {
+            List<double> sortedDataSeries = dataSeries.Sort();
+
+            double percentReal = percent / 100;
+
+            double entryIndex = percentReal * (sortedDataSeries.Count - 1) + 1;
+
+            int entryIndexInt = (int)entryIndex;
+
+            double indexDiff = entryIndex - entryIndexInt;
+
+            if (entryIndexInt - 1 >= 0 && entryIndexInt < sortedDataSeries.Count)
+            {
+                double entryDataDiff = sortedDataSeries[entryIndexInt] - sortedDataSeries[entryIndexInt - 1];
+
+                return sortedDataSeries[entryIndexInt - 1] + indexDiff * entryDataDiff;
+            }
+            else if (entryIndexInt - 1 < 0)
+            {
+                return sortedDataSeries.FirstOrDefault();
+            }
+            else if (entryIndexInt >= sortedDataSeries.Count)
+            {
+                return sortedDataSeries.LastOrDefault();
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Returns a dataseries correlation with another dataseries
+        /// </summary>
+        /// <param name="firstSeries"></param>
+        /// <param name="secondSeries">Other Dataseries</param>
+        /// <returns>double</returns>
+        public static double GetCorrelation(this DataSeries firstSeries, DataSeries secondSeries)
+        {
+            double[] values1 = new double[firstSeries.Count];
+            double[] values2 = new double[firstSeries.Count];
+
+            for (int i = 0; i < firstSeries.Count; i++)
+            {
+                values1[i] = firstSeries.Last(i);
+                values2[i] = secondSeries.Last(i);
+            }
+
+            var avg1 = values1.Average();
+            var avg2 = values2.Average();
+
+            var sum = values1.Zip(values2, (x1, y1) => (x1 - avg1) * (y1 - avg2)).Sum();
+
+            var sumSqr1 = values1.Sum(x => Math.Pow((x - avg1), 2.0));
+            var sumSqr2 = values2.Sum(y => Math.Pow((y - avg2), 2.0));
+
+            double result = Math.Round(sum / Math.Sqrt(sumSqr1 * sumSqr2), 2) * 100;
+
+            return result;
+        }
     }
 }
