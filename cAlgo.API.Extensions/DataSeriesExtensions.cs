@@ -149,24 +149,59 @@ namespace cAlgo.API.Extensions
         {
             List<Divergence> result = new List<Divergence>();
 
+            // Subtracting the lag number from index
             index = index - lag;
 
+            // First Condition For Up Divergence: The current value must be higher than x (periods) previous and y (lag) after values
             bool isHigherHigh = firstSeries.IsHigherHigh(index, periods, lag);
 
-            if (isHigherHigh)
+            // First Condition For Down Divergence: The current value must be lower than x (periods) previous and y (lag) after values
+            bool isLowerLow = firstSeries.IsLowerLow(index, periods, lag);
+
+            if (isHigherHigh || isLowerLow)
             {
                 for (int i = index - 1; i >= index - maxValuesToScan; i--)
                 {
-                    bool isThisValueHigherHigh = firstSeries.IsHigherHigh(i, periods, periods);
+                    // Second Condition For Down Divergence: This (i) previous value must be an higher high too
+                    bool isThisValueHigherHigh = firstSeries.IsHigherHigh(i, periods, index - i);
+
+                    // Second Condition For Up Divergence: This (i) previous value must be a lower low too
+                    bool isThisValueLowerLow = firstSeries.IsLowerLow(i, periods, index - i);
+
+                    // Third Condition For Down Divergence: This (i) previous value must be higher than all values upto current value (index)
                     bool isThisValueHigherThanAllValuesInBetween = firstSeries[i] > firstSeries.Maximum(i + 1, index);
 
-                    if (isThisValueHigherHigh && isThisValueHigherThanAllValuesInBetween)
+                    // Third Condition For Up Divergence: This (i) previous value must be lower than all values upto current value (index)
+                    bool isThisValueLowerThanAllValuesInBetween = firstSeries[i] < firstSeries.Minimum(i + 1, index);
+
+                    if ((isThisValueHigherHigh && isThisValueHigherThanAllValuesInBetween) ||
+                        (isThisValueLowerLow && isThisValueLowerThanAllValuesInBetween))
                     {
+                        // Fourth Condition For Down Divergence: Is the second series current value an higher high
                         bool isSecondSeriesThisValueHigherHighToo = secondSeries.IsHigherHigh(index, periods, lag, equal: false);
+
+                        // Fourth Condition For Up Divergence: Is the second series current value a lower low
+                        bool isSecondSeriesThisValueLowerLowToo = secondSeries.IsLowerLow(index, periods, lag, equal: false);
+
+                        // Fifth Condition For Down Divergence: Is the second series current value (index) higher than this (i) value
                         bool isSecondSeriesCurrentValueHigherThanThisValue = secondSeries[index] > secondSeries[i];
+
+                        // Fifth Condition For Up Divergence: Is the second series current value (index) lower than this (i) value
+                        bool isSecondSeriesCurrentValueLowerThanThisValue = secondSeries[index] < secondSeries[i];
+
+                        // Sixth Condition For Down Divergence: Is the second series this (i) value lower than highest value up to current
+                        // value (index)
                         bool IsSecondSeriesThisValueLowerThanAllValuesInBetween = secondSeries[i] < secondSeries.Maximum(i + 1, index);
 
-                        if (isSecondSeriesThisValueHigherHighToo &&
+                        // Sixth Condition For Up Divergence: Is the second series this (i) value higher than lowest value up to current
+                        // value (index)
+                        bool IsSecondSeriesThisValueHigherThanAllValuesInBetween = secondSeries[i] > secondSeries.Minimum(i + 1, index);
+
+                        // Checking back all conditions of down divergence
+                        if (isHigherHigh &&
+                            isThisValueHigherHigh &&
+                            isThisValueHigherThanAllValuesInBetween &&
+                            isSecondSeriesThisValueHigherHighToo &&
                             isSecondSeriesCurrentValueHigherThanThisValue &&
                             IsSecondSeriesThisValueLowerThanAllValuesInBetween)
                         {
@@ -175,6 +210,24 @@ namespace cAlgo.API.Extensions
                                 StartIndex = i,
                                 EndIndex = index,
                                 Type = DivergenceType.Down
+                            };
+
+                            result.Add(divergence);
+                        }
+
+                        // Checking back all conditions of up divergence
+                        if (isLowerLow &&
+                            isThisValueLowerLow &&
+                            isThisValueLowerThanAllValuesInBetween &&
+                            isSecondSeriesThisValueLowerLowToo &&
+                            isSecondSeriesCurrentValueLowerThanThisValue &&
+                            IsSecondSeriesThisValueHigherThanAllValuesInBetween)
+                        {
+                            Divergence divergence = new Divergence
+                            {
+                                StartIndex = i,
+                                EndIndex = index,
+                                Type = DivergenceType.Up
                             };
 
                             result.Add(divergence);
