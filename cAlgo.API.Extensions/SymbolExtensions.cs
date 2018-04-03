@@ -6,7 +6,7 @@ namespace cAlgo.API.Extensions
     public static class SymbolExtensions
     {
         /// <summary>
-        /// Returns a symbol correct Pip size
+        /// Returns a symbol pip value
         /// </summary>
         /// <param name="symbol"></param>
         /// <returns>double</returns>
@@ -21,7 +21,7 @@ namespace cAlgo.API.Extensions
         /// <param name="symbol"></param>
         /// <param name="price">The price level</param>
         /// <returns>double</returns>
-        public static double GetPriceInPips(this Symbol symbol, double price)
+        public static double ToPips(this Symbol symbol, double price)
         {
             return price * symbol.GetPip();
         }
