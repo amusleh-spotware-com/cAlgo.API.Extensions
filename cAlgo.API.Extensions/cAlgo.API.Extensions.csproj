@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IndicatorExtensions.cs" />
+    <Compile Include="Models\LegendOutput.cs" />
     <Compile Include="SymbolExtensions.cs" />
     <Compile Include="Models\Divergence.cs" />
     <Compile Include="Enums\DivergenceType.cs" />
