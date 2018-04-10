@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace cAlgo.API.Extensions
 {
@@ -15,18 +16,15 @@ namespace cAlgo.API.Extensions
         /// <param name="position">Position of legend on indicator window</param>
         public static void PlotLegend(this Indicator indicator, List<LegendOutput> outputs, string legendChar = "-")
         {
-            foreach (LegendOutput output in outputs)
-            {
-                if (string.IsNullOrEmpty(output.Name))
-                {
-                    continue;
-                }
+            List<LegendOutput> validLegendOutputs = outputs.Where(o => !string.IsNullOrEmpty(o.Name)).ToList();
 
+            foreach (LegendOutput output in validLegendOutputs)
+            {
                 string objName = string.Format("{0} {1}", output.Name, output.Color);
 
                 StringBuilder stringBuilder = new StringBuilder();
 
-                for (int i = 0; i <= outputs.IndexOf(output); i++)
+                for (int i = 0; i <= validLegendOutputs.IndexOf(output); i++)
                 {
                     stringBuilder.AppendLine();
                 }
