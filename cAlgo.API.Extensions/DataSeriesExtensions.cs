@@ -342,5 +342,20 @@ namespace cAlgo.API.Extensions
 
             return result;
         }
+
+        /// <summary>
+        /// Returns the angle of a value (index) in a dataseries with it's x (periods) previous values
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="index">The value index</param>
+        /// <param name="periods">The number of previous values from index</param>
+        /// <returns>double</returns>
+        public static double GetAngle(this DataSeries dataSeries, int index, int periods)
+        {
+            double xDiff = index - (index - periods);
+            double yDiff = dataSeries[index - periods] - dataSeries[index];
+
+            return Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI;
+        }
     }
 }
