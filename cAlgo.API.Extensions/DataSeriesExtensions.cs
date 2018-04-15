@@ -353,7 +353,7 @@ namespace cAlgo.API.Extensions
         public static double GetAngle(this DataSeries dataSeries, int index, int periods)
         {
             double xDiff = index - (index - periods);
-            double yDiff = dataSeries[index - periods] - dataSeries[index];
+            double yDiff = dataSeries[index] - dataSeries[index - periods];
 
             return Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI;
         }
