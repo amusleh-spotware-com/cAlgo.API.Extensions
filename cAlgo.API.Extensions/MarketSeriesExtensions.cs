@@ -80,55 +80,5 @@ namespace cAlgo.API.Extensions
         {
             return -((marketSeries.Open[index] - marketSeries.Close[index]) / marketSeries.Open[index]) * 100;
         }
-
-        /// <summary>
-        /// Returns true if the bars between start and end index trending up otherwise false
-        /// </summary>
-        /// <param name="marketSeries"></param>
-        /// <param name="startIndex">The start bar index in a market series</param>
-        /// <param name="endIndex">The end bar index in a market series</param>
-        /// <param name="step">The step that will be used for comparison of bars</param>
-        /// <returns></returns>
-        public static bool IsTrendingUp(this MarketSeries marketSeries, int startIndex, int endIndex, int step = 3)
-        {
-            bool result = true;
-
-            for (int i = startIndex + step; i <= endIndex; i += step)
-            {
-                if (marketSeries.High[i] < marketSeries.High[i - step])
-                {
-                    result = false;
-
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns true if the bars between start and end index trending down otherwise false
-        /// </summary>
-        /// <param name="marketSeries"></param>
-        /// <param name="startIndex">The start bar index in a market series</param>
-        /// <param name="endIndex">The end bar index in a market series</param>
-        /// <param name="step">The step that will be used for comparison of bars</param>
-        /// <returns></returns>
-        public static bool IsTrendingDown(this MarketSeries marketSeries, int startIndex, int endIndex, int step = 3)
-        {
-            bool result = true;
-
-            for (int i = startIndex + step; i <= endIndex; i += step)
-            {
-                if (marketSeries.Low[i] > marketSeries.Low[i - step])
-                {
-                    result = false;
-
-                    break;
-                }
-            }
-
-            return result;
-        }
     }
 }

@@ -357,5 +357,55 @@ namespace cAlgo.API.Extensions
 
             return Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI;
         }
+
+        /// <summary>
+        /// Returns true if the bars between start and end index trending up otherwise false
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="startIndex">The start bar index in a data Series</param>
+        /// <param name="endIndex">The end bar index in a data series</param>
+        /// <param name="step">The step that will be used for comparison of bars</param>
+        /// <returns>bool</returns>
+        public static bool IsTrendingUp(this DataSeries dataSeries, int startIndex, int endIndex, int step = 3)
+        {
+            bool result = true;
+
+            for (int i = startIndex + step; i <= endIndex; i += step)
+            {
+                if (dataSeries[i] < dataSeries[i - step])
+                {
+                    result = false;
+
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns true if the bars between start and end index trending down otherwise false
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="startIndex">The start bar index in a data series</param>
+        /// <param name="endIndex">The end bar index in a data series</param>
+        /// <param name="step">The step that will be used for comparison of bars</param>
+        /// <returns>bool</returns>
+        public static bool IsTrendingDown(this DataSeries dataSeries, int startIndex, int endIndex, int step = 3)
+        {
+            bool result = true;
+
+            for (int i = startIndex + step; i <= endIndex; i += step)
+            {
+                if (dataSeries[i] > dataSeries[i - step])
+                {
+                    result = false;
+
+                    break;
+                }
+            }
+
+            return result;
+        }
     }
 }
