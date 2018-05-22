@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\SeriesType.cs" />
     <Compile Include="IndicatorExtensions.cs" />
     <Compile Include="IndicatorTimeSeries.cs" />
     <Compile Include="Models\LegendOutput.cs" />
