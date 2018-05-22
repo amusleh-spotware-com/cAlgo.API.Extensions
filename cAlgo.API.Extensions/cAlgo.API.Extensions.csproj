@@ -46,8 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\BarType.cs" />
     <Compile Include="Enums\SeriesType.cs" />
     <Compile Include="IndicatorExtensions.cs" />
+    <Compile Include="IndicatorMarketSeries.cs" />
     <Compile Include="IndicatorTimeSeries.cs" />
     <Compile Include="Models\LegendOutput.cs" />
     <Compile Include="SymbolExtensions.cs" />

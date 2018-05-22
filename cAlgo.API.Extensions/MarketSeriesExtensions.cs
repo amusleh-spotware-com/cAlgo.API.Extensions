@@ -80,5 +80,16 @@ namespace cAlgo.API.Extensions
         {
             return -((marketSeries.Open[index] - marketSeries.Close[index]) / marketSeries.Open[index]) * 100;
         }
+
+        /// <summary>
+        /// Returns the bar type
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">Index of bar</param>
+        /// <returns>BarType</returns>
+        public static BarType GetBarType(this MarketSeries marketSeries, int index)
+        {
+            return marketSeries.Close[index] > marketSeries.Open[index] ? BarType.Up : BarType.Down;
+        }
     }
 }
