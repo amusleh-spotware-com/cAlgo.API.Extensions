@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IndicatorExtensions.cs" />
+    <Compile Include="IndicatorTimeSeries.cs" />
     <Compile Include="Models\LegendOutput.cs" />
     <Compile Include="SymbolExtensions.cs" />
     <Compile Include="Models\Divergence.cs" />
