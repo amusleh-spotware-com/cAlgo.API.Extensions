@@ -201,6 +201,15 @@ namespace cAlgo.API.Extensions
             _openTime.Insert(index, value);
         }
 
+        public void AddNewBar(int index, double openPrice, DateTime openTime)
+        {
+            Insert(index, openPrice, SeriesType.Open);
+            Insert(index, openPrice, SeriesType.High);
+            Insert(index, openPrice, SeriesType.Low);
+            Insert(index, openPrice, SeriesType.Close);
+            Insert(index, openTime);
+        }
+
         #endregion Methods
     }
 }

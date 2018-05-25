@@ -91,5 +91,30 @@ namespace cAlgo.API.Extensions
         {
             return marketSeries.Close[index] > marketSeries.Open[index] ? BarType.Up : BarType.Down;
         }
+
+        /// <summary>
+        /// Returns the range of a bar in a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">Bar index in market series</param>
+        /// <param name="useOpenClose">Use bar open and close price instead of high and low?</param>
+        /// <returns>double</returns>
+        public static double GetBarRange(this MarketSeries marketSeries, int index, bool useOpenClose = false)
+        {
+            return useOpenClose ? marketSeries.Open[index] - marketSeries.Close[index] : marketSeries.High[index] - marketSeries.Low[index];
+        }
+
+        /// <summary>
+        /// Returns the range of a bar in a market series in Pips
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">Bar index in market series</param>
+        /// <param name="useOpenClose">Use bar open and close price instead of high and low?</param>
+        /// <returns>double</returns>
+        public static double GetBarRangeInPips(this MarketSeries marketSeries, Symbol symbol, int index, bool useOpenClose = false)
+        {
+            return useOpenClose ? symbol.ToPips(marketSeries.Open[index] - marketSeries.Close[index]) :
+                symbol.ToPips(marketSeries.High[index] - marketSeries.Low[index]);
+        }
     }
 }
