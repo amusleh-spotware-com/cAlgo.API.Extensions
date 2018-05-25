@@ -317,17 +317,17 @@ namespace cAlgo.API.Extensions
         /// Returns a dataseries correlation with another dataseries
         /// </summary>
         /// <param name="firstSeries"></param>
-        /// <param name="secondSeries">Other Dataseries</param>
+        /// <param name="otherDataSeries">Other Dataseries</param>
         /// <returns>double</returns>
-        public static double GetCorrelation(this DataSeries firstSeries, DataSeries secondSeries)
+        public static double GetCorrelation(this DataSeries dataSeries, DataSeries otherDataSeries)
         {
-            double[] values1 = new double[firstSeries.Count];
-            double[] values2 = new double[firstSeries.Count];
+            double[] values1 = new double[dataSeries.Count];
+            double[] values2 = new double[dataSeries.Count];
 
-            for (int i = 0; i < firstSeries.Count; i++)
+            for (int i = 0; i < dataSeries.Count; i++)
             {
-                values1[i] = firstSeries.Last(i);
-                values2[i] = secondSeries.Last(i);
+                values1[i] = dataSeries.Last(i);
+                values2[i] = otherDataSeries.Last(i);
             }
 
             var avg1 = values1.Average();
@@ -338,9 +338,7 @@ namespace cAlgo.API.Extensions
             var sumSqr1 = values1.Sum(x => Math.Pow((x - avg1), 2.0));
             var sumSqr2 = values2.Sum(y => Math.Pow((y - avg2), 2.0));
 
-            double result = Math.Round(sum / Math.Sqrt(sumSqr1 * sumSqr2), 2) * 100;
-
-            return result;
+            return Math.Round(sum / Math.Sqrt(sumSqr1 * sumSqr2), 2);
         }
 
         /// <summary>
