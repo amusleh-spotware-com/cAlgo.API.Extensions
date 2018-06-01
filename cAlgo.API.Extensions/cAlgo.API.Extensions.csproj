@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\BarType.cs" />
+    <Compile Include="Enums\CandlePattern.cs" />
     <Compile Include="Enums\SeriesType.cs" />
     <Compile Include="IndicatorExtensions.cs" />
     <Compile Include="IndicatorMarketSeries.cs" />

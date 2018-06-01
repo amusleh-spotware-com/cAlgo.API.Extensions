@@ -113,8 +113,115 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetBarRangeInPips(this MarketSeries marketSeries, Symbol symbol, int index, bool useOpenClose = false)
         {
-            return useOpenClose ? symbol.ToPips(marketSeries.Open[index] - marketSeries.Close[index]) :
-                symbol.ToPips(marketSeries.High[index] - marketSeries.Low[index]);
+            return symbol.ToPips(marketSeries.GetBarRange(index, useOpenClose));
+        }
+
+        /// <summary>
+        /// Returns the maximum bar range in a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The start bar index</param>
+        /// <param name="periods">The number of previous bars</param>
+        /// <param name="useOpenClose">Use bar open and close price instead of high and low?</param>
+        /// <returns>double</returns>
+        public static double GetMaxBarRange(this MarketSeries marketSeries, int index, int periods, bool useOpenClose = false)
+        {
+            double maxRange = double.MinValue;
+
+            for (int i = index; i >= index - periods; i--)
+            {
+                maxRange = Math.Max(maxRange, marketSeries.GetBarRange(i, useOpenClose));
+            }
+
+            return maxRange;
+        }
+
+        /// <summary>
+        /// Returns the minimum bar range in a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The start bar index</param>
+        /// <param name="periods">The number of previous bars</param>
+        /// <param name="useOpenClose">Use bar open and close price instead of high and low?</param>
+        /// <returns>double</returns>
+        public static double GetMinBarRange(this MarketSeries marketSeries, int index, int periods, bool useOpenClose = false)
+        {
+            double minRange = double.MaxValue;
+
+            for (int i = index; i >= index - periods; i--)
+            {
+                minRange = Math.Min(minRange, marketSeries.GetBarRange(i, useOpenClose));
+            }
+
+            return minRange;
+        }
+
+        /// <summary>
+        /// Returns the mean bar range in a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The start bar index</param>
+        /// <param name="periods">The number of previous bars</param>
+        /// <param name="useOpenClose">Use bar open and close price instead of high and low?</param>
+        /// <returns>double</returns>
+        public static double GetMeanBarRange(this MarketSeries marketSeries, int index, int periods, bool useOpenClose = false)
+        {
+            List<double> ranges = new List<double>();
+
+            for (int i = index; i >= index - periods; i--)
+            {
+                ranges.Add(marketSeries.GetBarRange(i, useOpenClose));
+            }
+
+            return ranges.Average();
+        }
+
+        /// <summary>
+        /// Returns the candle type of given bar index
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The bar index number in a market series</param>
+        /// <returns>List<CandlePattern></returns>
+        public static List<CandlePattern> GetCandlePattern(this MarketSeries marketSeries, int index)
+        {
+            List<CandlePattern> patterns = new List<CandlePattern>();
+
+            double barBodyRange = marketSeries.GetBarRange(index, true);
+            double barRange = marketSeries.GetBarRange(index);
+            double previousBarRange = marketSeries.GetBarRange(index - 1);
+
+            BarType barType = marketSeries.GetBarType(index);
+            BarType previousBarType = marketSeries.GetBarType(index - 1);
+
+            double meanBarRange = marketSeries.GetMeanBarRange(index - 1, 50);
+
+            // Engulfing
+            if (barBodyRange > previousBarRange && barType != previousBarType)
+            {
+                patterns.Add(CandlePattern.Engulfing);
+            }
+
+            // Rejection
+            if (barBodyRange / barRange < 0.3 && barRange > meanBarRange)
+            {
+                double barMiddle = (barRange * 0.5) + marketSeries.Low[index];
+                double barFirstQuartile = (barRange * 0.25) + marketSeries.Low[index];
+                double barThirdQuartile = (barRange * 0.75) + marketSeries.Low[index];
+
+                if ((marketSeries.Open[index] > barMiddle && marketSeries.Close[index] > barThirdQuartile && barType == BarType.Up) ||
+                    (marketSeries.Open[index] < barMiddle && marketSeries.Close[index] < barFirstQuartile && barType == BarType.Down))
+                {
+                    patterns.Add(CandlePattern.Rejection);
+                }
+            }
+
+            // Doji
+            if (barRange < meanBarRange / 3 && barBodyRange / barRange < 0.5)
+            {
+                patterns.Add(CandlePattern.Doji);
+            }
+
+            return patterns;
         }
     }
 }
