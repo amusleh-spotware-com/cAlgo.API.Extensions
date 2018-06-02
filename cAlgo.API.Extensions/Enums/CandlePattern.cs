@@ -5,5 +5,6 @@
         Engulfing,
         Rejection,
         Doji,
+        InsideBar
     }
 }

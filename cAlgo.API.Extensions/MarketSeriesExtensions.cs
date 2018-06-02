@@ -221,6 +221,14 @@ namespace cAlgo.API.Extensions
                 patterns.Add(CandlePattern.Doji);
             }
 
+            // InsideBar
+            if (marketSeries.High[index] < marketSeries.High[index - 1] &&
+                marketSeries.Low[index] > marketSeries.Low[index - 1] &&
+                barType != previousBarType)
+            {
+                patterns.Add(CandlePattern.InsideBar);
+            }
+
             return patterns;
         }
     }
