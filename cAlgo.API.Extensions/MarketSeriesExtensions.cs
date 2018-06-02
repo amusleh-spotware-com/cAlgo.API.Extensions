@@ -304,7 +304,7 @@ namespace cAlgo.API.Extensions
         /// <param name="marketSeries"></param>
         /// <param name="index">The bar index number in a market series</param>
         /// <returns>List<CandlePattern></returns>
-        public static List<CandlePattern> GetCandlePattern(this MarketSeries marketSeries, int index)
+        public static List<CandlePattern> GetCandlePatterns(this MarketSeries marketSeries, int index)
         {
             List<CandlePattern> patterns = new List<CandlePattern>();
 
