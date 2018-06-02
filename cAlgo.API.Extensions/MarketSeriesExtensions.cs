@@ -262,12 +262,12 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns True if the index bar is a three reversal bar
+        /// Returns True if the index bar is a three bar reversal
         /// </summary>
         /// <param name="marketSeries"></param>
         /// <param name="index">The bar index number in a market series</param>
         /// <returns>bool</returns>
-        public static bool IsThreeReversalBar(this MarketSeries marketSeries, int index)
+        public static bool IsThreeBarReversal(this MarketSeries marketSeries, int index)
         {
             bool result = false;
 
@@ -333,9 +333,9 @@ namespace cAlgo.API.Extensions
             }
 
             // Three Reversal Bars
-            if (marketSeries.IsThreeReversalBar(index))
+            if (marketSeries.IsThreeBarReversal(index))
             {
-                patterns.Add(CandlePattern.ThreeReversalBars);
+                patterns.Add(CandlePattern.ThreeBarReversal);
             }
 
             return patterns;

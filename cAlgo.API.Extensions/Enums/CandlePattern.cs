@@ -6,6 +6,6 @@
         Rejection,
         Doji,
         InsideBar,
-        ThreeReversalBars
+        ThreeBarReversal
     }
 }
