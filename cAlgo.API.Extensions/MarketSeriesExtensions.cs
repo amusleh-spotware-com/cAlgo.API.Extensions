@@ -101,7 +101,8 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetBarRange(this MarketSeries marketSeries, int index, bool useOpenClose = false)
         {
-            return useOpenClose ? marketSeries.Open[index] - marketSeries.Close[index] : marketSeries.High[index] - marketSeries.Low[index];
+            return useOpenClose ? Math.Abs(marketSeries.Open[index] - marketSeries.Close[index])
+                : marketSeries.High[index] - marketSeries.Low[index];
         }
 
         /// <summary>
@@ -339,6 +340,34 @@ namespace cAlgo.API.Extensions
             }
 
             return patterns;
+        }
+
+        /// <summary>
+        /// Returns True if the provided bar matches any of the provided patterns otherwise false
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The bar index number in a market series</param>
+        /// <param name="patternsToMatch">List of candle patterns to match</param>
+        /// <returns>bool</returns>
+        public static bool IsCandlePatternMatchesAny(this MarketSeries marketSeries, int index, List<CandlePattern> patternsToMatch)
+        {
+            List<CandlePattern> barPatterns = marketSeries.GetCandlePatterns(index);
+
+            return patternsToMatch.Any(pattern => barPatterns.Contains(pattern));
+        }
+
+        /// <summary>
+        /// Returns True if the provided bar matches all of the provided patterns otherwise false
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The bar index number in a market series</param>
+        /// <param name="patternsToMatch">List of candle patterns to match</param>
+        /// <returns>bool</returns>
+        public static bool IsCandlePatternMatchesAll(this MarketSeries marketSeries, int index, List<CandlePattern> patternsToMatch)
+        {
+            List<CandlePattern> barPatterns = marketSeries.GetCandlePatterns(index);
+
+            return patternsToMatch.All(pattern => barPatterns.Contains(pattern));
         }
     }
 }
