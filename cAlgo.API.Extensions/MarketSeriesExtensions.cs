@@ -177,31 +177,37 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns the candle type of given bar index
+        /// Returns True if the index bar is an engulfing bar
         /// </summary>
         /// <param name="marketSeries"></param>
         /// <param name="index">The bar index number in a market series</param>
-        /// <returns>List<CandlePattern></returns>
-        public static List<CandlePattern> GetCandlePattern(this MarketSeries marketSeries, int index)
+        /// <returns>bool</returns>
+        public static bool IsEngulfingBar(this MarketSeries marketSeries, int index)
         {
-            List<CandlePattern> patterns = new List<CandlePattern>();
-
             double barBodyRange = marketSeries.GetBarRange(index, true);
-            double barRange = marketSeries.GetBarRange(index);
             double previousBarRange = marketSeries.GetBarRange(index - 1);
 
             BarType barType = marketSeries.GetBarType(index);
             BarType previousBarType = marketSeries.GetBarType(index - 1);
 
+            return barBodyRange > previousBarRange && barType != previousBarType ? true : false;
+        }
+
+        /// <summary>
+        /// Returns True if the index bar is a rejection bar
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The bar index number in a market series</param>
+        /// <returns>bool</returns>
+        public static bool IsRejectionBar(this MarketSeries marketSeries, int index)
+        {
+            double barBodyRange = marketSeries.GetBarRange(index, true);
+            double barRange = marketSeries.GetBarRange(index);
+
+            BarType barType = marketSeries.GetBarType(index);
+
             double meanBarRange = marketSeries.GetMeanBarRange(index - 1, 50);
 
-            // Engulfing
-            if (barBodyRange > previousBarRange && barType != previousBarType)
-            {
-                patterns.Add(CandlePattern.Engulfing);
-            }
-
-            // Rejection
             if (barBodyRange / barRange < 0.3 && barRange > meanBarRange)
             {
                 double barMiddle = (barRange * 0.5) + marketSeries.Low[index];
@@ -211,22 +217,125 @@ namespace cAlgo.API.Extensions
                 if ((marketSeries.Open[index] > barMiddle && marketSeries.Close[index] > barThirdQuartile && barType == BarType.Up) ||
                     (marketSeries.Open[index] < barMiddle && marketSeries.Close[index] < barFirstQuartile && barType == BarType.Down))
                 {
-                    patterns.Add(CandlePattern.Rejection);
+                    return true;
                 }
             }
 
+            return false;
+        }
+
+        /// <summary>
+        /// Returns True if the index bar is a doji bar
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The bar index number in a market series</param>
+        /// <returns>bool</returns>
+        public static bool IsDojiBar(this MarketSeries marketSeries, int index)
+        {
+            double barBodyRange = marketSeries.GetBarRange(index, true);
+            double barRange = marketSeries.GetBarRange(index);
+
+            double meanBarRange = marketSeries.GetMeanBarRange(index - 1, 50);
+
+            return barRange < meanBarRange / 3 && barBodyRange / barRange < 0.5 ? true : false;
+        }
+
+        /// <summary>
+        /// Returns True if the index bar is an inside bar
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The bar index number in a market series</param>
+        /// <returns>bool</returns>
+        public static bool IsInsideBar(this MarketSeries marketSeries, int index)
+        {
+            BarType barType = marketSeries.GetBarType(index);
+            BarType previousBarType = marketSeries.GetBarType(index - 1);
+
+            if (marketSeries.High[index] < marketSeries.High[index - 1] &&
+                marketSeries.Low[index] > marketSeries.Low[index - 1] &&
+                barType != previousBarType)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns True if the index bar is a three reversal bar
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The bar index number in a market series</param>
+        /// <returns>bool</returns>
+        public static bool IsThreeReversalBar(this MarketSeries marketSeries, int index)
+        {
+            bool result = false;
+
+            BarType barType = marketSeries.GetBarType(index);
+            BarType previousBarType = marketSeries.GetBarType(index - 1);
+
+            if (barType == BarType.Up && previousBarType == BarType.Down && marketSeries.GetBarType(index - 2) == BarType.Down)
+            {
+                if (marketSeries.Low[index - 1] < marketSeries.Low[index - 2] && marketSeries.Low[index - 1] < marketSeries.Low[index])
+                {
+                    if (marketSeries.Close[index] > marketSeries.Open[index - 1])
+                    {
+                        result = true;
+                    }
+                }
+            }
+            else if (barType == BarType.Down && previousBarType == BarType.Up && marketSeries.GetBarType(index - 2) == BarType.Up)
+            {
+                if (marketSeries.High[index - 1] > marketSeries.High[index - 2] && marketSeries.High[index - 1] > marketSeries.High[index])
+                {
+                    if (marketSeries.Close[index] < marketSeries.Open[index - 1])
+                    {
+                        result = true;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the candle type of given bar index
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The bar index number in a market series</param>
+        /// <returns>List<CandlePattern></returns>
+        public static List<CandlePattern> GetCandlePattern(this MarketSeries marketSeries, int index)
+        {
+            List<CandlePattern> patterns = new List<CandlePattern>();
+
+            // Engulfing
+            if (marketSeries.IsEngulfingBar(index))
+            {
+                patterns.Add(CandlePattern.Engulfing);
+            }
+
+            // Rejection
+            if (marketSeries.IsRejectionBar(index))
+            {
+                patterns.Add(CandlePattern.Rejection);
+            }
+
             // Doji
-            if (barRange < meanBarRange / 3 && barBodyRange / barRange < 0.5)
+            if (marketSeries.IsDojiBar(index))
             {
                 patterns.Add(CandlePattern.Doji);
             }
 
             // InsideBar
-            if (marketSeries.High[index] < marketSeries.High[index - 1] &&
-                marketSeries.Low[index] > marketSeries.Low[index - 1] &&
-                barType != previousBarType)
+            if (marketSeries.IsInsideBar(index))
             {
                 patterns.Add(CandlePattern.InsideBar);
+            }
+
+            // Three Reversal Bars
+            if (marketSeries.IsThreeReversalBar(index))
+            {
+                patterns.Add(CandlePattern.ThreeReversalBars);
             }
 
             return patterns;

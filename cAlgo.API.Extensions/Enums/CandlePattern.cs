@@ -5,6 +5,7 @@
         Engulfing,
         Rejection,
         Doji,
-        InsideBar
+        InsideBar,
+        ThreeReversalBars
     }
 }
