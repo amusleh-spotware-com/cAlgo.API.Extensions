@@ -459,5 +459,21 @@ namespace cAlgo.API.Extensions
 
             return max - min;
         }
+
+        /// <summary>
+        /// Returns true if the bars on provided index interval is flat
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <param name="maxStd">Maximum allowed standard deviation in range high and low</param>
+        /// <returns>bool</returns>
+        public static bool IsFlat(this MarketSeries marketSeries, int startIndex, int endIndex, double maxStd)
+        {
+            double highStd = marketSeries.High.GetStandardDeviation(startIndex, endIndex);
+            double lowStd = marketSeries.Low.GetStandardDeviation(startIndex, endIndex);
+
+            return highStd <= maxStd && lowStd <= maxStd;
+        }
     }
 }
