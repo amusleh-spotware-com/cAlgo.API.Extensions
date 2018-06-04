@@ -63,7 +63,7 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Checks if the index value is higher than x previous and future values in a dataseries
+        /// Checks if the index value is higher than x previous and future values in a data series
         /// </summary>
         /// <param name="dataSeries"></param>
         /// <param name="index">Dataseries value index</param>
@@ -88,7 +88,33 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Checks if the index value is lower than x previous and future values in a dataseries
+        /// Checks if the index value is higher than x previous and future values of another data series
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="otherSeries">Other data series</param>
+        /// <param name="index">Dataseries value index</param>
+        /// <param name="previousValues">The number of index previous values to check</param>
+        /// <param name="futureValues">The number of index future values to check</param>
+        /// <param name="equal">Check for equality</param>
+        /// <returns>bool</returns>
+        public static bool IsHigherHigh(
+            this DataSeries dataSeries, DataSeries otherSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
+        {
+            double previousBarsHighest = previousValues > 0 ? otherSeries.Maximum(index - previousValues, index - 1) : double.NegativeInfinity;
+            double futureBarsHighest = futureValues > 0 ? otherSeries.Maximum(index + 1, index + futureValues) : double.NegativeInfinity;
+
+            if (equal)
+            {
+                return dataSeries[index] >= previousBarsHighest && dataSeries[index] >= futureBarsHighest;
+            }
+            else
+            {
+                return dataSeries[index] > previousBarsHighest && dataSeries[index] > futureBarsHighest;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the index value is lower than x previous and future values in a data series
         /// </summary>
         /// <param name="dataSeries"></param>
         /// <param name="index">Dataseries value index</param>
@@ -99,8 +125,34 @@ namespace cAlgo.API.Extensions
         public static bool IsLowerLow(
             this DataSeries dataSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
-            double previousBarsLowest = previousValues > 0 ? dataSeries.Minimum(index - previousValues, index - 1) : double.NegativeInfinity;
-            double futureBarsLowest = futureValues > 0 ? dataSeries.Minimum(index + 1, index + futureValues) : double.NegativeInfinity;
+            double previousBarsLowest = previousValues > 0 ? dataSeries.Minimum(index - previousValues, index - 1) : double.PositiveInfinity;
+            double futureBarsLowest = futureValues > 0 ? dataSeries.Minimum(index + 1, index + futureValues) : double.PositiveInfinity;
+
+            if (equal)
+            {
+                return dataSeries[index] <= previousBarsLowest && dataSeries[index] <= futureBarsLowest;
+            }
+            else
+            {
+                return dataSeries[index] < previousBarsLowest && dataSeries[index] < futureBarsLowest;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the index value is lower than x previous and future values of another data series
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="otherSeries">Other data series</param>
+        /// <param name="index">Dataseries value index</param>
+        /// <param name="previousValues">The number of index previous values to check</param>
+        /// <param name="futureValues">The number of index future values to check</param>
+        /// <param name="equal">Check for equality</param>
+        /// <returns>bool</returns>
+        public static bool IsLowerLow(
+            this DataSeries dataSeries, DataSeries otherSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
+        {
+            double previousBarsLowest = previousValues > 0 ? otherSeries.Minimum(index - previousValues, index - 1) : double.PositiveInfinity;
+            double futureBarsLowest = futureValues > 0 ? otherSeries.Minimum(index + 1, index + futureValues) : double.PositiveInfinity;
 
             if (equal)
             {
@@ -370,7 +422,7 @@ namespace cAlgo.API.Extensions
 
             for (int i = startIndex + step; i <= endIndex; i += step)
             {
-                if (dataSeries[i] < dataSeries[i - step])
+                if (dataSeries[i] <= dataSeries[i - step])
                 {
                     result = false;
 
@@ -395,7 +447,7 @@ namespace cAlgo.API.Extensions
 
             for (int i = startIndex + step; i <= endIndex; i += step)
             {
-                if (dataSeries[i] > dataSeries[i - step])
+                if (dataSeries[i] >= dataSeries[i - step])
                 {
                     result = false;
 
