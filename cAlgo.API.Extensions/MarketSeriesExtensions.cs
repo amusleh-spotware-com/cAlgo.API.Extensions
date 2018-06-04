@@ -425,5 +425,39 @@ namespace cAlgo.API.Extensions
 
             return result;
         }
+
+        /// <summary>
+        /// Returns the range between an index interval in a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <param name="useBarBody">Use bar body (open and close) instead of shadows (high and low)</param>
+        /// <returns>double</returns>
+        public static double GetRange(this MarketSeries marketSeries, int startIndex, int endIndex, bool useBarBody = false)
+        {
+            double min = double.MinValue, max = double.MaxValue;
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                double barLow, barHigh;
+
+                if (useBarBody)
+                {
+                    barLow = marketSeries.GetBarType(i) == BarType.Up ? marketSeries.Open[i] : marketSeries.Close[i];
+                    barHigh = marketSeries.GetBarType(i) == BarType.Up ? marketSeries.Close[i] : marketSeries.Open[i];
+                }
+                else
+                {
+                    barLow = marketSeries.Low[i];
+                    barHigh = marketSeries.High[i];
+                }
+
+                min = Math.Min(min, barLow);
+                max = Math.Max(max, barHigh);
+            }
+
+            return max - min;
+        }
     }
 }

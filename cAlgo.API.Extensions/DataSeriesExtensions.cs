@@ -457,5 +457,78 @@ namespace cAlgo.API.Extensions
 
             return result;
         }
+
+        /// <summary>
+        /// Returns the variance between an index interval in a data series
+        /// </summary>
+        /// <param name="dataSeries">Data series</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <returns>double</returns>
+        public static double GetVariance(this DataSeries dataSeries, int startIndex, int endIndex)
+        {
+            List<double> data = new List<double>();
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                data.Add(dataSeries[i]);
+            }
+
+            return data.Select(value => Math.Pow(value - data.Average(), 2)).Sum() / (endIndex - startIndex);
+        }
+
+        /// <summary>
+        /// Returns the standard deviation between an index interval in a data series
+        /// </summary>
+        /// <param name="dataSeries">Data series</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <returns>double</returns>
+        public static double GetStandardDeviation(this DataSeries dataSeries, int startIndex, int endIndex)
+        {
+            return Math.Sqrt(dataSeries.GetVariance(startIndex, endIndex));
+        }
+
+        /// <summary>
+        /// Returns the median value between an index interval in a data series
+        /// </summary>
+        /// <param name="dataSeries">Data series</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <returns>double</returns>
+        public static double GetMedian(this DataSeries dataSeries, int startIndex, int endIndex)
+        {
+            List<double> data = new List<double>();
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                data.Add(dataSeries[i]);
+            }
+
+            data.Sort();
+
+            int median = (int)(((data.Count() + 1) / 2) - 1);
+
+            return data.Count() % 2 == 0 ? (data[median] + data[median + 1]) / 2 : data[median];
+        }
+
+        /// <summary>
+        /// Returns the range value between an index interval in a data series
+        /// </summary>
+        /// <param name="dataSeries">Data series</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <returns>double</returns>
+        public static double GetRange(this DataSeries dataSeries, int startIndex, int endIndex)
+        {
+            List<double> data = new List<double>();
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                data.Add(dataSeries[i]);
+            }
+
+            return data.Max() - data.Min();
+        }
     }
 }
