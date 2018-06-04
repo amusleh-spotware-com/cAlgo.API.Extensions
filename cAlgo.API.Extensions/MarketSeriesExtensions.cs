@@ -369,5 +369,61 @@ namespace cAlgo.API.Extensions
 
             return patternsToMatch.All(pattern => barPatterns.Contains(pattern));
         }
+
+        /// <summary>
+        /// Returns the largest bar index number between an interval in a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <returns>int</returns>
+        public static int GetLargestBarIndex(this MarketSeries marketSeries, int startIndex, int endIndex)
+        {
+            double maxBarRange = double.MinValue;
+
+            int result = 0;
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                double currentBarRange = marketSeries.High[i] - marketSeries.Low[i];
+
+                if (currentBarRange > maxBarRange)
+                {
+                    maxBarRange = currentBarRange;
+
+                    result = i;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the smallest bar index number between an interval in a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <returns>int</returns>
+        public static int GetSmallestBarIndex(this MarketSeries marketSeries, int startIndex, int endIndex)
+        {
+            double minBarRange = double.MinValue;
+
+            int result = 0;
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                double currentBarRange = marketSeries.High[i] - marketSeries.Low[i];
+
+                if (currentBarRange < minBarRange)
+                {
+                    minBarRange = currentBarRange;
+
+                    result = i;
+                }
+            }
+
+            return result;
+        }
     }
 }
