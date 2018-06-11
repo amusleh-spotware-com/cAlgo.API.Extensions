@@ -1,5 +1,6 @@
 ﻿using cAlgo.API;
 using cAlgo.API.Internals;
+using cAlgo.API.Indicators;
 using System;
 
 namespace cAlgo.API.Extensions
@@ -7,6 +8,8 @@ namespace cAlgo.API.Extensions
     public class IndicatorMarketSeries : MarketSeries
     {
         #region Fields
+
+        private readonly Algo _algo;
 
         private readonly IndicatorDataSeries _open, _close, _high, _low, _tickVolume, _median, _typical, _weighted, _weightedClose;
 
@@ -22,6 +25,8 @@ namespace cAlgo.API.Extensions
 
         public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode, Algo algo)
         {
+            _algo = algo;
+
             _open = algo.CreateDataSeries();
             _close = algo.CreateDataSeries();
             _high = algo.CreateDataSeries();
@@ -153,47 +158,7 @@ namespace cAlgo.API.Extensions
 
         public void Insert(int index, double value, SeriesType seriesType)
         {
-            switch (seriesType)
-            {
-                case SeriesType.Open:
-                    _open[index] = value;
-                    break;
-
-                case SeriesType.High:
-                    _high[index] = value;
-                    break;
-
-                case SeriesType.Low:
-                    _low[index] = value;
-                    break;
-
-                case SeriesType.Close:
-                    _close[index] = value;
-                    break;
-
-                case SeriesType.Median:
-                    _median[index] = value;
-                    break;
-
-                case SeriesType.TickVolume:
-                    _tickVolume[index] = value;
-                    break;
-
-                case SeriesType.Typical:
-                    _typical[index] = value;
-                    break;
-
-                case SeriesType.Weighted:
-                    _weighted[index] = value;
-                    break;
-
-                case SeriesType.WeightedClose:
-                    _weightedClose[index] = value;
-                    break;
-
-                default:
-                    break;
-            }
+            ((IndicatorDataSeries)this.GetSeries(seriesType))[index] = value;
         }
 
         public void Insert(int index, DateTime value)
@@ -208,6 +173,71 @@ namespace cAlgo.API.Extensions
             Insert(index, openPrice, SeriesType.Low);
             Insert(index, openPrice, SeriesType.Close);
             Insert(index, openTime);
+        }
+
+        public void CalculateHeikenAshi(MarketSeries marketSeries, int seriesIndex, int index, int periods = 1)
+        {
+            double barOhlcSum = marketSeries.Open[seriesIndex] + marketSeries.Low[seriesIndex] +
+                marketSeries.High[seriesIndex] + marketSeries.Close[seriesIndex];
+
+            _close[index] = Round(barOhlcSum / 4);
+
+            if (seriesIndex < periods || double.IsNaN(_open[index - 1]))
+            {
+                _open[index] = Round((marketSeries.Open[seriesIndex] + marketSeries.Close[seriesIndex]) / 2);
+                _high[index] = marketSeries.High[seriesIndex];
+                _low[index] = marketSeries.Low[seriesIndex];
+            }
+            else
+            {
+                _open[index] = Round((_open[index - 1] + _close[index - 1]) / 2);
+                _high[index] = Math.Max(marketSeries.High[seriesIndex], Math.Max(Open[index], Close[index]));
+                _low[index] = Math.Min(marketSeries.Low[seriesIndex], Math.Min(Open[index], Close[index]));
+            }
+        }
+
+        public void CalculateHeikenAshiSmoothed(
+            MarketSeries marketSeries, int seriesIndex, int index, int maPeriods, MovingAverageType maType, int periods = 1)
+        {
+            if (seriesIndex <= maPeriods)
+            {
+                return;
+            }
+
+            double barMaOpen = GetSeriesMovingAverageValue(marketSeries, SeriesType.Open, maPeriods, maType, seriesIndex);
+            double barMaHigh = GetSeriesMovingAverageValue(marketSeries, SeriesType.High, maPeriods, maType, seriesIndex);
+            double barMaLow = GetSeriesMovingAverageValue(marketSeries, SeriesType.Low, maPeriods, maType, seriesIndex);
+            double barMaClose = GetSeriesMovingAverageValue(marketSeries, SeriesType.Close, maPeriods, maType, seriesIndex);
+
+            _close[index] = (barMaOpen + barMaClose + barMaHigh + barMaLow) / 4;
+
+            if (seriesIndex < periods || double.IsNaN(_open[index - 1]))
+            {
+                _open[index] = (barMaOpen + barMaClose) / 2;
+                _high[index] = barMaHigh;
+                _low[index] = barMaLow;
+            }
+            else
+            {
+                _open[index] = (_open[index - 1] + _close[index - 1]) / 2;
+                _high[index] = Math.Max(barMaHigh, Math.Max(_open[index], _close[index]));
+                _low[index] = Math.Min(barMaLow, Math.Min(_open[index], _close[index]));
+            }
+        }
+
+        public double GetSeriesMovingAverageValue(
+            MarketSeries marketSeries, SeriesType seriesType, int periods, MovingAverageType type, int index)
+        {
+            DataSeries series = marketSeries.GetSeries(seriesType);
+
+            MovingAverage ma = _algo.Indicators.MovingAverage(series, periods, type);
+
+            return ma.Result[index];
+        }
+
+        public double Round(double input)
+        {
+            return Math.Round(input, _algo.Symbol.Digits);
         }
 
         #endregion Methods

@@ -3,6 +3,7 @@
     public enum BarType
     {
         Up,
-        Down
+        Down,
+        Neutral
     }
 }

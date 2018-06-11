@@ -14,7 +14,7 @@ namespace cAlgo.API.Extensions
         /// <returns>int</returns>
         public static int GetIndex(this MarketSeries marketSeries)
         {
-            return marketSeries.Close.Count - 1;
+            return marketSeries.Close.Count > 0 ? marketSeries.Close.Count - 1 : marketSeries.Close.Count;
         }
 
         /// <summary>
@@ -89,7 +89,18 @@ namespace cAlgo.API.Extensions
         /// <returns>BarType</returns>
         public static BarType GetBarType(this MarketSeries marketSeries, int index)
         {
-            return marketSeries.Close[index] > marketSeries.Open[index] ? BarType.Up : BarType.Down;
+            if (marketSeries.Close[index] > marketSeries.Open[index])
+            {
+                return BarType.Up;
+            }
+            else if (marketSeries.Close[index] < marketSeries.Open[index])
+            {
+                return BarType.Down;
+            }
+            else
+            {
+                return BarType.Neutral;
+            }
         }
 
         /// <summary>
@@ -474,6 +485,45 @@ namespace cAlgo.API.Extensions
             double lowStd = marketSeries.Low.GetStandardDeviation(startIndex, endIndex);
 
             return highStd <= maxStd && lowStd <= maxStd;
+        }
+
+        /// <summary>
+        /// Returns a market series specific data series based on provided series type
+        /// </summary>
+        /// <param name="marketSeries">The market series</param>
+        /// <param name="seriesType">Series type</param>
+        /// <returns>DataSeries</returns>
+        public static DataSeries GetSeries(this MarketSeries marketSeries, SeriesType seriesType)
+        {
+            switch (seriesType)
+            {
+                case SeriesType.Open:
+                    return marketSeries.Open;
+
+                case SeriesType.High:
+                    return marketSeries.High;
+
+                case SeriesType.Low:
+                    return marketSeries.Low;
+
+                case SeriesType.Close:
+                    return marketSeries.Close;
+
+                case SeriesType.Median:
+                    return marketSeries.Median;
+
+                case SeriesType.TickVolume:
+                    return marketSeries.TickVolume;
+
+                case SeriesType.Typical:
+                    return marketSeries.Typical;
+
+                case SeriesType.WeightedClose:
+                    return marketSeries.WeightedClose;
+
+                default:
+                    return null;
+            }
         }
     }
 }
