@@ -18,52 +18,52 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns the volume profile of x latest values in a market series
+        /// Returns the volume profile of x latest bars in a market series
         /// </summary>
         /// <param name="marketSeries"></param>
-        /// <param name="periods">The number of latest values</param>
+        /// <param name="periods">The number of latest bars</param>
         /// <param name="priceStep">The step (Pips) that is used for increament of price</param>
         /// <param name="symbol">The market series symbol</param>
         /// <returns>List<PriceVolume></returns>
-        public static List<PriceVolume> GetPriceVolume(this MarketSeries marketSeries, int periods, double priceStep, Symbol symbol)
+        public static List<PriceLevel> GetVolumeProfile(this MarketSeries marketSeries, int periods, double width, Symbol symbol)
         {
-            List<PriceVolume> result = new List<PriceVolume>();
+            List<PriceLevel> result = new List<PriceLevel>();
 
             int index = marketSeries.GetIndex();
 
-            double priceStepInPrice = symbol.ToPips(priceStep);
+            double widthInPips = symbol.ToPips(width);
 
             for (int i = index; i > index - periods; i--)
             {
-                double barRange = symbol.ToPips(marketSeries.High[i] - marketSeries.Low[i]) / priceStepInPrice;
+                double barRange = marketSeries.GetBarRange(index);
 
-                long volumePerPriceLevel = (long)(marketSeries.TickVolume[i] / barRange);
+                double percentageAboveBarClose = (marketSeries.High[index] - marketSeries.Close[index]) / barRange;
+                double percentageBelowBarClose = -(marketSeries.Close[index] - marketSeries.Low[index]) / barRange;
 
-                for (double price = marketSeries.Low[i]; price <= marketSeries.High[i]; price += priceStep)
+                double barVolume = marketSeries.TickVolume[index];
+
+                double bullishVolume = barVolume * percentageBelowBarClose;
+                double bearishVolume = barVolume * percentageAboveBarClose;
+
+                long bullishVolumePerLevel = (long)(bullishVolume / (symbol.ToPips(barRange) / widthInPips));
+                long bearishVolumePerLevel = (long)(bearishVolume / (symbol.ToPips(barRange) / widthInPips));
+
+                for (double low = marketSeries.Low[i]; low <= marketSeries.High[i]; low += width)
                 {
-                    price = Math.Round(price, symbol.Digits);
+                    low = Math.Round(low, symbol.Digits);
+                    double high = low + width;
 
-                    PriceVolume priceVolume = result.FirstOrDefault(pVolume => pVolume.Price == price);
+                    PriceLevel priceLevel = result.FirstOrDefault(pLevel => pLevel.Low == low && pLevel.High == high);
 
-                    if (priceVolume == null)
+                    if (priceLevel == null)
                     {
-                        priceVolume = new PriceVolume() { Price = price };
+                        priceLevel = new PriceLevel() { Low = low, High = high };
 
-                        result.Add(priceVolume);
+                        result.Add(priceLevel);
                     }
 
-                    if (marketSeries.Close[i] > marketSeries.Open[i])
-                    {
-                        priceVolume.BullishVolume += volumePerPriceLevel;
-                    }
-                    else if (marketSeries.Close[i] < marketSeries.Open[i])
-                    {
-                        priceVolume.BearishVolume += volumePerPriceLevel;
-                    }
-                    else
-                    {
-                        priceVolume.NeutralVolume += volumePerPriceLevel;
-                    }
+                    priceLevel.BullishVolume += bullishVolumePerLevel;
+                    priceLevel.BearishVolume += bearishVolumePerLevel;
                 }
             }
 
@@ -524,6 +524,34 @@ namespace cAlgo.API.Extensions
                 default:
                     return null;
             }
+        }
+
+        /// <summary>
+        /// Returns a bar open time by giving its index, it supports both past and future bars
+        /// </summary>
+        /// <param name="marketSeries">The market series</param>
+        /// <param name="barIndex">The bar index</param>
+        /// <returns></returns>
+        public static DateTime GetOpenTime(this MarketSeries marketSeries, double barIndex)
+        {
+            int index = marketSeries.GetIndex();
+
+            TimeSpan timeDiff = marketSeries.OpenTime[index] - marketSeries.OpenTime[index - 1];
+
+            double indexDiff = barIndex - index;
+
+            DateTime result = marketSeries.OpenTime[index];
+
+            for (int i = 1; i <= Math.Abs(indexDiff); i++)
+            {
+                result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
+            }
+
+            double indexDecimalPart = indexDiff - Math.Floor(indexDiff);
+
+            result = result.AddMinutes(timeDiff.TotalMinutes * indexDecimalPart);
+
+            return result;
         }
     }
 }

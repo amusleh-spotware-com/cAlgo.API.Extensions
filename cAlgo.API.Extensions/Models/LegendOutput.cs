@@ -10,7 +10,7 @@ namespace cAlgo.API.Extensions
         {
         }
 
-        public LegendOutput(string name, Colors color)
+        public LegendOutput(string name, Color color)
         {
             Name = name;
 
@@ -23,7 +23,7 @@ namespace cAlgo.API.Extensions
 
         public string Name { get; set; }
 
-        public Colors Color { get; set; }
+        public Color Color { get; set; }
 
         #endregion Properties
     }

@@ -59,7 +59,7 @@
     <Compile Include="Enums\DivergenceType.cs" />
     <Compile Include="MarketSeriesExtensions.cs" />
     <Compile Include="DataSeriesExtensions.cs" />
-    <Compile Include="Models\PriceVolume.cs" />
+    <Compile Include="Models\PriceLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

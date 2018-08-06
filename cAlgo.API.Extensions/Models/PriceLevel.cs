@@ -1,19 +1,19 @@
 ﻿namespace cAlgo.API.Extensions
 {
-    public class PriceVolume
+    public class PriceLevel
     {
         #region Properties
 
-        public double Price { get; set; }
+        public double High { get; set; }
+        public double Low { get; set; }
         public long BullishVolume { get; set; }
         public long BearishVolume { get; set; }
-        public long NeutralVolume { get; set; }
 
         public long TotalVolume
         {
             get
             {
-                return BullishVolume + BearishVolume + NeutralVolume;
+                return BullishVolume + BearishVolume;
             }
         }
 
@@ -21,7 +21,7 @@
 
         #region Methods
 
-        public static bool operator !=(PriceVolume obj1, PriceVolume obj2)
+        public static bool operator !=(PriceLevel obj1, PriceLevel obj2)
         {
             if (object.ReferenceEquals(obj1, null))
             {
@@ -31,7 +31,7 @@
             return !obj1.Equals(obj2);
         }
 
-        public static bool operator ==(PriceVolume obj1, PriceVolume obj2)
+        public static bool operator ==(PriceLevel obj1, PriceLevel obj2)
         {
             if (object.ReferenceEquals(obj1, null))
             {
@@ -43,24 +43,25 @@
 
         public override bool Equals(object obj)
         {
-            if (obj == null || !(obj is PriceVolume))
+            if (obj == null || !(obj is PriceLevel))
             {
                 return false;
             }
 
-            return Equals((PriceVolume)obj);
+            return Equals((PriceLevel)obj);
         }
 
-        public bool Equals(PriceVolume other)
+        public bool Equals(PriceLevel other)
         {
-            return other != null && other.Price == Price;
+            return other != null && other.Low == Low && other.High == High;
         }
 
         public override int GetHashCode()
         {
             int hash = 17;
 
-            hash += (hash * 31) + Price.GetHashCode();
+            hash += (hash * 31) + Low.GetHashCode();
+            hash += (hash * 31) + High.GetHashCode();
 
             return hash;
         }
