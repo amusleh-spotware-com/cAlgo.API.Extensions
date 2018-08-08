@@ -4,8 +4,7 @@
     {
         #region Properties
 
-        public double High { get; set; }
-        public double Low { get; set; }
+        public double Level { get; set; }
         public long BullishVolume { get; set; }
         public long BearishVolume { get; set; }
 
@@ -53,15 +52,14 @@
 
         public bool Equals(PriceLevel other)
         {
-            return other != null && other.Low == Low && other.High == High;
+            return other != null && other.Level == Level;
         }
 
         public override int GetHashCode()
         {
             int hash = 17;
 
-            hash += (hash * 31) + Low.GetHashCode();
-            hash += (hash * 31) + High.GetHashCode();
+            hash += (hash * 31) + Level.GetHashCode();
 
             return hash;
         }

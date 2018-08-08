@@ -25,39 +25,38 @@ namespace cAlgo.API.Extensions
         /// <param name="priceStep">The step (Pips) that is used for increament of price</param>
         /// <param name="symbol">The market series symbol</param>
         /// <returns>List<PriceVolume></returns>
-        public static List<PriceLevel> GetVolumeProfile(this MarketSeries marketSeries, int periods, double width, Symbol symbol)
+        public static List<PriceLevel> GetVolumeProfile(this MarketSeries marketSeries, int periods, Symbol symbol)
         {
             List<PriceLevel> result = new List<PriceLevel>();
 
             int index = marketSeries.GetIndex();
 
-            double widthInPips = symbol.ToPips(width);
-
             for (int i = index; i > index - periods; i--)
             {
-                double barRange = marketSeries.GetBarRange(index);
+                double barRange = marketSeries.GetBarRange(i);
 
-                double percentageAboveBarClose = (marketSeries.High[index] - marketSeries.Close[index]) / barRange;
-                double percentageBelowBarClose = -(marketSeries.Close[index] - marketSeries.Low[index]) / barRange;
+                double percentageAboveBarClose = (marketSeries.High[i] - marketSeries.Close[i]) / barRange;
+                double percentageBelowBarClose = (marketSeries.Close[i] - marketSeries.Low[i]) / barRange;
 
-                double barVolume = marketSeries.TickVolume[index];
+                double barVolume = marketSeries.TickVolume[i];
 
                 double bullishVolume = barVolume * percentageBelowBarClose;
                 double bearishVolume = barVolume * percentageAboveBarClose;
 
-                long bullishVolumePerLevel = (long)(bullishVolume / (symbol.ToPips(barRange) / widthInPips));
-                long bearishVolumePerLevel = (long)(bearishVolume / (symbol.ToPips(barRange) / widthInPips));
+                double barRangeInPips = symbol.ToPips(barRange);
 
-                for (double low = marketSeries.Low[i]; low <= marketSeries.High[i]; low += width)
+                long bullishVolumePerLevel = (long)(bullishVolume / barRangeInPips);
+                long bearishVolumePerLevel = (long)(bearishVolume / barRangeInPips);
+
+                for (double level = marketSeries.Low[i]; level <= marketSeries.High[i]; level += symbol.TickSize)
                 {
-                    low = Math.Round(low, symbol.Digits);
-                    double high = low + width;
+                    level = Math.Round(level, symbol.Digits);
 
-                    PriceLevel priceLevel = result.FirstOrDefault(pLevel => pLevel.Low == low && pLevel.High == high);
+                    PriceLevel priceLevel = result.FirstOrDefault(pLevel => pLevel.Level == level);
 
                     if (priceLevel == null)
                     {
-                        priceLevel = new PriceLevel() { Low = low, High = high };
+                        priceLevel = new PriceLevel() { Level = level };
 
                         result.Add(priceLevel);
                     }
@@ -547,9 +546,13 @@ namespace cAlgo.API.Extensions
                 result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
             }
 
-            double indexDecimalPart = indexDiff - Math.Floor(indexDiff);
+            double indexDiffAbs = Math.Abs(indexDiff);
 
-            result = result.AddMinutes(timeDiff.TotalMinutes * indexDecimalPart);
+            double indexDecimalPart = indexDiffAbs - Math.Floor(indexDiffAbs);
+
+            double decimalPartMinutes = timeDiff.TotalMinutes * indexDecimalPart;
+
+            result = result.AddMinutes(indexDiff > 0 ? decimalPartMinutes : -decimalPartMinutes);
 
             return result;
         }
