@@ -543,12 +543,14 @@ namespace cAlgo.API.Extensions
 
             for (int i = 1; i <= Math.Abs(indexDiff); i++)
             {
-                do
-                {
-                    result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
-                }
-                while (result.DayOfWeek == DayOfWeek.Saturday || result.DayOfWeek == DayOfWeek.Sunday);
+                result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
             }
+
+            do
+            {
+                result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
+            }
+            while (result.DayOfWeek == DayOfWeek.Saturday || result.DayOfWeek == DayOfWeek.Sunday);
 
             double indexDiffAbs = Math.Abs(indexDiff);
 
@@ -570,7 +572,7 @@ namespace cAlgo.API.Extensions
         {
             int index = marketSeries.GetIndex();
 
-            if (index < 1)
+            if (index < 5)
             {
                 throw new InvalidOperationException("Not enough data in market series to calculate the time difference");
             }
