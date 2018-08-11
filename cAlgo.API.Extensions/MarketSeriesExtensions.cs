@@ -535,7 +535,7 @@ namespace cAlgo.API.Extensions
         {
             int index = marketSeries.GetIndex();
 
-            TimeSpan timeDiff = marketSeries.OpenTime[index] - marketSeries.OpenTime[index - 1];
+            TimeSpan timeDiff = marketSeries.GetTimeDiff();
 
             double indexDiff = barIndex - index;
 
@@ -543,7 +543,11 @@ namespace cAlgo.API.Extensions
 
             for (int i = 1; i <= Math.Abs(indexDiff); i++)
             {
-                result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
+                do
+                {
+                    result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
+                }
+                while (result.DayOfWeek == DayOfWeek.Saturday || result.DayOfWeek == DayOfWeek.Sunday);
             }
 
             double indexDiffAbs = Math.Abs(indexDiff);
@@ -555,6 +559,30 @@ namespace cAlgo.API.Extensions
             result = result.AddMinutes(indexDiff > 0 ? decimalPartMinutes : -decimalPartMinutes);
 
             return result;
+        }
+
+        /// <summary>
+        /// Returns the time difference between two bar of a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <returns>TimeSpan</returns>
+        public static TimeSpan GetTimeDiff(this MarketSeries marketSeries)
+        {
+            int index = marketSeries.GetIndex();
+
+            if (index < 1)
+            {
+                throw new InvalidOperationException("Not enough data in market series to calculate the time difference");
+            }
+
+            List<TimeSpan> timeDiffs = new List<TimeSpan>();
+
+            for (int i = index; i >= index - 5; i--)
+            {
+                timeDiffs.Add(marketSeries.OpenTime[i] - marketSeries.OpenTime[i - 1]);
+            }
+
+            return timeDiffs.GroupBy(diff => diff).OrderBy(diffGroup => diffGroup.Count()).Last().First();
         }
     }
 }
