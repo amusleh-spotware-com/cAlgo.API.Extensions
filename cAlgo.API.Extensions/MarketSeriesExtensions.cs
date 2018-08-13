@@ -539,20 +539,19 @@ namespace cAlgo.API.Extensions
 
             double indexDiff = barIndex - index;
 
+            double indexDiffAbs = Math.Abs(indexDiff);
+
             DateTime result = marketSeries.OpenTime[index];
 
-            for (int i = 1; i <= Math.Abs(indexDiff); i++)
+            for (int i = 1; i <= indexDiffAbs; i++)
             {
                 result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
             }
 
-            do
+            while (result.DayOfWeek == DayOfWeek.Saturday || result.DayOfWeek == DayOfWeek.Sunday)
             {
                 result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
             }
-            while (result.DayOfWeek == DayOfWeek.Saturday || result.DayOfWeek == DayOfWeek.Sunday);
-
-            double indexDiffAbs = Math.Abs(indexDiff);
 
             double indexDecimalPart = indexDiffAbs - Math.Floor(indexDiffAbs);
 
