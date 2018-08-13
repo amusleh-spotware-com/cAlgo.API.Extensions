@@ -526,44 +526,45 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns a bar open time by giving its index, it supports both past and future bars
+        /// Returns a bar open time by giving its index, it supports both past and future bars but the future bars provided
+        /// open time is an approximation based on previous bars time differences not exact open time
         /// </summary>
         /// <param name="marketSeries">The market series</param>
         /// <param name="barIndex">The bar index</param>
-        /// <returns></returns>
+        /// <returns>DateTime</returns>
         public static DateTime GetOpenTime(this MarketSeries marketSeries, double barIndex)
         {
-            int index = marketSeries.GetIndex();
+            int currentIndex = marketSeries.GetIndex();
 
             TimeSpan timeDiff = marketSeries.GetTimeDiff();
 
-            double indexDiff = barIndex - index;
+            double indexDiff = barIndex - currentIndex;
 
             double indexDiffAbs = Math.Abs(indexDiff);
 
-            DateTime result = marketSeries.OpenTime[index];
+            double indexDiffFloor = Math.Floor(indexDiffAbs);
 
-            for (int i = 1; i <= indexDiffAbs; i++)
+            double indexDiffFraction = indexDiffAbs - indexDiffFloor;
+
+            DateTime result = indexDiff <= 0 ? marketSeries.OpenTime[(int)barIndex] : marketSeries.OpenTime[currentIndex];
+
+            if (indexDiff > 0)
             {
-                result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
+                for (int i = 1; i <= indexDiffAbs; i++)
+                {
+                    result = result.Add(timeDiff);
+                }
             }
 
-            while (result.DayOfWeek == DayOfWeek.Saturday || result.DayOfWeek == DayOfWeek.Sunday)
-            {
-                result = result.Add(indexDiff > 0 ? timeDiff : -timeDiff);
-            }
+            double indexDiffFractionInMinutes = timeDiff.TotalMinutes * indexDiffFraction;
 
-            double indexDecimalPart = indexDiffAbs - Math.Floor(indexDiffAbs);
-
-            double decimalPartMinutes = timeDiff.TotalMinutes * indexDecimalPart;
-
-            result = result.AddMinutes(indexDiff > 0 ? decimalPartMinutes : -decimalPartMinutes);
+            result = result.AddMinutes(indexDiff > 0 ? indexDiffFractionInMinutes : -indexDiffFractionInMinutes);
 
             return result;
         }
 
         /// <summary>
-        /// Returns the time difference between two bar of a market series
+        /// Returns the most common time difference between two bar of a market series
         /// </summary>
         /// <param name="marketSeries"></param>
         /// <returns>TimeSpan</returns>
