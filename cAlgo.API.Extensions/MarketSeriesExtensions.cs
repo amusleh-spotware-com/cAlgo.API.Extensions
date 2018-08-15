@@ -21,24 +21,28 @@ namespace cAlgo.API.Extensions
         /// Returns the volume profile of x latest bars in a market series
         /// </summary>
         /// <param name="marketSeries"></param>
-        /// <param name="periods">The number of latest bars</param>
+        /// <param name="index">Last Bar Index</param>
+        /// <param name="periods">Number of previous bars before provided index</param>
         /// <param name="priceStep">The step (Pips) that is used for increament of price</param>
         /// <param name="symbol">The market series symbol</param>
         /// <returns>List<PriceVolume></returns>
-        public static List<PriceLevel> GetVolumeProfile(this MarketSeries marketSeries, int periods, Symbol symbol)
+        public static List<PriceLevel> GetVolumeProfile(this MarketSeries marketSeries, int index, int periods, Symbol symbol)
         {
             List<PriceLevel> result = new List<PriceLevel>();
-
-            int index = marketSeries.GetIndex();
 
             for (int i = index; i > index - periods; i--)
             {
                 double barRange = marketSeries.GetBarRange(i);
 
+                double barVolume = marketSeries.TickVolume[i];
+
+                if (barRange <= 0 || barVolume <= 0)
+                {
+                    continue;
+                }
+
                 double percentageAboveBarClose = (marketSeries.High[i] - marketSeries.Close[i]) / barRange;
                 double percentageBelowBarClose = (marketSeries.Close[i] - marketSeries.Low[i]) / barRange;
-
-                double barVolume = marketSeries.TickVolume[i];
 
                 double bullishVolume = barVolume * percentageBelowBarClose;
                 double bearishVolume = barVolume * percentageAboveBarClose;
@@ -56,7 +60,10 @@ namespace cAlgo.API.Extensions
 
                     if (priceLevel == null)
                     {
-                        priceLevel = new PriceLevel() { Level = level };
+                        priceLevel = new PriceLevel
+                        {
+                            Level = level
+                        };
 
                         result.Add(priceLevel);
                     }
@@ -552,7 +559,11 @@ namespace cAlgo.API.Extensions
             {
                 for (int i = 1; i <= indexDiffAbs; i++)
                 {
-                    result = result.Add(timeDiff);
+                    do
+                    {
+                        result = result.Add(timeDiff);
+                    }
+                    while (result.DayOfWeek == DayOfWeek.Saturday);
                 }
             }
 
