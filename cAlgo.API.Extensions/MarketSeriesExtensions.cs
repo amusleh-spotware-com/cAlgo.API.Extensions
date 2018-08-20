@@ -564,7 +564,7 @@ namespace cAlgo.API.Extensions
                     {
                         result = result.Add(timeDiff);
                     }
-                    while (result.DayOfWeek == DayOfWeek.Saturday);
+                    while (result.DayOfWeek == DayOfWeek.Saturday || result.DayOfWeek == DayOfWeek.Sunday);
                 }
             }
 
