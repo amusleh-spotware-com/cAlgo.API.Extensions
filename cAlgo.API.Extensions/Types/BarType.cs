@@ -1,4 +1,4 @@
-﻿namespace cAlgo.API.Extensions
+﻿namespace cAlgo.API.Extensions.Types
 {
     public enum BarType
     {

@@ -2,6 +2,7 @@
 using cAlgo.API.Internals;
 using cAlgo.API.Indicators;
 using System;
+using cAlgo.API.Extensions.Types;
 
 namespace cAlgo.API.Extensions
 {
