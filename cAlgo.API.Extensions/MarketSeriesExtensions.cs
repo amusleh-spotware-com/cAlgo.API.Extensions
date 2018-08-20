@@ -24,7 +24,6 @@ namespace cAlgo.API.Extensions
         /// <param name="marketSeries"></param>
         /// <param name="index">Last Bar Index</param>
         /// <param name="periods">Number of previous bars before provided index</param>
-        /// <param name="priceStep">The step (Pips) that is used for increament of price</param>
         /// <param name="symbol">The market series symbol</param>
         /// <returns>List<PriceVolume></returns>
         public static List<PriceLevel> GetVolumeProfile(this MarketSeries marketSeries, int index, int periods, Symbol symbol)
@@ -597,6 +596,53 @@ namespace cAlgo.API.Extensions
             }
 
             return timeDiffs.GroupBy(diff => diff).OrderBy(diffGroup => diffGroup.Count()).Last().First();
+        }
+
+        /// <summary>
+        /// Returns the market profile of x latest bars in a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">Last Bar Index</param>
+        /// <param name="periods">Number of previous bars before provided index</param>
+        /// <param name="symbol">The market series symbol</param>
+        /// <param name="step">The price increament step in Pips</param>
+        /// <returns>List<PriceVolume></returns>
+        public static List<PriceLevel> GetMarketProfile(this MarketSeries marketSeries, int index, int periods, Symbol symbol, double step)
+        {
+            step = step * symbol.PipSize;
+
+            List<PriceLevel> result = new List<PriceLevel>();
+
+            for (int i = index; i > index - periods; i--)
+            {
+                for (double level = marketSeries.Low[i]; level <= marketSeries.High[i]; level += step)
+                {
+                    level = Math.Round(level, symbol.Digits);
+
+                    PriceLevel priceLevel = result.FirstOrDefault(pLevel => pLevel.Level == level);
+
+                    if (priceLevel == null)
+                    {
+                        priceLevel = new PriceLevel
+                        {
+                            Level = level
+                        };
+
+                        result.Add(priceLevel);
+                    }
+
+                    if (marketSeries.GetBarType(i) == BarType.Up)
+                    {
+                        priceLevel.BullishVolume += 1;
+                    }
+                    else
+                    {
+                        priceLevel.BearishVolume += 1;
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }
