@@ -625,20 +625,14 @@ namespace cAlgo.API.Extensions
                     {
                         priceLevel = new PriceLevel
                         {
-                            Level = level
+                            Level = level,
+                            Profile = new List<int>()
                         };
 
                         result.Add(priceLevel);
                     }
 
-                    if (marketSeries.GetBarType(i) == BarType.Up)
-                    {
-                        priceLevel.BullishVolume += 1;
-                    }
-                    else
-                    {
-                        priceLevel.BearishVolume += 1;
-                    }
+                    priceLevel.Profile.Add(i);
                 }
             }
 

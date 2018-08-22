@@ -1,4 +1,6 @@
-﻿namespace cAlgo.API.Extensions
+﻿using System.Collections.Generic;
+
+namespace cAlgo.API.Extensions
 {
     public class PriceLevel
     {
@@ -15,6 +17,8 @@
                 return BullishVolume + BearishVolume;
             }
         }
+
+        public List<int> Profile { get; set; }
 
         #endregion Properties
 
