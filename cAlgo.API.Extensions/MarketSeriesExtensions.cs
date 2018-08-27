@@ -1,8 +1,8 @@
-﻿using cAlgo.API.Internals;
+﻿using cAlgo.API.Extensions.Types;
+using cAlgo.API.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using cAlgo.API.Extensions.Types;
 
 namespace cAlgo.API.Extensions
 {
@@ -26,9 +26,11 @@ namespace cAlgo.API.Extensions
         /// <param name="periods">Number of previous bars before provided index</param>
         /// <param name="symbol">The market series symbol</param>
         /// <returns>List<PriceVolume></returns>
-        public static List<PriceLevel> GetVolumeProfile(this MarketSeries marketSeries, int index, int periods, Symbol symbol)
+        public static List<PriceLevel> GetVolumeProfile(this MarketSeries marketSeries, int index, int periods, Symbol symbol, double stepInPips)
         {
             List<PriceLevel> result = new List<PriceLevel>();
+
+            double step = stepInPips * symbol.PipSize;
 
             for (int i = index; i > index - periods; i--)
             {
@@ -52,7 +54,7 @@ namespace cAlgo.API.Extensions
                 long bullishVolumePerLevel = (long)(bullishVolume / barRangeInPips);
                 long bearishVolumePerLevel = (long)(bearishVolume / barRangeInPips);
 
-                for (double level = marketSeries.Low[i]; level <= marketSeries.High[i]; level += symbol.TickSize)
+                for (double level = marketSeries.Low[i]; level <= marketSeries.High[i]; level += step)
                 {
                     level = Math.Round(level, symbol.Digits);
 
@@ -605,11 +607,11 @@ namespace cAlgo.API.Extensions
         /// <param name="index">Last Bar Index</param>
         /// <param name="periods">Number of previous bars before provided index</param>
         /// <param name="symbol">The market series symbol</param>
-        /// <param name="step">The price increament step in Pips</param>
+        /// <param name="step">The price increment step in Pips</param>
         /// <returns>List<PriceVolume></returns>
-        public static List<PriceLevel> GetMarketProfile(this MarketSeries marketSeries, int index, int periods, Symbol symbol, double step)
+        public static List<PriceLevel> GetMarketProfile(this MarketSeries marketSeries, int index, int periods, Symbol symbol, double stepInPips)
         {
-            step = step * symbol.PipSize;
+            double step = stepInPips * symbol.PipSize;
 
             List<PriceLevel> result = new List<PriceLevel>();
 
@@ -637,6 +639,58 @@ namespace cAlgo.API.Extensions
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Combines the input price levels volume profile and market profile data based on provided width
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="data">The input data</param>
+        /// <param name="width">Width in term of price not Pips</param>
+        /// <param name="symbol">The symbol of price levels</param>
+        /// <returns>List<PriceLevel></returns>
+        public static List<PriceLevel> GetCombinedPriceLevels(this MarketSeries marketSeries, List<PriceLevel> data, double width)
+        {
+            List<PriceLevel> ordered = data.OrderBy(priceLevel => priceLevel.Level).ToList();
+
+            List<PriceLevel> dataCombined = new List<PriceLevel>();
+
+            PriceLevel currentLevel = new PriceLevel
+            {
+                Level = ordered.First().Level,
+                Profile = new List<int>()
+            };
+
+            ordered.ForEach(priceLevel =>
+            {
+                if (priceLevel.Level >= currentLevel.Level && priceLevel.Level <= currentLevel.Level + width)
+                {
+                    // Market profile
+                    if (priceLevel.Profile != null)
+                    {
+                        currentLevel.Profile.AddRange(priceLevel.Profile);
+                    }
+
+                    // Volume profile
+                    currentLevel.BearishVolume += priceLevel.BearishVolume;
+                    currentLevel.BullishVolume += priceLevel.BullishVolume;
+                }
+                else
+                {
+                    currentLevel = new PriceLevel
+                    {
+                        Level = priceLevel.Level,
+                        Profile = new List<int>()
+                    };
+                }
+
+                if (!dataCombined.Contains(currentLevel))
+                {
+                    dataCombined.Add(currentLevel);
+                }
+            });
+
+            return dataCombined;
         }
     }
 }
