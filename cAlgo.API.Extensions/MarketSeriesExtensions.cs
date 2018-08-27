@@ -51,8 +51,11 @@ namespace cAlgo.API.Extensions
 
                 double barRangeInPips = symbol.ToPips(barRange);
 
-                long bullishVolumePerLevel = (long)(bullishVolume / barRangeInPips);
-                long bearishVolumePerLevel = (long)(bearishVolume / barRangeInPips);
+                double bullishVolumePerPips = bullishVolume / barRangeInPips;
+                double bearishVolumePerPips = bearishVolume / barRangeInPips;
+
+                long bullishVolumePerLevel = (long)(bullishVolumePerPips * stepInPips);
+                long bearishVolumePerLevel = (long)(bearishVolumePerPips * stepInPips);
 
                 for (double level = marketSeries.Low[i]; level <= marketSeries.High[i]; level += step)
                 {
