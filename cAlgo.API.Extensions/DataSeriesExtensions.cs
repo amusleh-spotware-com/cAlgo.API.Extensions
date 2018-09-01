@@ -1,8 +1,8 @@
 ﻿using cAlgo.API;
+using cAlgo.API.Extensions.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using cAlgo.API.Extensions.Types;
 
 namespace cAlgo.API.Extensions
 {
@@ -194,128 +194,117 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns the divergence between two dataseries
+        /// Returns the divergences between two data series based on provided index
         /// </summary>
-        /// <param name="firstSeries"></param>
-        /// <param name="index">Index of the value you want to get its divergence</param>
-        /// <param name="secondSeries">The second dataseries</param>
-        /// <param name="periods">This number of previous values from index will be used in calculation</param>
-        /// <param name="lag">The number of values to wait for confirmation of divergence</param>
-        /// <param name="maxValuesToScan">Maximum number of previous values from index to scan for finding divergence</param>
+        /// <param name="firstSeries">The first data series</param>
+        /// <param name="secondSeries">The second data series</param>
+        /// <param name="index">Index of the value you want to get its divergences</param>
+        /// <param name="periods">This number of previous values from index will be checked to find divergence in both data series</param>
         /// <returns>List<Divergence></returns>
         public static List<Divergence> GetDivergence(
-            this DataSeries firstSeries, int index, DataSeries secondSeries, int periods = 20, int lag = 3, int maxValuesToScan = 100)
+            this DataSeries firstSeries, DataSeries secondSeries, int index, int periods = 200, int lag = 20)
         {
             List<Divergence> result = new List<Divergence>();
 
-            // Subtracting the lag number from index
-            index = index - lag;
-
-            // First Condition For Down Divergence: The current value must be higher than x (periods) previous and y (lag) after values
-            bool isHigherHigh = firstSeries.IsHigherHigh(index, periods, lag);
-
-            // First Condition For Up Divergence: The current value must be lower than x (periods) previous and y (lag) after values
-            bool isLowerLow = firstSeries.IsLowerLow(index, periods, lag);
-
-            if (isHigherHigh || isLowerLow)
+            for (int i = index - lag; i >= index - periods; i--)
             {
-                for (int i = index - 1; i >= index - maxValuesToScan; i--)
+                bool isDiverged = firstSeries.IsDiverged(secondSeries, i, index);
+
+                if (!isDiverged)
                 {
-                    // Second Condition For Down Divergence: This (i) previous value must be an higher high too
-                    bool isThisValueHigherHigh = firstSeries.IsHigherHigh(i, periods, index - i);
+                    continue;
+                }
 
-                    // Second Condition For Up Divergence: This (i) previous value must be a lower low too
-                    bool isThisValueLowerLow = firstSeries.IsLowerLow(i, periods, index - i);
-
-                    // Third Condition For Down Divergence: This (i) previous value must be higher than all values upto current value (index)
-                    bool isThisValueHigherThanAllValuesInBetween = firstSeries[i] > firstSeries.Maximum(i + 1, index);
-
-                    // Third Condition For Up Divergence: This (i) previous value must be lower than all values upto current value (index)
-                    bool isThisValueLowerThanAllValuesInBetween = firstSeries[i] < firstSeries.Minimum(i + 1, index);
-
-                    if ((isThisValueHigherHigh && isThisValueHigherThanAllValuesInBetween) ||
-                        (isThisValueLowerLow && isThisValueLowerThanAllValuesInBetween))
+                if (firstSeries[i] < firstSeries[index] && firstSeries.IsConnectionPossible(i, index, LineSide.Down) &&
+                    secondSeries.IsConnectionPossible(i, index, LineSide.Down))
+                {
+                    Divergence divergence = new Divergence
                     {
-                        // Fourth Condition For Down Divergence: Is the second series current value an higher high
-                        bool isSecondSeriesThisValueHigherHighToo = secondSeries.IsHigherHigh(index, periods, lag, equal: false);
+                        StartIndex = i,
+                        EndIndex = index,
+                        Type = DivergenceType.Up
+                    };
 
-                        // Fourth Condition For Up Divergence: Is the second series current value a lower low
-                        bool isSecondSeriesThisValueLowerLowToo = secondSeries.IsLowerLow(index, periods, lag, equal: false);
+                    result.Add(divergence);
+                }
+                else if (firstSeries[i] > firstSeries[index] && firstSeries.IsConnectionPossible(i, index, LineSide.Up) &&
+                    secondSeries.IsConnectionPossible(i, index, LineSide.Up))
+                {
+                    Divergence divergence = new Divergence
+                    {
+                        StartIndex = i,
+                        EndIndex = index,
+                        Type = DivergenceType.Down
+                    };
 
-                        // Fifth Condition For Down Divergence: Is the second series current value (index) higher than this (i) value
-                        bool isSecondSeriesCurrentValueHigherThanThisValue = secondSeries[index] > secondSeries[i];
-
-                        // Fifth Condition For Up Divergence: Is the second series current value (index) lower than this (i) value
-                        bool isSecondSeriesCurrentValueLowerThanThisValue = secondSeries[index] < secondSeries[i];
-
-                        // Sixth Condition For Down Divergence: Is the second series this (i) value lower than highest value up to current
-                        // value (index)
-                        bool isSecondSeriesThisValueLowerThanAllValuesInBetween = secondSeries[i] < secondSeries.Maximum(i + 1, index);
-
-                        // Sixth Condition For Up Divergence: Is the second series this (i) value higher than lowest value up to current
-                        // value (index)
-                        bool isSecondSeriesThisValueHigherThanAllValuesInBetween = secondSeries[i] > secondSeries.Minimum(i + 1, index);
-
-                        int halfIndex = index - ((index - i) / 2);
-
-                        // Seventh Condition For Down Divergence: Is the current value in first series higher than half of the values in
-                        // between
-                        bool isCurrentValueHigherThanHalfOfValuesInBetween = firstSeries[index] > firstSeries.Maximum(halfIndex, index - 1);
-
-                        // Seventh Condition For Up Divergence: Is the current value in first series lower than half of the values in
-                        // between
-                        bool isCurrentValueLowerThanHalfOfValuesInBetween = firstSeries[index] < firstSeries.Minimum(halfIndex, index - 1);
-
-                        // Eighth Condition For Down Divergence: Is this value in first series higher than half of the values in between
-                        bool isThisValueHigherThanHalfOfValuesInBetween = firstSeries[i] > firstSeries.Maximum(i + 1, halfIndex);
-
-                        // Eighth Condition For Up Divergence: Is this value in first series lower than half of the values in between
-                        bool isThisValueLowerThanHalfOfValuesInBetween = firstSeries[i] < firstSeries.Minimum(i + 1, halfIndex);
-
-                        // Checking back all conditions of down divergence
-                        if (isHigherHigh &&
-                            isThisValueHigherHigh &&
-                            isThisValueHigherThanAllValuesInBetween &&
-                            isSecondSeriesThisValueHigherHighToo &&
-                            isSecondSeriesCurrentValueHigherThanThisValue &&
-                            isSecondSeriesThisValueLowerThanAllValuesInBetween &&
-                            isCurrentValueHigherThanHalfOfValuesInBetween &&
-                            isThisValueHigherThanHalfOfValuesInBetween)
-                        {
-                            Divergence divergence = new Divergence
-                            {
-                                StartIndex = i,
-                                EndIndex = index,
-                                Type = DivergenceType.Down
-                            };
-
-                            result.Add(divergence);
-                        }
-
-                        // Checking back all conditions of up divergence
-                        if (isLowerLow &&
-                            isThisValueLowerLow &&
-                            isThisValueLowerThanAllValuesInBetween &&
-                            isSecondSeriesThisValueLowerLowToo &&
-                            isSecondSeriesCurrentValueLowerThanThisValue &&
-                            isSecondSeriesThisValueHigherThanAllValuesInBetween &&
-                            isCurrentValueLowerThanHalfOfValuesInBetween &&
-                            isThisValueLowerThanHalfOfValuesInBetween)
-                        {
-                            Divergence divergence = new Divergence
-                            {
-                                StartIndex = i,
-                                EndIndex = index,
-                                Type = DivergenceType.Up
-                            };
-
-                            result.Add(divergence);
-                        }
-                    }
+                    result.Add(divergence);
                 }
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Returns True if data series moved in cross direction on firstPointIndex and secondPointIndex
+        /// </summary>
+        /// <param name="firstSeries">The first data series</param>
+        /// <param name="secondSeries">The second data series</param>
+        /// <param name="firstPointIndex">The first point index in data series</param>
+        /// <param name="secondPointIndex">The second point index in data series</param>
+        /// <returns></returns>
+        public static bool IsDiverged(this DataSeries firstSeries, DataSeries secondSeries, int firstPointIndex, int secondPointIndex)
+        {
+            if (firstPointIndex >= secondPointIndex)
+            {
+                throw new ArgumentException("The 'firstPointIndex' must be less than 'secondPointIndex'");
+            }
+
+            if (firstSeries[firstPointIndex] > firstSeries[secondPointIndex] && secondSeries[firstPointIndex] < secondSeries[secondPointIndex])
+            {
+                return true;
+            }
+            else if (firstSeries[firstPointIndex] < firstSeries[secondPointIndex] && secondSeries[firstPointIndex] > secondSeries[secondPointIndex])
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns True if connecting two provided data point based on cross side is possible otherwise False
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="firstPointIndex">The first point index in data series</param>
+        /// <param name="secondPointIndex">The second point index in data series</param>
+        /// <param name="side">The line side, is it on upper side or lower side?</param>
+        /// <returns>bool</returns>
+        public static bool IsConnectionPossible(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex, LineSide side)
+        {
+            if (firstPointIndex >= secondPointIndex)
+            {
+                throw new ArgumentException("The 'firstPointIndex' must be less than 'secondPointIndex'");
+            }
+
+            double slope = (dataSeries[secondPointIndex] - dataSeries[firstPointIndex]) / (secondPointIndex - firstPointIndex);
+
+            int counter = 0;
+
+            for (int i = firstPointIndex + 1; i < secondPointIndex; i++)
+            {
+                counter++;
+
+                if (side == LineSide.Up && dataSeries[i] > dataSeries[firstPointIndex] + (slope * counter))
+                {
+                    return false;
+                }
+                else if (side == LineSide.Down && dataSeries[i] < dataSeries[firstPointIndex] + (slope * counter))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
