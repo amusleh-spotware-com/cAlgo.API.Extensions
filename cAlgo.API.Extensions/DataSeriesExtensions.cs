@@ -202,21 +202,25 @@ namespace cAlgo.API.Extensions
         /// <param name="periods">This number of previous values from index will be checked to find divergence in both data series</param>
         /// <returns>List<Divergence></returns>
         public static List<Divergence> GetDivergence(
-            this DataSeries firstSeries, DataSeries secondSeries, int index, int periods = 200, int lag = 20)
+            this DataSeries firstSeries, DataSeries secondSeries, int index, int periods, int minDistance, double firstSeriesMinSlope, double secondSeriesMinSlope)
         {
             List<Divergence> result = new List<Divergence>();
 
-            for (int i = index - lag; i >= index - periods; i--)
+            for (int i = index - minDistance; i >= index - periods; i--)
             {
                 bool isDiverged = firstSeries.IsDiverged(secondSeries, i, index);
+                bool isSlopeEnough = Math.Abs(firstSeries.GetSlope(i, index)) >= firstSeriesMinSlope && Math.Abs(secondSeries.GetSlope(i, index)) >= secondSeriesMinSlope;
 
-                if (!isDiverged)
+                if (!isDiverged || !isSlopeEnough)
                 {
                     continue;
                 }
 
+                bool isHigherHigh = firstSeries.IsHigherHigh(i, minDistance);
+                bool islowerLow = firstSeries.IsLowerLow(i, minDistance);
+
                 if (firstSeries[i] < firstSeries[index] && firstSeries.IsConnectionPossible(i, index, LineSide.Down) &&
-                    secondSeries.IsConnectionPossible(i, index, LineSide.Down))
+                    secondSeries.IsConnectionPossible(i, index, LineSide.Down) && islowerLow)
                 {
                     Divergence divergence = new Divergence
                     {
@@ -228,7 +232,7 @@ namespace cAlgo.API.Extensions
                     result.Add(divergence);
                 }
                 else if (firstSeries[i] > firstSeries[index] && firstSeries.IsConnectionPossible(i, index, LineSide.Up) &&
-                    secondSeries.IsConnectionPossible(i, index, LineSide.Up))
+                    secondSeries.IsConnectionPossible(i, index, LineSide.Up) && isHigherHigh)
                 {
                     Divergence divergence = new Divergence
                     {
@@ -286,7 +290,7 @@ namespace cAlgo.API.Extensions
                 throw new ArgumentException("The 'firstPointIndex' must be less than 'secondPointIndex'");
             }
 
-            double slope = (dataSeries[secondPointIndex] - dataSeries[firstPointIndex]) / (secondPointIndex - firstPointIndex);
+            double slope = dataSeries.GetSlope(firstPointIndex, secondPointIndex);
 
             int counter = 0;
 
@@ -305,6 +309,18 @@ namespace cAlgo.API.Extensions
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Returns the amount of slope between two level in a data series
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="firstPointIndex">The first point index in data series</param>
+        /// <param name="secondPointIndex">The second point index in data series</param>
+        /// <returns>double</returns>
+        public static double GetSlope(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex)
+        {
+            return (dataSeries[secondPointIndex] - dataSeries[firstPointIndex]) / (secondPointIndex - firstPointIndex);
         }
 
         /// <summary>
