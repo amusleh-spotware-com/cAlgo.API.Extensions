@@ -36,7 +36,7 @@ namespace cAlgo.API.Extensions
             {
                 double barRange = marketSeries.GetBarRange(i);
 
-                double barVolume = marketSeries.TickVolume[i];
+                double barVolume = symbol.ToTicks(barRange);
 
                 if (barRange <= 0 || barVolume <= 0)
                 {
@@ -128,15 +128,38 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns the range of a bar in a market series in Pips
+        /// Returns the range of a bar in a market series
         /// </summary>
         /// <param name="marketSeries"></param>
         /// <param name="index">Bar index in market series</param>
+        /// <param name="symbol">The market series symbol</param>
+        /// <param name="type">The return type</param>
         /// <param name="useOpenClose">Use bar open and close price instead of high and low?</param>
         /// <returns>double</returns>
-        public static double GetBarRangeInPips(this MarketSeries marketSeries, Symbol symbol, int index, bool useOpenClose = false)
+        public static double GetBarRange(this MarketSeries marketSeries, int index, Symbol symbol, BarRangeType type, bool useOpenClose = false)
         {
-            return symbol.ToPips(marketSeries.GetBarRange(index, useOpenClose));
+            double range = marketSeries.GetBarRange(index, useOpenClose);
+
+            if (type == BarRangeType.Normal)
+            {
+                return range;
+            }
+            else if (symbol == null)
+            {
+                throw new NullReferenceException("The symbol is null");
+            }
+
+            switch (type)
+            {
+                case BarRangeType.Pips:
+                    return symbol.ToPips(range);
+
+                case BarRangeType.Ticks:
+                    return symbol.ToTicks(range);
+
+                default:
+                    throw new InvalidOperationException("Invalid BarRangeType");
+            }
         }
 
         /// <summary>
@@ -153,7 +176,7 @@ namespace cAlgo.API.Extensions
 
             for (int i = index; i >= index - periods; i--)
             {
-                maxRange = Math.Max(maxRange, marketSeries.GetBarRange(i, useOpenClose));
+                maxRange = Math.Max(maxRange, marketSeries.GetBarRange(i, useOpenClose: useOpenClose));
             }
 
             return maxRange;
@@ -173,7 +196,7 @@ namespace cAlgo.API.Extensions
 
             for (int i = index; i >= index - periods; i--)
             {
-                minRange = Math.Min(minRange, marketSeries.GetBarRange(i, useOpenClose));
+                minRange = Math.Min(minRange, marketSeries.GetBarRange(i, useOpenClose: useOpenClose));
             }
 
             return minRange;
@@ -193,7 +216,7 @@ namespace cAlgo.API.Extensions
 
             for (int i = index; i >= index - periods; i--)
             {
-                ranges.Add(marketSeries.GetBarRange(i, useOpenClose));
+                ranges.Add(marketSeries.GetBarRange(i, useOpenClose: useOpenClose));
             }
 
             return ranges.Average();
@@ -207,7 +230,7 @@ namespace cAlgo.API.Extensions
         /// <returns>bool</returns>
         public static bool IsEngulfingBar(this MarketSeries marketSeries, int index)
         {
-            double barBodyRange = marketSeries.GetBarRange(index, true);
+            double barBodyRange = marketSeries.GetBarRange(index, useOpenClose: true);
             double previousBarRange = marketSeries.GetBarRange(index - 1);
 
             BarType barType = marketSeries.GetBarType(index);
@@ -224,7 +247,7 @@ namespace cAlgo.API.Extensions
         /// <returns>bool</returns>
         public static bool IsRejectionBar(this MarketSeries marketSeries, int index)
         {
-            double barBodyRange = marketSeries.GetBarRange(index, true);
+            double barBodyRange = marketSeries.GetBarRange(index, useOpenClose: true);
             double barRange = marketSeries.GetBarRange(index);
 
             BarType barType = marketSeries.GetBarType(index);
@@ -255,7 +278,7 @@ namespace cAlgo.API.Extensions
         /// <returns>bool</returns>
         public static bool IsDojiBar(this MarketSeries marketSeries, int index)
         {
-            double barBodyRange = marketSeries.GetBarRange(index, true);
+            double barBodyRange = marketSeries.GetBarRange(index, useOpenClose: true);
             double barRange = marketSeries.GetBarRange(index);
 
             double meanBarRange = marketSeries.GetMeanBarRange(index - 1, 50);

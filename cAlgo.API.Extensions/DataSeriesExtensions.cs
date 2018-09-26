@@ -209,7 +209,8 @@ namespace cAlgo.API.Extensions
             for (int i = index - minDistance; i >= index - periods; i--)
             {
                 bool isDiverged = firstSeries.IsDiverged(secondSeries, i, index);
-                bool isSlopeEnough = Math.Abs(firstSeries.GetSlope(i, index)) >= firstSeriesMinSlope && Math.Abs(secondSeries.GetSlope(i, index)) >= secondSeriesMinSlope;
+                bool isSlopeEnough = Math.Abs(firstSeries.GetSlope(i, index)) >= firstSeriesMinSlope &&
+                    Math.Abs(secondSeries.GetSlope(i, index)) >= secondSeriesMinSlope;
 
                 if (!isDiverged || !isSlopeEnough)
                 {

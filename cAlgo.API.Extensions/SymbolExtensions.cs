@@ -16,7 +16,7 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns a symbol price level in pips
+        /// Returns a price value in terms of pips
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="price">The price level</param>
@@ -24,6 +24,17 @@ namespace cAlgo.API.Extensions
         public static double ToPips(this Symbol symbol, double price)
         {
             return price * symbol.GetPip();
+        }
+
+        /// <summary>
+        /// Returns a price value in terms of ticks
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="price">The price level</param>
+        /// <returns>double</returns>
+        public static double ToTicks(this Symbol symbol, double price)
+        {
+            return price * Math.Pow(10, symbol.Digits);
         }
     }
 }
