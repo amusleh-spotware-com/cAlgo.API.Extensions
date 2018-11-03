@@ -375,27 +375,28 @@ namespace cAlgo.API.Extensions
         /// <summary>
         /// Returns a dataseries correlation with another dataseries
         /// </summary>
-        /// <param name="firstSeries"></param>
+        /// <param name="dataSeries"></param>
         /// <param name="otherDataSeries">Other Dataseries</param>
+        /// <param name="periods">The x previous values number</param>
         /// <returns>double</returns>
-        public static double GetCorrelation(this DataSeries dataSeries, DataSeries otherDataSeries)
+        public static double GetCorrelation(this DataSeries dataSeries, DataSeries otherDataSeries, int periods)
         {
-            double[] values1 = new double[dataSeries.Count];
-            double[] values2 = new double[dataSeries.Count];
+            double[] firstSeries = new double[periods];
+            double[] secondSeries = new double[periods];
 
-            for (int i = 0; i < dataSeries.Count; i++)
+            for (int i = 0; i < periods; i++)
             {
-                values1[i] = dataSeries.Last(i);
-                values2[i] = otherDataSeries.Last(i);
+                firstSeries[i] = dataSeries.Last(i);
+                secondSeries[i] = otherDataSeries.Last(i);
             }
 
-            var avg1 = values1.Average();
-            var avg2 = values2.Average();
+            var avg1 = firstSeries.Average();
+            var avg2 = secondSeries.Average();
 
-            var sum = values1.Zip(values2, (x1, y1) => (x1 - avg1) * (y1 - avg2)).Sum();
+            var sum = firstSeries.Zip(secondSeries, (x1, y1) => (x1 - avg1) * (y1 - avg2)).Sum();
 
-            var sumSqr1 = values1.Sum(x => Math.Pow((x - avg1), 2.0));
-            var sumSqr2 = values2.Sum(y => Math.Pow((y - avg2), 2.0));
+            var sumSqr1 = firstSeries.Sum(x => Math.Pow((x - avg1), 2.0));
+            var sumSqr2 = secondSeries.Sum(y => Math.Pow((y - avg2), 2.0));
 
             return Math.Round(sum / Math.Sqrt(sumSqr1 * sumSqr2), 2);
         }
