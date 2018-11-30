@@ -19,7 +19,7 @@ namespace cAlgo.API.Extensions
 
             for (int i = 0; i < dataSeries.Count; i++)
             {
-                data.Add(i);
+                data.Add(dataSeries[i]);
             }
 
             return data;
@@ -335,36 +335,37 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns a percentile value in a dataseries
+        /// Returns a percentile value in a data series
         /// </summary>
         /// <param name="dataSeries"></param>
         /// <param name="percent">Percent (1-100)</param>
+        /// <param name="periods">The x number of previous values that will be used for calculation</param>
         /// <returns>double</returns>
-        public static double GetPercentile(this DataSeries dataSeries, double percent)
+        public static double GetPercentile(this DataSeries dataSeries, double percent, int periods)
         {
-            List<double> sortedDataSeries = dataSeries.Sort();
+            List<double> data = dataSeries.ToList().Skip(dataSeries.Count - periods).OrderBy(value => value).ToList();
 
-            double percentReal = percent / 100;
+            double percentFraction = percent / 100;
 
-            double entryIndex = percentReal * (sortedDataSeries.Count - 1) + 1;
+            double entryIndex = percentFraction * (data.Count - 1) + 1;
 
             int entryIndexInt = (int)entryIndex;
 
             double indexDiff = entryIndex - entryIndexInt;
 
-            if (entryIndexInt - 1 >= 0 && entryIndexInt < sortedDataSeries.Count)
+            if (entryIndexInt - 1 >= 0 && entryIndexInt < data.Count)
             {
-                double entryDataDiff = sortedDataSeries[entryIndexInt] - sortedDataSeries[entryIndexInt - 1];
+                double entryDataDiff = data[entryIndexInt] - data[entryIndexInt - 1];
 
-                return sortedDataSeries[entryIndexInt - 1] + indexDiff * entryDataDiff;
+                return data[entryIndexInt - 1] + indexDiff * entryDataDiff;
             }
             else if (entryIndexInt - 1 < 0)
             {
-                return sortedDataSeries.FirstOrDefault();
+                return data.FirstOrDefault();
             }
-            else if (entryIndexInt >= sortedDataSeries.Count)
+            else if (entryIndexInt >= data.Count)
             {
-                return sortedDataSeries.LastOrDefault();
+                return data.LastOrDefault();
             }
             else
             {
