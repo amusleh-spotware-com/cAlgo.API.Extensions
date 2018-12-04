@@ -48,6 +48,7 @@
     <Compile Include="Types\BarRangeType.cs" />
     <Compile Include="Types\BarType.cs" />
     <Compile Include="Types\CandlePattern.cs" />
+    <Compile Include="Types\LeastSquares.cs" />
     <Compile Include="Types\LineSide.cs" />
     <Compile Include="Types\SeriesType.cs" />
     <Compile Include="IndicatorExtensions.cs" />

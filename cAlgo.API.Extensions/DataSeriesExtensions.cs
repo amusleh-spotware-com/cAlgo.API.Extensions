@@ -539,5 +539,41 @@ namespace cAlgo.API.Extensions
 
             return data.Max() - data.Min();
         }
+
+        /// <summary>
+        /// Returns the slope and intercept by using the least squares method
+        /// </summary>
+        /// <param name="dataSeries">Data series</param>
+        /// <param name="firstPointIndex">The first point index</param>
+        /// <param name="secondPointIndex">The second point index</param>
+        /// <returns>LeastSquares</returns>
+        public static LeastSquares GetLeastSquaresRegression(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex)
+        {
+            List<int> xValues = new List<int>();
+            List<double> yValues = new List<double>();
+
+            for (int x = firstPointIndex; x <= secondPointIndex; x++)
+            {
+                xValues.Add(x);
+                yValues.Add(dataSeries[x]);
+            }
+
+            List<double> xSquared = xValues.Select(x => Math.Pow(x, 2)).ToList();
+            List<double> xyProducts = xValues.Zip(yValues, (x, y) => x * y).ToList();
+
+            double xSum = xValues.Sum();
+            double ySum = yValues.Sum();
+
+            double xSqauredSum = xSquared.Sum();
+
+            double xyProductsSum = xyProducts.Sum();
+
+            int n = xValues.Count;
+
+            double slope = ((n * xyProductsSum) - (xSum * ySum)) / ((n * xSqauredSum) - Math.Pow(xSum, 2));
+            double intercept = (ySum - (slope * xSum)) / n;
+
+            return new LeastSquares { Slope = slope, Intercept = intercept };
+        }
     }
 }
