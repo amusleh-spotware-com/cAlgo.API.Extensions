@@ -80,14 +80,12 @@ namespace cAlgo.API.Extensions
             return _series[_series.Count - index];
         }
 
-        public void Add(DateTime time)
+        public void Populate(TimeSeries timeSeries)
         {
-            _series.Add(time);
-        }
-
-        public void Insert(int index, DateTime time)
-        {
-            _series.Insert(index, time);
+            for (int i = 0; i < timeSeries.Count; i++)
+            {
+                _series.Add(timeSeries[i]);
+            }
         }
 
         #endregion Methods

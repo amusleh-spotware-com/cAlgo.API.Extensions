@@ -14,7 +14,7 @@ namespace cAlgo.API.Extensions
 
         private readonly IndicatorDataSeries _open, _close, _high, _low, _tickVolume, _median, _typical, _weighted, _weightedClose;
 
-        private readonly IndicatorTimeSeries _openTime;
+        private readonly TimeSeries _openTime;
 
         private readonly TimeFrame _timeFrame;
 
@@ -24,7 +24,11 @@ namespace cAlgo.API.Extensions
 
         #region Constructor
 
-        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode, Algo algo)
+        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode, Algo algo): this(timeFrame, symbolCode, new IndicatorTimeSeries(), algo)
+        {
+        }
+
+        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode, TimeSeries timeSeries, Algo algo)
         {
             _algo = algo;
 
@@ -38,7 +42,7 @@ namespace cAlgo.API.Extensions
             _weighted = algo.CreateDataSeries();
             _weightedClose = algo.CreateDataSeries();
 
-            _openTime = new IndicatorTimeSeries();
+            _openTime = timeSeries;
 
             _timeFrame = timeFrame;
 
@@ -162,18 +166,12 @@ namespace cAlgo.API.Extensions
             ((IndicatorDataSeries)this.GetSeries(seriesType))[index] = value;
         }
 
-        public void Insert(int index, DateTime value)
-        {
-            _openTime.Insert(index, value);
-        }
-
         public void AddNewBar(int index, double openPrice, DateTime openTime)
         {
             Insert(index, openPrice, SeriesType.Open);
             Insert(index, openPrice, SeriesType.High);
             Insert(index, openPrice, SeriesType.Low);
             Insert(index, openPrice, SeriesType.Close);
-            Insert(index, openTime);
         }
 
         public void CalculateHeikenAshi(MarketSeries marketSeries, int periods = 1)
@@ -184,19 +182,19 @@ namespace cAlgo.API.Extensions
             double barOhlcSum = marketSeries.Open[seriesIndex] + marketSeries.Low[seriesIndex] +
                 marketSeries.High[seriesIndex] + marketSeries.Close[seriesIndex];
 
-            _close[index] = Round(barOhlcSum / 4);
+            _close[seriesIndex] = Round(barOhlcSum / 4);
 
-            if (seriesIndex < periods || double.IsNaN(_open[index - 1]))
+            if (_open.Count < periods || double.IsNaN(_open[seriesIndex - 1]))
             {
-                _open[index] = Round((marketSeries.Open[seriesIndex] + marketSeries.Close[seriesIndex]) / 2);
-                _high[index] = marketSeries.High[seriesIndex];
-                _low[index] = marketSeries.Low[seriesIndex];
+                _open[seriesIndex] = Round((marketSeries.Open[seriesIndex] + marketSeries.Close[seriesIndex]) / 2);
+                _high[seriesIndex] = marketSeries.High[seriesIndex];
+                _low[seriesIndex] = marketSeries.Low[seriesIndex];
             }
             else
             {
-                _open[index] = Round((_open[index - 1] + _close[index - 1]) / 2);
-                _high[index] = Math.Max(marketSeries.High[seriesIndex], Math.Max(Open[index], Close[index]));
-                _low[index] = Math.Min(marketSeries.Low[seriesIndex], Math.Min(Open[index], Close[index]));
+                _open[seriesIndex] = Round((_open[seriesIndex - 1] + _close[seriesIndex - 1]) / 2);
+                _high[seriesIndex] = Math.Max(marketSeries.High[seriesIndex], Math.Max(Open[seriesIndex], Close[seriesIndex]));
+                _low[seriesIndex] = Math.Min(marketSeries.Low[seriesIndex], Math.Min(Open[seriesIndex], Close[seriesIndex]));
             }
         }
 
@@ -215,19 +213,19 @@ namespace cAlgo.API.Extensions
             double barMaLow = GetSeriesMovingAverageValue(marketSeries, SeriesType.Low, maPeriods, maType, seriesIndex);
             double barMaClose = GetSeriesMovingAverageValue(marketSeries, SeriesType.Close, maPeriods, maType, seriesIndex);
 
-            _close[index] = (barMaOpen + barMaClose + barMaHigh + barMaLow) / 4;
+            _close[seriesIndex] = (barMaOpen + barMaClose + barMaHigh + barMaLow) / 4;
 
-            if (seriesIndex < periods || double.IsNaN(_open[index - 1]))
+            if (seriesIndex < periods || double.IsNaN(_open[seriesIndex - 1]))
             {
-                _open[index] = (barMaOpen + barMaClose) / 2;
-                _high[index] = barMaHigh;
-                _low[index] = barMaLow;
+                _open[seriesIndex] = (barMaOpen + barMaClose) / 2;
+                _high[seriesIndex] = barMaHigh;
+                _low[seriesIndex] = barMaLow;
             }
             else
             {
-                _open[index] = (_open[index - 1] + _close[index - 1]) / 2;
-                _high[index] = Math.Max(barMaHigh, Math.Max(_open[index], _close[index]));
-                _low[index] = Math.Min(barMaLow, Math.Min(_open[index], _close[index]));
+                _open[seriesIndex] = (_open[seriesIndex - 1] + _close[seriesIndex - 1]) / 2;
+                _high[seriesIndex] = Math.Max(barMaHigh, Math.Max(_open[seriesIndex], _close[seriesIndex]));
+                _low[seriesIndex] = Math.Min(barMaLow, Math.Min(_open[seriesIndex], _close[seriesIndex]));
             }
         }
 
