@@ -1,4 +1,4 @@
-﻿namespace cAlgo.API.Extensions.Types
+﻿namespace cAlgo.API.Extensions.Enums
 {
     public enum LineSide
     {

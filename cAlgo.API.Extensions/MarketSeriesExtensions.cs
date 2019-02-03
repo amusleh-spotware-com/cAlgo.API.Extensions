@@ -1,4 +1,4 @@
-﻿using cAlgo.API.Extensions.Types;
+﻿using cAlgo.API.Extensions.Enums;
 using cAlgo.API.Internals;
 using System;
 using System.Collections.Generic;

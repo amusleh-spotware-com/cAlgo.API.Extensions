@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace cAlgo.API.Extensions
+﻿namespace cAlgo.API.Extensions
 {
     public class LegendOutput
     {

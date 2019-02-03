@@ -1,8 +1,7 @@
-﻿using cAlgo.API;
-using cAlgo.API.Internals;
+﻿using cAlgo.API.Extensions.Enums;
 using cAlgo.API.Indicators;
+using cAlgo.API.Internals;
 using System;
-using cAlgo.API.Extensions.Types;
 
 namespace cAlgo.API.Extensions
 {
@@ -24,7 +23,7 @@ namespace cAlgo.API.Extensions
 
         #region Constructor
 
-        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode, Algo algo): this(timeFrame, symbolCode, new IndicatorTimeSeries(), algo)
+        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode, Algo algo) : this(timeFrame, symbolCode, new IndicatorTimeSeries(), algo)
         {
         }
 

@@ -1,5 +1,6 @@
 ﻿using cAlgo.API;
-using cAlgo.API.Extensions.Types;
+using cAlgo.API.Extensions.Enums;
+using cAlgo.API.Extensions.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
