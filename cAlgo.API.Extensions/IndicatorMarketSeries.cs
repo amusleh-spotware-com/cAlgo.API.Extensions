@@ -165,12 +165,12 @@ namespace cAlgo.API.Extensions
             ((IndicatorDataSeries)this.GetSeries(seriesType))[index] = value;
         }
 
-        public void AddNewBar(int index, double openPrice, DateTime openTime)
+        public void Insert(int index, double open, double high, double low, double close, DateTime openTime)
         {
-            Insert(index, openPrice, SeriesType.Open);
-            Insert(index, openPrice, SeriesType.High);
-            Insert(index, openPrice, SeriesType.Low);
-            Insert(index, openPrice, SeriesType.Close);
+            Insert(index, open, SeriesType.Open);
+            Insert(index, high, SeriesType.High);
+            Insert(index, low, SeriesType.Low);
+            Insert(index, close, SeriesType.Close);
         }
 
         public void CalculateHeikenAshi(MarketSeries marketSeries, int periods = 1)

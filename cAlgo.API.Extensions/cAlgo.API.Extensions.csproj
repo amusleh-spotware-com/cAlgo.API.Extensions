@@ -49,6 +49,7 @@
     <Compile Include="Enums\BarType.cs" />
     <Compile Include="Enums\CandlePattern.cs" />
     <Compile Include="Factories\ColorFactory.cs" />
+    <Compile Include="Models\BarVolume.cs" />
     <Compile Include="Models\LeastSquares.cs" />
     <Compile Include="Enums\LineSide.cs" />
     <Compile Include="Enums\SeriesType.cs" />

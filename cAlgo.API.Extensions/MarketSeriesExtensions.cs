@@ -1,4 +1,5 @@
 ﻿using cAlgo.API.Extensions.Enums;
+using cAlgo.API.Extensions.Models;
 using cAlgo.API.Internals;
 using System;
 using System.Collections.Generic;
@@ -717,6 +718,26 @@ namespace cAlgo.API.Extensions
             });
 
             return dataCombined;
+        }
+
+        /// <summary>
+        /// Returns a bar bullish/bearish volume amount in a market series
+        /// </summary>
+        /// <param name="marketSeries">Market series</param>
+        /// <param name="index">Bar index in market series</param>
+        /// <returns>BarVolume</returns>
+        public static BarVolume GetBarVolume(this MarketSeries marketSeries, int index)
+        {
+            double barRange = marketSeries.High[index] - marketSeries.Low[index];
+
+            double percentageAboveBarClose = (marketSeries.High[index] - marketSeries.Close[index]) / barRange;
+            double percentageBelowBarClose = (marketSeries.Close[index] - marketSeries.Low[index]) / barRange;
+
+            return new BarVolume
+            {
+                BullishVolume = marketSeries.TickVolume[index] * percentageBelowBarClose,
+                BearishVolume = marketSeries.TickVolume[index] * percentageAboveBarClose
+            };
         }
     }
 }
