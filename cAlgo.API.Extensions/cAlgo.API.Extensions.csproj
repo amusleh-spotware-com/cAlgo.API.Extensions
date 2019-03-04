@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\BarRangeType.cs" />
+    <Compile Include="Enums\PriceValueType.cs" />
     <Compile Include="Enums\BarType.cs" />
     <Compile Include="Enums\CandlePattern.cs" />
     <Compile Include="Factories\ColorFactory.cs" />

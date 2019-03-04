@@ -1,6 +1,6 @@
 ﻿namespace cAlgo.API.Extensions.Enums
 {
-    public enum BarRangeType
+    public enum PriceValueType
     {
         Normal,
         Pips,

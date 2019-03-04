@@ -1,4 +1,5 @@
-﻿using cAlgo.API.Internals;
+﻿using cAlgo.API.Extensions.Enums;
+using cAlgo.API.Internals;
 using System;
 
 namespace cAlgo.API.Extensions
@@ -35,6 +36,29 @@ namespace cAlgo.API.Extensions
         public static double ToTicks(this Symbol symbol, double price)
         {
             return price * Math.Pow(10, symbol.Digits);
+        }
+
+        /// <summary>
+        /// Returns a symbol price based value to either pips or ticks
+        /// </summary>
+        /// <param name="symbol">The symbol</param>
+        /// <param name="priceValue">The price based value</param>
+        /// <param name="returnType">The price value return type</param>
+        /// <returns>double</returns>
+        public static double ChangePriceValueType(this Symbol symbol, double priceValue, PriceValueType returnType)
+        {
+            switch (returnType)
+            {
+                case PriceValueType.Pips:
+                    return symbol.ToPips(priceValue);
+
+                case PriceValueType.Ticks:
+                    return symbol.ToTicks(priceValue);
+
+                default:
+
+                    return priceValue;
+            }
         }
     }
 }
