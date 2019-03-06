@@ -1,6 +1,6 @@
-﻿namespace cAlgo.API.Extensions.Factories
+﻿namespace cAlgo.API.Extensions.Utility
 {
-    public static class ColorFactory
+    public static class ColorTools
     {
         public static Color GetColor(string colorString, int alpha = 255)
         {
