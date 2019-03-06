@@ -484,7 +484,16 @@ namespace cAlgo.API.Extensions
                 data.Add(dataSeries[i]);
             }
 
-            return data.Select(value => Math.Pow(value - data.Average(), 2)).Sum() / (endIndex - startIndex);
+            double average = data.Average();
+
+            double n = endIndex - startIndex - 1;
+
+            if (n <= 0)
+            {
+                n = 1;
+            }
+
+            return data.Select(value => Math.Pow(value - average, 2)).Sum() / n;
         }
 
         /// <summary>
@@ -496,7 +505,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetStandardDeviation(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            return Math.Sqrt(dataSeries.GetVariance(startIndex, endIndex));
+            double variance = dataSeries.GetVariance(startIndex, endIndex);
+
+            return Math.Sqrt(variance);
         }
 
         /// <summary>
