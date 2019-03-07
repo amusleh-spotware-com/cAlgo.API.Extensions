@@ -8,7 +8,7 @@ namespace cAlgo.API.Extensions.Utility
 {
     public static class TimeSpanTools
     {
-        public static void Parse(string value, Chart chart, string parameterName, out TimeSpan result)
+        public static void TryParse(string value, Chart chart, string parameterName, out TimeSpan result)
         {
             bool parseResult = TimeSpan.TryParse(value, CultureInfo.InvariantCulture, out result);
 
