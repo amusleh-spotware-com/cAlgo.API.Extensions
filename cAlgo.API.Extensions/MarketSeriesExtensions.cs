@@ -37,7 +37,7 @@ namespace cAlgo.API.Extensions
             {
                 double barRange = marketSeries.GetBarRange(i);
 
-                double barVolume = symbol.ToTicks(barRange);
+                double barVolume = marketSeries.TickVolume[i];
 
                 if (barRange <= 0 || barVolume <= 0)
                 {

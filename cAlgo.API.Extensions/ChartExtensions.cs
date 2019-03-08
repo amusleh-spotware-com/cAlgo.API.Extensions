@@ -9,11 +9,11 @@ namespace cAlgo.API.Extensions
         /// </summary>
         /// <param name="chart">The chart</param>
         /// <param name="message">The message</param>
-        public static void ShowMessage(this Chart chart, string message)
+        public static ChartStaticText ShowMessage(this Chart chart, string message)
         {
             string objectSuffix = string.Format("No_Suffix_{0}", DateTime.Now.Ticks);
 
-            chart.ShowMessage(message, objectSuffix);
+            return chart.ShowMessage(message, objectSuffix);
         }
 
         /// <summary>
@@ -22,9 +22,9 @@ namespace cAlgo.API.Extensions
         /// <param name="chart">The chart</param>
         /// <param name="message">The message</param>
         /// <param name="objectSuffix">The optional suffix that will be appended at the end of message object</param>
-        public static void ShowMessage(this Chart chart, string message, string objectSuffix)
+        public static ChartStaticText ShowMessage(this Chart chart, string message, string objectSuffix)
         {
-            chart.ShowMessage(message, objectSuffix, VerticalAlignment.Center, HorizontalAlignment.Center, Color.Red);
+            return chart.ShowMessage(message, objectSuffix, VerticalAlignment.Center, HorizontalAlignment.Center, Color.Red);
         }
 
         /// <summary>
@@ -36,37 +36,39 @@ namespace cAlgo.API.Extensions
         /// <param name="verticalAlignment">The vertical alignment of message on chart</param>
         /// <param name="horizontalAlignment">The horizontal alignment of message on chart</param>
         /// <param name="color">The color of message on chart</param>
-        public static void ShowMessage(this Chart chart, string message, string objectSuffix, VerticalAlignment verticalAlignment,
+        public static ChartStaticText ShowMessage(this Chart chart, string message, string objectSuffix, VerticalAlignment verticalAlignment,
             HorizontalAlignment horizontalAlignment, Color color)
         {
             objectSuffix = objectSuffix ?? string.Format("No_Suffix_{0}", DateTime.Now.Ticks);
 
             string chartObjectName = string.Format("Message_{0}", objectSuffix);
 
-            chart.DrawStaticText(chartObjectName, message, VerticalAlignment.Center, HorizontalAlignment.Center, Color.Red);
+            return chart.DrawStaticText(chartObjectName, message, verticalAlignment, horizontalAlignment, color);
         }
 
         /// <summary>
-        /// Shows amessage with the provided parameter name and value to notice the user that his/her provided value isn't valid
+        /// Shows a message with the provided parameter name and value to notice the user that his/her provided value isn't valid
         /// </summary>
         /// <param name="chart">The chart</param>
         /// <param name="parameterName">The parameter name</param>
         /// <param name="parameterValue">The parameter value</param>
-        public static void ShowInvalidParameterMessage(this Chart chart, string parameterName, object parameterValue)
+        public static ChartStaticText ShowInvalidParameterMessage(this Chart chart, string parameterName, object parameterValue)
         {
-            chart.ShowInvalidParameterMessage(parameterName, parameterValue, VerticalAlignment.Center, HorizontalAlignment.Center, Color.Red);
+            return chart.ShowInvalidParameterMessage(parameterName, parameterValue, VerticalAlignment.Center, HorizontalAlignment.Center,
+                Color.Red);
         }
 
         /// <summary>
-        /// Shows amessage with the provided parameter name and value to notice the user that his/her provided value isn't valid
+        /// Shows a message with the provided parameter name and value to notice the user that his/her provided value isn't valid
         /// </summary>
         /// <param name="chart">The chart</param>
         /// <param name="parameterName">The parameter name</param>
         /// <param name="parameterValue">The parameter value</param>
         /// <param name="chartObjectsSuffix">The chart objects suffix</param>
-        public static void ShowInvalidParameterMessage(this Chart chart, string parameterName, object parameterValue, string chartObjectsSuffix)
+        public static ChartStaticText ShowInvalidParameterMessage(this Chart chart, string parameterName, object parameterValue,
+            string chartObjectsSuffix)
         {
-            chart.ShowInvalidParameterMessage(parameterName, parameterValue, chartObjectsSuffix, VerticalAlignment.Center,
+            return chart.ShowInvalidParameterMessage(parameterName, parameterValue, chartObjectsSuffix, VerticalAlignment.Center,
                 HorizontalAlignment.Center, Color.Red);
         }
 
@@ -79,12 +81,13 @@ namespace cAlgo.API.Extensions
         /// <param name="verticalAlignment">The vertical alignment of message on chart</param>
         /// <param name="horizontalAlignment">The horizontal alignment of message on chart</param>
         /// <param name="color">The color of message on chart</param>
-        public static void ShowInvalidParameterMessage(this Chart chart, string parameterName, object parameterValue, VerticalAlignment verticalAlignment,
-            HorizontalAlignment horizontalAlignment, Color color)
+        public static ChartStaticText ShowInvalidParameterMessage(this Chart chart, string parameterName, object parameterValue,
+            VerticalAlignment verticalAlignment, HorizontalAlignment horizontalAlignment, Color color)
         {
             string chartObjectsSuffix = string.Format("InvalidParameterValue_{0}_{1}_{2}", parameterName, parameterValue, DateTime.Now.Ticks);
 
-            chart.ShowInvalidParameterMessage(parameterName, parameterValue, chartObjectsSuffix, verticalAlignment, horizontalAlignment, color);
+            return chart.ShowInvalidParameterMessage(parameterName, parameterValue, chartObjectsSuffix, verticalAlignment, horizontalAlignment,
+                color);
         }
 
         /// <summary>
@@ -96,12 +99,12 @@ namespace cAlgo.API.Extensions
         /// <param name="verticalAlignment">The vertical alignment of message on chart</param>
         /// <param name="horizontalAlignment">The horizontal alignment of message on chart</param>
         /// <param name="color">The color of message on chart</param>
-        public static void ShowInvalidParameterMessage(this Chart chart, string parameterName, object parameterValue, string chartObjectsSuffix,
-            VerticalAlignment verticalAlignment, HorizontalAlignment horizontalAlignment, Color color)
+        public static ChartStaticText ShowInvalidParameterMessage(this Chart chart, string parameterName, object parameterValue,
+            string chartObjectsSuffix, VerticalAlignment verticalAlignment, HorizontalAlignment horizontalAlignment, Color color)
         {
             string message = string.Format("The value ({0}) you provided for '{1}' isn't valid", parameterValue, parameterName);
 
-            chart.ShowMessage(message, chartObjectsSuffix, verticalAlignment, horizontalAlignment, color);
+            return chart.ShowMessage(message, chartObjectsSuffix, verticalAlignment, horizontalAlignment, color);
         }
     }
 }
