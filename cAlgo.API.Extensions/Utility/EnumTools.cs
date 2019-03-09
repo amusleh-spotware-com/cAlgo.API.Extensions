@@ -7,7 +7,7 @@ namespace cAlgo.API.Extensions.Utility
 {
     public static class EnumTools
     {
-        public static void TryParse<TEnum>(string value, string parameterName, Chart chart, string chartObjectsSuffix, out TEnum result) 
+        public static bool TryParse<TEnum>(string value, string parameterName, Chart chart, string chartObjectsSuffix, out TEnum result) 
             where TEnum: struct
         {
             bool parseResult = Enum.TryParse<TEnum>(value, true, out result);
@@ -16,6 +16,8 @@ namespace cAlgo.API.Extensions.Utility
             {
                 chart.ShowInvalidParameterMessage(parameterName, value, chartObjectsSuffix);
             }
+
+            return parseResult;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace cAlgo.API.Extensions.Utility
 {
     public static class TimeSpanTools
     {
-        public static void TryParse(string value, string parameterName, Chart chart, string chartObjectsSuffix, out TimeSpan result)
+        public static bool TryParse(string value, string parameterName, Chart chart, string chartObjectsSuffix, out TimeSpan result)
         {
             bool parseResult = TimeSpan.TryParse(value, CultureInfo.InvariantCulture, out result);
 
@@ -16,6 +16,8 @@ namespace cAlgo.API.Extensions.Utility
             {
                 chart.ShowInvalidParameterMessage(parameterName, value, chartObjectsSuffix);
             }
+
+            return parseResult;
         }
     }
 }
