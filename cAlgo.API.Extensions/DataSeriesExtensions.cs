@@ -265,11 +265,19 @@ namespace cAlgo.API.Extensions
                 throw new ArgumentException("The 'firstPointIndex' must be less than 'secondPointIndex'");
             }
 
-            if (firstSeries[firstPointIndex] > firstSeries[secondPointIndex] && secondSeries[firstPointIndex] < secondSeries[secondPointIndex])
+            if (firstSeries[firstPointIndex] >= firstSeries[secondPointIndex] && secondSeries[firstPointIndex] < secondSeries[secondPointIndex])
             {
                 return true;
             }
-            else if (firstSeries[firstPointIndex] < firstSeries[secondPointIndex] && secondSeries[firstPointIndex] > secondSeries[secondPointIndex])
+            else if (firstSeries[firstPointIndex] <= firstSeries[secondPointIndex] && secondSeries[firstPointIndex] > secondSeries[secondPointIndex])
+            {
+                return true;
+            }
+            else if (firstSeries[firstPointIndex] > firstSeries[secondPointIndex] && secondSeries[firstPointIndex] <= secondSeries[secondPointIndex])
+            {
+                return true;
+            }
+            else if (firstSeries[firstPointIndex] < firstSeries[secondPointIndex] && secondSeries[firstPointIndex] >= secondSeries[secondPointIndex])
             {
                 return true;
             }
