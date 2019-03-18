@@ -73,7 +73,7 @@ namespace cAlgo.API.Extensions
         /// <param name="futureValues">The number of index future values to check</param>
         /// <param name="equal">Check for equality</param>
         /// <returns>bool</returns>
-        public static bool IsHigherHigh(
+        public static bool IsHigher(
             this DataSeries dataSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
             double previousBarsHighest = previousValues > 0 ? dataSeries.Maximum(index - previousValues, index - 1) : double.NegativeInfinity;
@@ -99,7 +99,7 @@ namespace cAlgo.API.Extensions
         /// <param name="futureValues">The number of index future values to check</param>
         /// <param name="equal">Check for equality</param>
         /// <returns>bool</returns>
-        public static bool IsHigherHigh(
+        public static bool IsHigher(
             this DataSeries dataSeries, DataSeries otherSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
             double previousBarsHighest = previousValues > 0 ? otherSeries.Maximum(index - previousValues, index - 1) : double.NegativeInfinity;
@@ -124,7 +124,7 @@ namespace cAlgo.API.Extensions
         /// <param name="futureValues">The number of index future values to check</param>
         /// <param name="equal">Check for equality</param>
         /// <returns>bool</returns>
-        public static bool IsLowerLow(
+        public static bool IsLower(
             this DataSeries dataSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
             double previousBarsLowest = previousValues > 0 ? dataSeries.Minimum(index - previousValues, index - 1) : double.PositiveInfinity;
@@ -150,7 +150,7 @@ namespace cAlgo.API.Extensions
         /// <param name="futureValues">The number of index future values to check</param>
         /// <param name="equal">Check for equality</param>
         /// <returns>bool</returns>
-        public static bool IsLowerLow(
+        public static bool IsLower(
             this DataSeries dataSeries, DataSeries otherSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
             double previousBarsLowest = previousValues > 0 ? otherSeries.Minimum(index - previousValues, index - 1) : double.PositiveInfinity;
@@ -218,8 +218,8 @@ namespace cAlgo.API.Extensions
                     continue;
                 }
 
-                bool isHigherHigh = firstSeries.IsHigherHigh(i, minDistance);
-                bool islowerLow = firstSeries.IsLowerLow(i, minDistance);
+                bool isHigherHigh = firstSeries.IsHigher(i, minDistance);
+                bool islowerLow = firstSeries.IsLower(i, minDistance);
 
                 if (firstSeries[i] < firstSeries[index] && firstSeries.IsConnectionPossible(i, index, LineSide.Down) &&
                     secondSeries.IsConnectionPossible(i, index, LineSide.Down) && islowerLow)
