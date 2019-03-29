@@ -7,10 +7,10 @@ namespace cAlgo.API.Extensions
         #region Properties
 
         public double Level { get; set; }
-        public long BullishVolume { get; set; }
-        public long BearishVolume { get; set; }
+        public double BullishVolume { get; set; }
+        public double BearishVolume { get; set; }
 
-        public long TotalVolume
+        public double TotalVolume
         {
             get
             {
