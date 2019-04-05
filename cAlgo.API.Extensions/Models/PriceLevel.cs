@@ -18,6 +18,14 @@ namespace cAlgo.API.Extensions
             }
         }
 
+        public double Delta
+        {
+            get
+            {
+                return BullishVolume - BearishVolume;
+            }
+        }
+
         public List<int> Profile { get; set; }
 
         #endregion Properties

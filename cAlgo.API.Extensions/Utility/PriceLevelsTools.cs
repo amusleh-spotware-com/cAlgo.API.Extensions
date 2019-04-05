@@ -16,7 +16,7 @@ namespace cAlgo.API.Extensions.Utility
         /// <param name="width">Width in term of price not Pips</param>
         /// <param name="symbol">The symbol of price levels</param>
         /// <returns>List<PriceLevel></returns>
-        public static List<PriceLevel> GetCombinedPriceLevels(List<PriceLevel> data, double width)
+        public static List<PriceLevel> GetCombinedLevels(List<PriceLevel> data, double width)
         {
             List<PriceLevel> ordered = data.OrderBy(priceLevel => priceLevel.Level).ToList();
 
