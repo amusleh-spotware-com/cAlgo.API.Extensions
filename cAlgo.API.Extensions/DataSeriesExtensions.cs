@@ -388,16 +388,26 @@ namespace cAlgo.API.Extensions
         /// <param name="dataSeries"></param>
         /// <param name="otherDataSeries">Other Dataseries</param>
         /// <param name="periods">The x previous values number</param>
+        /// <param name="lag">The number of values that will be skipped from the other series</param>
+        /// <param name="percentageChange">Should it use the series percentage change instead raw values</param>
         /// <returns>double</returns>
-        public static double GetCorrelation(this DataSeries dataSeries, DataSeries otherDataSeries, int periods)
+        public static double GetCorrelation(this DataSeries dataSeries, DataSeries otherDataSeries, int periods, int lag, bool percentageChange)
         {
             double[] firstSeries = new double[periods];
             double[] secondSeries = new double[periods];
 
             for (int i = 0; i < periods; i++)
             {
-                firstSeries[i] = dataSeries.Last(i);
-                secondSeries[i] = otherDataSeries.Last(i);
+                if (percentageChange)
+                {
+                    firstSeries[i] = double.IsNaN(dataSeries.Last(i + 1)) ? 0 : ((dataSeries.Last(i) - dataSeries.Last(i + 1)) / dataSeries.Last(i + 1)) * 100;
+                    secondSeries[i] = double.IsNaN(otherDataSeries.Last(i + 1 + lag)) ? 0 : ((otherDataSeries.Last(i + lag) - otherDataSeries.Last(i + 1 + lag)) / otherDataSeries.Last(i + 1 + lag)) * 100;
+                }
+                else
+                {
+                    firstSeries[i] = dataSeries.Last(i);
+                    secondSeries[i] = otherDataSeries.Last(i + lag);
+                }
             }
 
             var avg1 = firstSeries.Average();
