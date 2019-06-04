@@ -60,5 +60,31 @@ namespace cAlgo.API.Extensions
                     return priceValue;
             }
         }
+
+        /// <summary>
+        /// Returns the amount of risk percentage based on stop loss amount
+        /// </summary>
+        /// <param name="symbol">The symbol</param>
+        /// <param name="stopLossInPips">Stop loss amount in Pips</param>
+        /// <param name="accountBalance">The account balance</param>
+        /// <param name="volume">The volume amount in units (Not lots)</param>
+        /// <returns>double</returns>
+        public static double GetRiskPercentage(this Symbol symbol, double stopLossInPips, double accountBalance, double volume)
+        {
+            return (((Math.Abs(stopLossInPips) * symbol.PipValue) / accountBalance) * 100.0) * volume;
+        }
+
+        /// <summary>
+        /// Returns the amount of stop loss in Pips based on risk percentage amount
+        /// </summary>
+        /// <param name="symbol">The symbol</param>
+        /// <param name="riskPercentage">Risk percentage amount</param>
+        /// <param name="accountBalance">The account balance</param>
+        /// <param name="volume">The volume amount in units (Not lots)</param>
+        /// <returns>double</returns>
+        public static double GetStopLoss(this Symbol symbol, double riskPercentage, double accountBalance, double volume)
+        {
+            return riskPercentage / (((symbol.PipValue / accountBalance) * 100.0) * volume);
+        }
     }
 }
