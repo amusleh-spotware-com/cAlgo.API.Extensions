@@ -312,7 +312,7 @@ namespace cAlgo.API.Extensions
                 {
                     return false;
                 }
-                else if (side == Direction.Down && dataSeries[i] > dataSeries[firstPointIndex] - (slope * counter))
+                else if (side == Direction.Down && dataSeries[i] > dataSeries[firstPointIndex] + (slope * counter))
                 {
                     return false;
                 }
