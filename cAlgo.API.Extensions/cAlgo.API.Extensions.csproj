@@ -51,7 +51,7 @@
     <Compile Include="Utility\ColorTools.cs" />
     <Compile Include="Models\BarVolume.cs" />
     <Compile Include="Models\LeastSquares.cs" />
-    <Compile Include="Enums\LineDirection.cs" />
+    <Compile Include="Enums\Direction.cs" />
     <Compile Include="Enums\SeriesType.cs" />
     <Compile Include="IndicatorMarketSeries.cs" />
     <Compile Include="IndicatorTimeSeries.cs" />

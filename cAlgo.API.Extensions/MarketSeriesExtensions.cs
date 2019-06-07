@@ -103,11 +103,11 @@ namespace cAlgo.API.Extensions
         {
             if (marketSeries.Close[index] > marketSeries.Open[index])
             {
-                return BarType.Up;
+                return BarType.Bullish;
             }
             else if (marketSeries.Close[index] < marketSeries.Open[index])
             {
-                return BarType.Down;
+                return BarType.Bearish;
             }
             else
             {
@@ -242,8 +242,8 @@ namespace cAlgo.API.Extensions
                 double barFirstQuartile = (barRange * 0.25) + marketSeries.Low[index];
                 double barThirdQuartile = (barRange * 0.75) + marketSeries.Low[index];
 
-                if ((marketSeries.Open[index] > barMiddle && marketSeries.Close[index] > barThirdQuartile && barType == BarType.Up) ||
-                    (marketSeries.Open[index] < barMiddle && marketSeries.Close[index] < barFirstQuartile && barType == BarType.Down))
+                if ((marketSeries.Open[index] > barMiddle && marketSeries.Close[index] > barThirdQuartile && barType == BarType.Bullish) ||
+                    (marketSeries.Open[index] < barMiddle && marketSeries.Close[index] < barFirstQuartile && barType == BarType.Bearish))
                 {
                     return true;
                 }
@@ -302,7 +302,7 @@ namespace cAlgo.API.Extensions
             BarType barType = marketSeries.GetBarType(index);
             BarType previousBarType = marketSeries.GetBarType(index - 1);
 
-            if (barType == BarType.Up && previousBarType == BarType.Down && marketSeries.GetBarType(index - 2) == BarType.Down)
+            if (barType == BarType.Bullish && previousBarType == BarType.Bearish && marketSeries.GetBarType(index - 2) == BarType.Bearish)
             {
                 if (marketSeries.Low[index - 1] < marketSeries.Low[index - 2] && marketSeries.Low[index - 1] < marketSeries.Low[index])
                 {
@@ -312,7 +312,7 @@ namespace cAlgo.API.Extensions
                     }
                 }
             }
-            else if (barType == BarType.Down && previousBarType == BarType.Up && marketSeries.GetBarType(index - 2) == BarType.Up)
+            else if (barType == BarType.Bearish && previousBarType == BarType.Bullish && marketSeries.GetBarType(index - 2) == BarType.Bullish)
             {
                 if (marketSeries.High[index - 1] > marketSeries.High[index - 2] && marketSeries.High[index - 1] > marketSeries.High[index])
                 {
@@ -471,8 +471,8 @@ namespace cAlgo.API.Extensions
 
                 if (useBarBody)
                 {
-                    barLow = marketSeries.GetBarType(i) == BarType.Up ? marketSeries.Open[i] : marketSeries.Close[i];
-                    barHigh = marketSeries.GetBarType(i) == BarType.Up ? marketSeries.Close[i] : marketSeries.Open[i];
+                    barLow = marketSeries.GetBarType(i) == BarType.Bullish ? marketSeries.Open[i] : marketSeries.Close[i];
+                    barHigh = marketSeries.GetBarType(i) == BarType.Bullish ? marketSeries.Close[i] : marketSeries.Open[i];
                 }
                 else
                 {

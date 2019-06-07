@@ -2,8 +2,8 @@
 {
     public enum BarType
     {
-        Up,
-        Down,
+        Bullish,
+        Bearish,
         Neutral
     }
 }

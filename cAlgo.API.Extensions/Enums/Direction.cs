@@ -1,6 +1,6 @@
 ﻿namespace cAlgo.API.Extensions.Enums
 {
-    public enum LineDirection
+    public enum Direction
     {
         Up,
         Down
