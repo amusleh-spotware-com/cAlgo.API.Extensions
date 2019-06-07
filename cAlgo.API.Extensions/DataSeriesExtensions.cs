@@ -221,8 +221,8 @@ namespace cAlgo.API.Extensions
                 bool isHigherHigh = firstSeries.IsHigher(i, minDistance);
                 bool islowerLow = firstSeries.IsLower(i, minDistance);
 
-                if (firstSeries[i] < firstSeries[index] && firstSeries.IsConnectionPossible(i, index, LineSide.Down) &&
-                    secondSeries.IsConnectionPossible(i, index, LineSide.Down) && islowerLow)
+                if (firstSeries[i] < firstSeries[index] && firstSeries.IsConnectionPossible(i, index, LineDirection.Up) &&
+                    secondSeries.IsConnectionPossible(i, index, LineDirection.Up) && islowerLow)
                 {
                     Divergence divergence = new Divergence
                     {
@@ -233,8 +233,8 @@ namespace cAlgo.API.Extensions
 
                     result.Add(divergence);
                 }
-                else if (firstSeries[i] > firstSeries[index] && firstSeries.IsConnectionPossible(i, index, LineSide.Up) &&
-                    secondSeries.IsConnectionPossible(i, index, LineSide.Up) && isHigherHigh)
+                else if (firstSeries[i] > firstSeries[index] && firstSeries.IsConnectionPossible(i, index, LineDirection.Down) &&
+                    secondSeries.IsConnectionPossible(i, index, LineDirection.Down) && isHigherHigh)
                 {
                     Divergence divergence = new Divergence
                     {
@@ -293,7 +293,7 @@ namespace cAlgo.API.Extensions
         /// <param name="secondPointIndex">The second point index in data series</param>
         /// <param name="side">The line side, is it on upper side or lower side?</param>
         /// <returns>bool</returns>
-        public static bool IsConnectionPossible(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex, LineSide side)
+        public static bool IsConnectionPossible(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex, LineDirection side)
         {
             if (firstPointIndex >= secondPointIndex)
             {
@@ -304,15 +304,15 @@ namespace cAlgo.API.Extensions
 
             int counter = 0;
 
-            for (int i = firstPointIndex + 1; i < secondPointIndex; i++)
+            for (int i = firstPointIndex + 1; i <= secondPointIndex; i++)
             {
                 counter++;
 
-                if (side == LineSide.Up && dataSeries[i] > dataSeries[firstPointIndex] + (slope * counter))
+                if (side == LineDirection.Up && dataSeries[i] < dataSeries[firstPointIndex] + (slope * counter))
                 {
                     return false;
                 }
-                else if (side == LineSide.Down && dataSeries[i] < dataSeries[firstPointIndex] + (slope * counter))
+                else if (side == LineDirection.Down && dataSeries[i] > dataSeries[firstPointIndex] - (slope * counter))
                 {
                     return false;
                 }
