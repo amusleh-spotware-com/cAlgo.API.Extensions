@@ -46,6 +46,31 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
+        /// Returns the bar index that has the maximum value between start and end (inclusive) index in a dataseries
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="startIndex">Start index (Ex: 1)</param>
+        /// <param name="endIndex">End index (Ex: 10)</param>
+        /// <returns>double</returns>
+        public static int MaximumBarIndex(this DataSeries dataSeries, int startIndex, int endIndex)
+        {
+            double max = double.NegativeInfinity;
+
+            int maxBarIndex = startIndex;
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                if (dataSeries[i] >= max)
+                {
+                    max = dataSeries[i];
+                    maxBarIndex = i;
+                }
+            }
+
+            return maxBarIndex;
+        }
+
+        /// <summary>
         /// Returns the minimum value between start and end (inclusive) index in a dataseries
         /// </summary>
         /// <param name="dataSeries"></param>
@@ -62,6 +87,31 @@ namespace cAlgo.API.Extensions
             }
 
             return min;
+        }
+
+        /// <summary>
+        /// Returns the bar index that has the minimum value between start and end (inclusive) index in a dataseries
+        /// </summary>
+        /// <param name="dataSeries"></param>
+        /// <param name="startIndex">Start index (Ex: 1)</param>
+        /// <param name="endIndex">End index (Ex: 10)</param>
+        /// <returns>double</returns>
+        public static int MinimumBarIndex(this DataSeries dataSeries, int startIndex, int endIndex)
+        {
+            double min = double.NegativeInfinity;
+
+            int minBarIndex = startIndex;
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                if (dataSeries[i] <= min)
+                {
+                    min = dataSeries[i];
+                    minBarIndex = i;
+                }
+            }
+
+            return minBarIndex;
         }
 
         /// <summary>
