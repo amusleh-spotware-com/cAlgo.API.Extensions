@@ -341,9 +341,9 @@ namespace cAlgo.API.Extensions
         /// <param name="dataSeries"></param>
         /// <param name="firstPointIndex">The first point index in data series</param>
         /// <param name="secondPointIndex">The second point index in data series</param>
-        /// <param name="side">The line side, is it on upper side or lower side?</param>
+        /// <param name="direction">The line direction, is it on up direction or low direction?</param>
         /// <returns>bool</returns>
-        public static bool IsConnectionPossible(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex, Direction side)
+        public static bool IsConnectionPossible(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex, Direction direction)
         {
             if (firstPointIndex >= secondPointIndex)
             {
@@ -358,11 +358,11 @@ namespace cAlgo.API.Extensions
             {
                 counter++;
 
-                if (side == Direction.Up && dataSeries[i] < dataSeries[firstPointIndex] + (slope * counter))
+                if (direction == Direction.Up && dataSeries[i] < dataSeries[firstPointIndex] + (slope * counter))
                 {
                     return false;
                 }
-                else if (side == Direction.Down && dataSeries[i] > dataSeries[firstPointIndex] + (slope * counter))
+                else if (direction == Direction.Down && dataSeries[i] > dataSeries[firstPointIndex] + (slope * counter))
                 {
                     return false;
                 }

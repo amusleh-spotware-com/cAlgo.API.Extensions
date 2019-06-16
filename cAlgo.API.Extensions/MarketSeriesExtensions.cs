@@ -732,5 +732,120 @@ namespace cAlgo.API.Extensions
 
             return barRanges.Average();
         }
+
+        /// <summary>
+        /// Returns the high value of a bar body
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="barIndex">The bar index in market series</param>
+        /// <returns>double</returns>
+        public static double GetBarBodyHigh(this MarketSeries marketSeries, int barIndex)
+        {
+            return marketSeries.Close[barIndex] > marketSeries.Open[barIndex] ? marketSeries.Close[barIndex] : marketSeries.Open[barIndex];
+        }
+
+        /// <summary>
+        /// Returns the low value of a bar body
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="barIndex">The bar index in market series</param>
+        /// <returns>double</returns>
+        public static double GetBarBodyLow(this MarketSeries marketSeries, int barIndex)
+        {
+            return marketSeries.Close[barIndex] < marketSeries.Open[barIndex] ? marketSeries.Close[barIndex] : marketSeries.Open[barIndex];
+        }
+
+        /// <summary>
+        /// Returns the amount of slope between two level in a market series based on bar bodies
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="firstPointIndex">The first point index in market series</param>
+        /// <param name="secondPointIndex">The second point index in market series</param>
+        /// <param name="direction"></param>
+        /// <returns>double</returns>
+        public static double GetBodyBaseSlope(this MarketSeries marketSeries, int firstPointIndex, int secondPointIndex, Direction direction)
+        {
+            double firstPoint, secondPoint;
+
+            if (direction == Direction.Up)
+            {
+                firstPoint = marketSeries.GetBarBodyLow(firstPointIndex);
+                secondPoint = marketSeries.GetBarBodyLow(secondPointIndex);
+            }
+            else if (direction == Direction.Down)
+            {
+                firstPoint = marketSeries.GetBarBodyHigh(firstPointIndex);
+                secondPoint = marketSeries.GetBarBodyHigh(secondPointIndex);
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid Direction Type");
+            }
+
+            return (secondPoint - firstPoint) / (secondPointIndex - firstPointIndex);
+        }
+
+        /// <summary>
+        /// Returns True if connecting two provided data point based on cross direction is possible otherwise False
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="firstPointIndex">The first point index in market series</param>
+        /// <param name="secondPointIndex">The second point index in market series</param>
+        /// <param name="direction">The line direction, is it on up direction or low direction?</param>
+        /// <returns>bool</returns>
+        public static bool IsBodyConnectionPossible(this MarketSeries marketSeries, int firstPointIndex, int secondPointIndex, Direction direction)
+        {
+            if (firstPointIndex >= secondPointIndex)
+            {
+                throw new ArgumentException("The 'firstPointIndex' must be less than 'secondPointIndex'");
+            }
+
+            double slope = marketSeries.GetBodyBaseSlope(firstPointIndex, secondPointIndex, direction);
+
+            double firstPoint;
+
+            if (direction == Direction.Up)
+            {
+                firstPoint = marketSeries.GetBarBodyLow(firstPointIndex);
+            }
+            else if (direction == Direction.Down)
+            {
+                firstPoint = marketSeries.GetBarBodyHigh(firstPointIndex);
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid Direction Type");
+            }
+
+            int counter = 0;
+
+            for (int i = firstPointIndex + 1; i <= secondPointIndex; i++)
+            {
+                counter++;
+
+                double iPoint;
+
+                if (direction == Direction.Up)
+                {
+                    iPoint = marketSeries.GetBarBodyLow(i);
+
+                    if (iPoint < firstPoint + (slope * counter))
+                    {
+                        return false;
+                    }
+                }
+                else if (direction == Direction.Down)
+                {
+                    iPoint = marketSeries.GetBarBodyHigh(i);
+
+                    if (iPoint > firstPoint + (slope * counter))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
     }
 }
