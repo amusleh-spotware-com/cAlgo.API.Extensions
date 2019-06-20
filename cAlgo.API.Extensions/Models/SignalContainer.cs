@@ -121,11 +121,11 @@ namespace cAlgo.API.Extensions.Models
                 _newSignalSettings.AlertCallback(index, tradeType);
             }
 
-            if (tradeType == TradeType.Buy)
+            if (tradeType == TradeType.Buy && _newSignalSettings.BuySignal != null)
             {
                 _newSignalSettings.BuySignal[index] = _newSignalSettings.MarketSeries.Low[index] - _newSignalSettings.SignalDistance;
             }
-            else
+            else if (tradeType == TradeType.Sell && _newSignalSettings.SellSignal != null)
             {
                 _newSignalSettings.SellSignal[index] = _newSignalSettings.MarketSeries.High[index] + _newSignalSettings.SignalDistance;
             }
@@ -287,6 +287,39 @@ namespace cAlgo.API.Extensions.Models
             stringBuilder.AppendLine();
 
             return stringBuilder.ToString();
+        }
+
+        public void LoadSignals()
+        {
+            string doucmentsDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            string symbolSignalsDirecotryPath = Path.Combine(doucmentsDirectoryPath, "cAlgo", AlgoName, _symbol.Code);
+
+            if (!Directory.Exists(symbolSignalsDirecotryPath))
+            {
+                throw new DirectoryNotFoundException(string.Format("Couldn't find the symbol signal files directory at: {0}", symbolSignalsDirecotryPath));
+            }
+
+            string filePath = Path.Combine(symbolSignalsDirecotryPath, string.Format("{0}.xml", _timeFrame));
+
+            LoadSignals(filePath);
+        }
+
+        public void LoadSignals(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException(string.Format("The signals file doesn't exist at: {0}", filePath));
+            }
+
+            using (FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                XmlSerializer serializer = new XmlSerializer(this.GetType());
+
+                List<Signal> signals = (serializer.Deserialize(fileStream) as SignalContainer).Signals;
+
+                Signals.AddRange(signals);
+            }
         }
 
         private double CalculateGain(Signal signal, int index)
