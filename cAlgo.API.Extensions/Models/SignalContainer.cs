@@ -103,6 +103,8 @@ namespace cAlgo.API.Extensions.Models
                 throw new NullReferenceException("The signal container NewSignalSettings object is null");
             }
 
+            RemoveSignal(index, tradeType);
+
             Signal signal = new Signal
             {
                 Index = index,
@@ -202,6 +204,16 @@ namespace cAlgo.API.Extensions.Models
         public string GetStatsDisplayText(int index)
         {
             return GetStatsDisplayText(index, string.Format("{0} Signals Stats", AlgoName));
+        }
+
+        public void RemoveSignal(int index, TradeType tradeType)
+        {
+            Signal signal = Signals.FirstOrDefault(iSignal => iSignal.Index == index && iSignal.TradeType == tradeType);
+
+            if (signal != null)
+            {
+                Signals.Remove(signal);
+            }
         }
 
         public string GetStatsDisplayText(int index, string title)
