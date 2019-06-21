@@ -566,7 +566,7 @@ namespace cAlgo.API.Extensions
         /// <param name="marketSeries">The market series</param>
         /// <param name="barIndex">The bar index</param>
         /// <returns>DateTime</returns>
-        public static DateTime GetOpenTime(this MarketSeries marketSeries, double barIndex)
+        public static DateTime GetOpenTime(this MarketSeries marketSeries, double barIndex, Action<string> print)
         {
             int currentIndex = marketSeries.GetIndex();
 
@@ -575,10 +575,6 @@ namespace cAlgo.API.Extensions
             double indexDiff = barIndex - currentIndex;
 
             double indexDiffAbs = Math.Abs(indexDiff);
-
-            double indexDiffFloor = Math.Floor(indexDiffAbs);
-
-            double indexDiffFraction = indexDiffAbs - indexDiffFloor;
 
             DateTime result = indexDiff <= 0 ? marketSeries.OpenTime[(int)barIndex] : marketSeries.OpenTime[currentIndex];
 
@@ -594,9 +590,11 @@ namespace cAlgo.API.Extensions
                 }
             }
 
-            double indexDiffFractionInMinutes = timeDiff.TotalMinutes * indexDiffFraction;
+            double barIndexFraction = barIndex % 1;
 
-            result = result.AddMinutes(indexDiff > 0 ? indexDiffFractionInMinutes : -indexDiffFractionInMinutes);
+            double barIndexFractionInMinutes = timeDiff.TotalMinutes * barIndexFraction;
+
+            result = result.AddMinutes(barIndexFractionInMinutes);
 
             return result;
         }
@@ -610,14 +608,14 @@ namespace cAlgo.API.Extensions
         {
             int index = marketSeries.GetIndex();
 
-            if (index < 5)
+            if (index < 4)
             {
                 throw new InvalidOperationException("Not enough data in market series to calculate the time difference");
             }
 
             List<TimeSpan> timeDiffs = new List<TimeSpan>();
 
-            for (int i = index; i >= index - 5; i--)
+            for (int i = index; i >= index - 4; i--)
             {
                 timeDiffs.Add(marketSeries.OpenTime[i] - marketSeries.OpenTime[i - 1]);
             }
