@@ -65,7 +65,7 @@ namespace cAlgo.API.Extensions.Models
 
         #region Methods
 
-        public void Export()
+        public void Export(int signalsNumberToExport)
         {
             string doucmentsDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
@@ -78,16 +78,21 @@ namespace cAlgo.API.Extensions.Models
 
             string filePath = Path.Combine(symbolSignalsDirecotryPath, string.Format("{0}.xml", _timeFrame));
 
-            Export(filePath);
+            Export(filePath, signalsNumberToExport);
         }
 
-        public void Export(string filePath)
+        public void Export(string filePath, int signalsNumberToExport)
         {
+            SignalContainer signalContainer = new SignalContainer(AlgoName, _symbol, _timeFrame, _newSignalSettings, _signalStatsSettings)
+            {
+                Signals = signalsNumberToExport > 0 ? Signals.Skip(Signals.Count - signalsNumberToExport).ToList() : Signals,
+            };
+
             using (FileStream fileStream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(SignalContainer));
 
-                serializer.Serialize(fileStream, this);
+                serializer.Serialize(fileStream, signalContainer);
             }
         }
 
