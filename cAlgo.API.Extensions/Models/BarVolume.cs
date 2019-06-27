@@ -13,5 +13,29 @@
                 return BullishVolume - BearishVolume;
             }
         }
+
+        public double BullishVolumePercent
+        {
+            get
+            {
+                return (BullishVolume / TotalVolume) * 100;
+            }
+        }
+
+        public double BearishVolumePercent
+        {
+            get
+            {
+                return (BearishVolume / TotalVolume) * 100;
+            }
+        }
+
+        public double TotalVolume
+        {
+            get
+            {
+                return BullishVolume + BearishVolume;
+            }
+        }
     }
 }

@@ -55,6 +55,7 @@
     <Compile Include="Models\NewSignalSettings.cs" />
     <Compile Include="Models\Signal.cs" />
     <Compile Include="Models\SignalContainer.cs" />
+    <Compile Include="Models\TdBar.cs" />
     <Compile Include="Utility\ColorTools.cs" />
     <Compile Include="Models\BarVolume.cs" />
     <Compile Include="Models\LeastSquares.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Models\PriceLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\PriceLevelsTools.cs" />
+    <Compile Include="Utility\TdBarCounter.cs" />
     <Compile Include="Utility\TimeSpanTools.cs" />
     <Compile Include="Utility\EnumTools.cs" />
     <Compile Include="Utility\NumericScaler.cs" />
