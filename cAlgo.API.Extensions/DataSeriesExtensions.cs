@@ -487,53 +487,43 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns true if the bars between start and end index trending up otherwise false
+        /// Returns the direction of trend if there is any in between start and end index bars
         /// </summary>
         /// <param name="dataSeries"></param>
         /// <param name="startIndex">The start bar index in a data Series</param>
         /// <param name="endIndex">The end bar index in a data series</param>
         /// <param name="step">The step that will be used for comparison of bars</param>
-        /// <returns>bool</returns>
-        public static bool IsTrendingUp(this DataSeries dataSeries, int startIndex, int endIndex, int step = 3)
+        /// <returns>Direction</returns>
+        public static Direction GetTrendDirection(this DataSeries dataSeries, int startIndex, int endIndex, int step = 3)
         {
-            bool result = true;
+            bool isTrendingUp = true;
+            bool isTrendingDown = true;
 
             for (int i = startIndex + step; i <= endIndex; i += step)
             {
-                if (dataSeries[i] <= dataSeries[i - step])
+                if (isTrendingDown && dataSeries[i] >= dataSeries[i - step])
                 {
-                    result = false;
+                    isTrendingDown = false;
+                }
 
-                    break;
+                if (isTrendingUp && dataSeries[i] <= dataSeries[i - step])
+                {
+                    isTrendingUp = false;
                 }
             }
 
-            return result;
-        }
-
-        /// <summary>
-        /// Returns true if the bars between start and end index trending down otherwise false
-        /// </summary>
-        /// <param name="dataSeries"></param>
-        /// <param name="startIndex">The start bar index in a data series</param>
-        /// <param name="endIndex">The end bar index in a data series</param>
-        /// <param name="step">The step that will be used for comparison of bars</param>
-        /// <returns>bool</returns>
-        public static bool IsTrendingDown(this DataSeries dataSeries, int startIndex, int endIndex, int step = 3)
-        {
-            bool result = true;
-
-            for (int i = startIndex + step; i <= endIndex; i += step)
+            if (isTrendingUp)
             {
-                if (dataSeries[i] >= dataSeries[i - step])
-                {
-                    result = false;
-
-                    break;
-                }
+                return Direction.Up;
             }
-
-            return result;
+            else if (isTrendingDown)
+            {
+                return Direction.Down;
+            }
+            else
+            {
+                return Direction.None;
+            }
         }
 
         /// <summary>
