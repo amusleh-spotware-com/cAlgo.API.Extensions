@@ -566,7 +566,7 @@ namespace cAlgo.API.Extensions
         /// <param name="marketSeries">The market series</param>
         /// <param name="barIndex">The bar index</param>
         /// <returns>DateTime</returns>
-        public static DateTime GetOpenTime(this MarketSeries marketSeries, double barIndex, Action<string> print)
+        public static DateTime GetOpenTime(this MarketSeries marketSeries, double barIndex)
         {
             int currentIndex = marketSeries.GetIndex();
 
