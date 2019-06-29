@@ -1,5 +1,4 @@
 ﻿using cAlgo.API.Internals;
-using cAlgo.API.Extensions.Enums;
 using System;
 
 namespace cAlgo.API.Extensions.Models
@@ -12,9 +11,9 @@ namespace cAlgo.API.Extensions.Models
 
         public MarketSeries MarketSeries { get; set; }
 
-        public double SignalDistance { get; set; }
+        public double SignalDistance { get; set; } = 1;
 
-        public int MaxLookupBarsNumber { get; set; }
+        public int MaxLookupBarsNumber { get; set; } = 20;
 
         public double MinRewardRiskRatio { get; set; }
 
@@ -29,5 +28,11 @@ namespace cAlgo.API.Extensions.Models
         public Color BuySignalExitLineColor { get; set; } = Color.Lime;
 
         public Color SellSignalExitLineColor { get; set; } = Color.Red;
+
+        public Color StatsColor { get; set; } = Color.Red;
+
+        public VerticalAlignment StatsVerticalAlignment { get; set; } = VerticalAlignment.Top;
+
+        public HorizontalAlignment StatsHorizontalAlignment { get; set; } = HorizontalAlignment.Left;
     }
 }

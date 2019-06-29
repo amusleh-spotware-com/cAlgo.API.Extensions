@@ -220,12 +220,12 @@ namespace cAlgo.API.Extensions.Models
             }
         }
 
-        public string GetStatsDisplayText(int index)
+        public void DisplayText(int index)
         {
-            return GetStatsDisplayText(index, string.Format("{0} Signals Stats", AlgoName));
+            DisplayText(index, string.Format("{0} Signals Stats", AlgoName));
         }
 
-        public string GetStatsDisplayText(int index, string title)
+        public void DisplayText(int index, string title)
         {
             if (_newSignalSettings == null)
             {
@@ -238,7 +238,7 @@ namespace cAlgo.API.Extensions.Models
 
             if (!Signals.Any())
             {
-                return string.Empty;
+                return;
             }
 
             IEnumerable<Signal> profitableSignals = Signals.Where(iSignal => IsProfitable(iSignal, index));
@@ -286,7 +286,11 @@ namespace cAlgo.API.Extensions.Models
 
             stringBuilder.AppendLine();
 
-            return stringBuilder.ToString();
+            string text = stringBuilder.ToString();
+
+            string objectName = string.Format("Stats_{0}", _signalStatsSettings.ChartObjectNamesSuffix);
+
+            _signalStatsSettings.Chart.DrawStaticText(objectName, text, _signalStatsSettings.StatsVerticalAlignment, _signalStatsSettings.StatsHorizontalAlignment, _signalStatsSettings.StatsColor);
         }
 
         public void RemoveSignal(int index, TradeType tradeType)
