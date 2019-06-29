@@ -65,27 +65,31 @@ namespace cAlgo.API.Extensions.Models
 
         #region Methods
 
-        public void Export(int signalsNumberToExport)
+        public void Export()
         {
-            string doucmentsDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string filePath;
 
-            string symbolSignalsDirecotryPath = Path.Combine(doucmentsDirectoryPath, "cAlgo", AlgoName, SymbolName);
-
-            if (!Directory.Exists(symbolSignalsDirecotryPath))
+            if (string.IsNullOrEmpty(_newSignalSettings.ExportFilePath))
             {
-                Directory.CreateDirectory(symbolSignalsDirecotryPath);
+                string doucmentsDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                string symbolSignalsDirecotryPath = Path.Combine(doucmentsDirectoryPath, "cAlgo", AlgoName, SymbolName);
+
+                if (!Directory.Exists(symbolSignalsDirecotryPath))
+                {
+                    Directory.CreateDirectory(symbolSignalsDirecotryPath);
+                }
+
+                filePath = Path.Combine(symbolSignalsDirecotryPath, string.Format("{0}.xml", _timeFrame));
+            }
+            else
+            {
+                filePath = _newSignalSettings.ExportFilePath;
             }
 
-            string filePath = Path.Combine(symbolSignalsDirecotryPath, string.Format("{0}.xml", _timeFrame));
-
-            Export(filePath, signalsNumberToExport);
-        }
-
-        public void Export(string filePath, int signalsNumberToExport)
-        {
             SignalContainer signalContainer = new SignalContainer(AlgoName, _symbol, _timeFrame, _newSignalSettings, _signalStatsSettings)
             {
-                Signals = signalsNumberToExport > 0 ? Signals.Skip(Signals.Count - signalsNumberToExport).ToList() : Signals,
+                Signals = _newSignalSettings.SignalsNumberToExport > 0 ? Signals.Skip(Signals.Count - _newSignalSettings.SignalsNumberToExport).ToList() : Signals,
             };
 
             using (FileStream fileStream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
@@ -130,6 +134,11 @@ namespace cAlgo.API.Extensions.Models
             else if (tradeType == TradeType.Sell && _newSignalSettings.SellSignal != null)
             {
                 _newSignalSettings.SellSignal[index] = _newSignalSettings.MarketSeries.High[index] + _newSignalSettings.SignalDistance;
+            }
+
+            if (_newSignalSettings.IsExportEnabled)
+            {
+                Export();
             }
         }
 
