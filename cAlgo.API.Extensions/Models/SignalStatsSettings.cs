@@ -1,4 +1,6 @@
 ﻿using cAlgo.API.Internals;
+using cAlgo.API.Extensions.Enums;
+using System;
 
 namespace cAlgo.API.Extensions.Models
 {
@@ -12,10 +14,10 @@ namespace cAlgo.API.Extensions.Models
 
         public double SignalDistance { get; set; }
 
-        public bool IsCloseBased { get; set; }
-
         public int MaxLookupBarsNumber { get; set; }
 
         public double MinRewardRiskRatio { get; set; }
+
+        public Func<Signal, bool> ExitFunction { get; set; }
     }
 }

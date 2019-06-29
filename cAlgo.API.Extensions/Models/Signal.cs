@@ -40,5 +40,11 @@ namespace cAlgo.API.Extensions.Models
 
         [XmlIgnore]
         public string Comment { get; set; }
+
+        [XmlIgnore]
+        public bool Exited { get; set; }
+
+        [XmlIgnore]
+        public int ExitBarIndex { get; set; }
     }
 }
