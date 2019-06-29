@@ -19,5 +19,15 @@ namespace cAlgo.API.Extensions.Models
         public double MinRewardRiskRatio { get; set; }
 
         public Func<Signal, bool> ExitFunction { get; set; }
+
+        public Chart Chart { get; set; }
+
+        public string ChartObjectNamesSuffix { get; set; }
+
+        public bool DrawExitLines { get; set; }
+
+        public Color BuySignalExitLineColor { get; set; } = Color.Lime;
+
+        public Color SellSignalExitLineColor { get; set; } = Color.Red;
     }
 }

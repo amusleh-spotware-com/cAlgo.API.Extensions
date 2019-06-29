@@ -160,7 +160,33 @@ namespace cAlgo.API.Extensions.Models
 
                 if (signal.Exited)
                 {
-                    signal.ExitBarIndex = _signalStatsSettings.MarketSeries.GetIndex() - 1;
+                    signal.ExitIndex = _signalStatsSettings.MarketSeries.GetIndex() - 1;
+
+                    if (_signalStatsSettings.DrawExitLines)
+                    {
+                        string lineObjectName = string.Format("ExitLine_{0}_{1}_{2}", signal.Index, signal.ExitIndex, _signalStatsSettings.ChartObjectNamesSuffix);
+
+                        double y1, y2;
+
+                        Color lineColor;
+
+                        if (signal.TradeType == TradeType.Buy)
+                        {
+                            y1 = _signalStatsSettings.MarketSeries.Low[signal.Index];
+                            y2 = _signalStatsSettings.MarketSeries.Low[signal.ExitIndex];
+
+                            lineColor = _signalStatsSettings.BuySignalExitLineColor;
+                        }
+                        else
+                        {
+                            y1 = _signalStatsSettings.MarketSeries.High[signal.Index];
+                            y2 = _signalStatsSettings.MarketSeries.High[signal.ExitIndex];
+
+                            lineColor = _signalStatsSettings.SellSignalExitLineColor;
+                        }
+
+                        _signalStatsSettings.Chart.DrawTrendLine(lineObjectName, signal.Index, y1, signal.ExitIndex, y2, lineColor);
+                    }
                 }
 
                 signal.MaxUpMove = _signalStatsSettings.MarketSeries.High.Maximum(signal.Index, index) - _signalStatsSettings.MarketSeries.Close[signal.Index];
@@ -308,21 +334,21 @@ namespace cAlgo.API.Extensions.Models
 
         private double CalculateGain(Signal signal, int index)
         {
-            int exitBarIndex = signal.ExitBarIndex > index ? index : signal.ExitBarIndex;
+            int exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
 
             return signal.TradeType == TradeType.Buy ? _signalStatsSettings.MarketSeries.Close[exitBarIndex] - _signalStatsSettings.MarketSeries.Close[signal.Index] : _signalStatsSettings.MarketSeries.Close[signal.Index] - _signalStatsSettings.MarketSeries.Close[exitBarIndex];
         }
 
         private double CalculateLoss(Signal signal, int index)
         {
-            int exitBarIndex = signal.ExitBarIndex > index ? index : signal.ExitBarIndex;
+            int exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
 
             return signal.TradeType == TradeType.Buy ? _signalStatsSettings.MarketSeries.Close[signal.Index] - _signalStatsSettings.MarketSeries.Close[exitBarIndex] : _signalStatsSettings.MarketSeries.Close[exitBarIndex] - _signalStatsSettings.MarketSeries.Close[signal.Index];
         }
 
         private bool IsProfitable(Signal signal, int index)
         {
-            int exitBarIndex = signal.ExitBarIndex > index ? index : signal.ExitBarIndex;
+            int exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
 
             return (signal.TradeType == TradeType.Buy && _signalStatsSettings.MarketSeries.Close[exitBarIndex] > _signalStatsSettings.MarketSeries.Close[signal.Index]) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.MarketSeries.Close[exitBarIndex] < _signalStatsSettings.MarketSeries.Close[signal.Index]);
         }

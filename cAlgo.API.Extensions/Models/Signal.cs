@@ -45,6 +45,6 @@ namespace cAlgo.API.Extensions.Models
         public bool Exited { get; set; }
 
         [XmlIgnore]
-        public int ExitBarIndex { get; set; }
+        public int ExitIndex { get; set; }
     }
 }
