@@ -171,6 +171,8 @@ namespace cAlgo.API.Extensions.Models
                 {
                     signal.ExitIndex = _signalStatsSettings.MarketSeries.GetIndex() - 1;
 
+                    signal.HoldingTime = _signalStatsSettings.MarketSeries.OpenTime[signal.ExitIndex] - _signalStatsSettings.MarketSeries.OpenTime[signal.Index];
+
                     if (_signalStatsSettings.DrawExitLines)
                     {
                         string lineObjectName = string.Format("ExitLine_{0}_{1}_{2}", signal.Index, signal.ExitIndex, _signalStatsSettings.ChartObjectNamesSuffix);
@@ -281,6 +283,10 @@ namespace cAlgo.API.Extensions.Models
             double profitableSignalsTotalGainInPips = _symbol.ToPips(profitableSignals.Select(iSignal => CalculateGain(iSignal, index)).Sum());
             double losingSignalsGainInPips = _symbol.ToPips(losingSignals.Select(iSignal => CalculateLoss(iSignal, index)).Sum());
 
+            TimeSpan profitableSignalsMedianHoldingTime = TimeSpan.FromMinutes(profitableSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median());
+            TimeSpan losingSignalsMedianHoldingTime = TimeSpan.FromMinutes(losingSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median());
+            TimeSpan allSignalsMedianHoldingTime = TimeSpan.FromMinutes(Signals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median());
+
             stringBuilder.AppendLine(string.Format("Signals #: {0}", Signals.Count));
             stringBuilder.AppendLine(string.Format("Signals Accuracy: {0}%", Math.Round(strongSignalsAccuracy, 2)));
             stringBuilder.AppendLine(string.Format("Profitable Signals Median Reward:Risk: {0}", Math.Round(strongProfitableSignalsMedianRiskRewardRatio, 2)));
@@ -292,6 +298,9 @@ namespace cAlgo.API.Extensions.Models
             stringBuilder.AppendLine(string.Format("All Signals Median Loss (Pips): {0}", Math.Round(strongAllSignalsMedianLossInPips, 2)));
             stringBuilder.AppendLine(string.Format("All Signals Median Gain (Pips): {0}", Math.Round(strongAllSignalsMedianGainInPips, 2)));
             stringBuilder.AppendLine(string.Format("Signals Total Gain (Pips): {0}", Math.Round(profitableSignalsTotalGainInPips - losingSignalsGainInPips, 2)));
+            stringBuilder.AppendLine(string.Format("Profitable Signals Median Holding Time: {0}", profitableSignalsMedianHoldingTime));
+            stringBuilder.AppendLine(string.Format("Losing Signals Median Holding Time: {0}", losingSignalsMedianHoldingTime));
+            stringBuilder.AppendLine(string.Format("All Signals Median Holding Time: {0}", allSignalsMedianHoldingTime));
 
             stringBuilder.AppendLine();
 

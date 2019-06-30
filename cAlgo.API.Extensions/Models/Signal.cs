@@ -46,5 +46,8 @@ namespace cAlgo.API.Extensions.Models
 
         [XmlIgnore]
         public int ExitIndex { get; set; }
+
+        [XmlIgnore]
+        public TimeSpan HoldingTime { get; set; }
     }
 }
