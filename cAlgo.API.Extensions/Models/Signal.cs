@@ -10,6 +10,10 @@ namespace cAlgo.API.Extensions.Models
 
         public DateTime Time { get; set; }
 
+        public double? StopLoss { get; set; }
+
+        public double? TakeProfit { get; set; }
+
         [XmlIgnore]
         public int Index { get; set; }
 

@@ -107,6 +107,16 @@ namespace cAlgo.API.Extensions.Models
 
         public void AddSignal(int index, TradeType tradeType, string comment)
         {
+            AddSignal(index, tradeType, null, null, comment);
+        }
+
+        public void AddSignal(int index, TradeType tradeType, double? stopLoss, double? takeProfit)
+        {
+            AddSignal(index, tradeType, stopLoss, takeProfit, string.Empty);
+        }
+
+        public void AddSignal(int index, TradeType tradeType, double? stopLoss, double? takeProfit, string comment)
+        {
             if (_newSignalSettings == null)
             {
                 throw new NullReferenceException("The signal container NewSignalSettings object is null");
@@ -120,6 +130,8 @@ namespace cAlgo.API.Extensions.Models
                 Time = _newSignalSettings.MarketSeries.OpenTime[index],
                 Symbol = _symbol,
                 TradeType = tradeType,
+                StopLoss = stopLoss,
+                TakeProfit = takeProfit,
                 Comment = comment
             };
 
@@ -165,11 +177,24 @@ namespace cAlgo.API.Extensions.Models
                     continue;
                 }
 
-                signal.Exited = _signalStatsSettings.ExitFunction(signal);
+                if (signal.StopLoss.HasValue && ((signal.TradeType == TradeType.Buy && _signalStatsSettings.MarketSeries.Low[index] <= signal.StopLoss) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.MarketSeries.High[index] >= signal.StopLoss)))
+                {
+                    signal.Exited = true;
+                }
+
+                if (signal.TakeProfit.HasValue && ((signal.TradeType == TradeType.Buy && _signalStatsSettings.MarketSeries.High[index] >= signal.TakeProfit) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.MarketSeries.Low[index] <= signal.TakeProfit)))
+                {
+                    signal.Exited = true;
+                }
+
+                if (!signal.Exited && _signalStatsSettings.ExitFunction != null)
+                {
+                    signal.Exited = _signalStatsSettings.ExitFunction(signal);
+                }
 
                 if (signal.Exited)
                 {
-                    signal.ExitIndex = _signalStatsSettings.MarketSeries.GetIndex() - 1;
+                    signal.ExitIndex = index;
 
                     signal.HoldingTime = _signalStatsSettings.MarketSeries.OpenTime[signal.ExitIndex] - _signalStatsSettings.MarketSeries.OpenTime[signal.Index];
 
