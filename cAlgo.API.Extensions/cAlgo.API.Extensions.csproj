@@ -65,7 +65,7 @@
     <Compile Include="IndicatorTimeSeries.cs" />
     <Compile Include="Models\LegendOutput.cs" />
     <Compile Include="PositionExtensions.cs" />
-    <Compile Include="ChartExtensions.cs" />
+    <Compile Include="ChartAreaExtensions.cs" />
     <Compile Include="SymbolExtensions.cs" />
     <Compile Include="Models\Divergence.cs" />
     <Compile Include="Enums\DivergenceType.cs" />
