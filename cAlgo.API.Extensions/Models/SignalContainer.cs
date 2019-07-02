@@ -308,9 +308,13 @@ namespace cAlgo.API.Extensions.Models
             double profitableSignalsTotalGainInPips = _symbol.ToPips(profitableSignals.Select(iSignal => CalculateGain(iSignal, index)).Sum());
             double losingSignalsGainInPips = _symbol.ToPips(losingSignals.Select(iSignal => CalculateLoss(iSignal, index)).Sum());
 
-            TimeSpan profitableSignalsMedianHoldingTime = TimeSpan.FromMinutes(profitableSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median());
-            TimeSpan losingSignalsMedianHoldingTime = TimeSpan.FromMinutes(losingSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median());
-            TimeSpan allSignalsMedianHoldingTime = TimeSpan.FromMinutes(Signals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median());
+            double proftiableSignalsMedianHoldingTimeInMinutes = profitableSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median();
+            double losingSignalsMedianHoldingTimeInMinutes = losingSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median();
+            double allSignalsMedianHoldingTimeInMinutes = Signals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median();
+
+            TimeSpan profitableSignalsMedianHoldingTime = TimeSpan.FromMinutes(double.IsNaN(proftiableSignalsMedianHoldingTimeInMinutes) ? 0 : proftiableSignalsMedianHoldingTimeInMinutes);
+            TimeSpan losingSignalsMedianHoldingTime = TimeSpan.FromMinutes(double.IsNaN(losingSignalsMedianHoldingTimeInMinutes) ? 0 : losingSignalsMedianHoldingTimeInMinutes);
+            TimeSpan allSignalsMedianHoldingTime = TimeSpan.FromMinutes(double.IsNaN(allSignalsMedianHoldingTimeInMinutes) ? 0 : allSignalsMedianHoldingTimeInMinutes);
 
             stringBuilder.AppendLine(string.Format("Signals #: {0}", Signals.Count));
             stringBuilder.AppendLine(string.Format("Signals Accuracy: {0}%", Math.Round(strongSignalsAccuracy, 2)));
