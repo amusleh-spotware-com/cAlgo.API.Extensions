@@ -98,7 +98,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static int MinimumBarIndex(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            double min = double.NegativeInfinity;
+            double min = double.PositiveInfinity;
 
             int minBarIndex = startIndex;
 
