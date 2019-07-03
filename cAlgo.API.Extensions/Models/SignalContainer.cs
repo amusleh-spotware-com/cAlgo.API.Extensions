@@ -202,24 +202,10 @@ namespace cAlgo.API.Extensions.Models
                     {
                         string lineObjectName = string.Format("ExitLine_{0}_{1}_{2}", signal.Index, signal.ExitIndex, _signalStatsSettings.ChartObjectNamesSuffix);
 
-                        double y1, y2;
+                        double y1 = _signalStatsSettings.MarketSeries.Close[signal.Index];
+                        double y2 = _signalStatsSettings.MarketSeries.Close[signal.ExitIndex];
 
-                        Color lineColor;
-
-                        if (signal.TradeType == TradeType.Buy)
-                        {
-                            y1 = _signalStatsSettings.MarketSeries.Low[signal.Index];
-                            y2 = _signalStatsSettings.MarketSeries.Low[signal.ExitIndex];
-
-                            lineColor = _signalStatsSettings.BuySignalExitLineColor;
-                        }
-                        else
-                        {
-                            y1 = _signalStatsSettings.MarketSeries.High[signal.Index];
-                            y2 = _signalStatsSettings.MarketSeries.High[signal.ExitIndex];
-
-                            lineColor = _signalStatsSettings.SellSignalExitLineColor;
-                        }
+                        Color lineColor = signal.TradeType == TradeType.Buy ? _signalStatsSettings.BuySignalExitLineColor : _signalStatsSettings.SellSignalExitLineColor;
 
                         _signalStatsSettings.Chart.DrawTrendLine(lineObjectName, signal.Index, y1, signal.ExitIndex, y2, lineColor);
                     }
