@@ -23,7 +23,11 @@ namespace cAlgo.API.Extensions.Models
 
         public string ChartObjectNamesSuffix { get; set; }
 
-        public bool DrawExitLines { get; set; }
+        public bool ShowExits { get; set; }
+
+        public IndicatorDataSeries BuyExit { get; set; }
+
+        public IndicatorDataSeries SellExit { get; set; }
 
         public Color BuySignalExitLineColor { get; set; } = Color.Lime;
 

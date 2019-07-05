@@ -5,9 +5,9 @@ namespace cAlgo.API.Extensions.Models
 {
     public class NewSignalSettings
     {
-        public IndicatorDataSeries BuySignal { get; set; }
+        public IndicatorDataSeries BuyEntry { get; set; }
 
-        public IndicatorDataSeries SellSignal { get; set; }
+        public IndicatorDataSeries SellEntry { get; set; }
 
         public MarketSeries MarketSeries { get; set; }
 

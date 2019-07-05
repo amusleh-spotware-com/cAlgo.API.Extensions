@@ -139,13 +139,13 @@ namespace cAlgo.API.Extensions.Models
 
             _newSignalSettings.AlertCallback?.Invoke(index, tradeType);
 
-            if (tradeType == TradeType.Buy && _newSignalSettings.BuySignal != null)
+            if (tradeType == TradeType.Buy && _newSignalSettings.BuyEntry != null)
             {
-                _newSignalSettings.BuySignal[index] = _newSignalSettings.MarketSeries.Low[index] - _newSignalSettings.SignalDistance;
+                _newSignalSettings.BuyEntry[index] = _newSignalSettings.MarketSeries.Low[index] - _newSignalSettings.SignalDistance;
             }
-            else if (tradeType == TradeType.Sell && _newSignalSettings.SellSignal != null)
+            else if (tradeType == TradeType.Sell && _newSignalSettings.SellEntry != null)
             {
-                _newSignalSettings.SellSignal[index] = _newSignalSettings.MarketSeries.High[index] + _newSignalSettings.SignalDistance;
+                _newSignalSettings.SellEntry[index] = _newSignalSettings.MarketSeries.High[index] + _newSignalSettings.SignalDistance;
             }
 
             if (_newSignalSettings.IsExportEnabled)
@@ -198,7 +198,7 @@ namespace cAlgo.API.Extensions.Models
 
                     signal.HoldingTime = _signalStatsSettings.MarketSeries.OpenTime[signal.ExitIndex] - _signalStatsSettings.MarketSeries.OpenTime[signal.Index];
 
-                    if (_signalStatsSettings.DrawExitLines)
+                    if (_signalStatsSettings.ShowExits)
                     {
                         string lineObjectName = string.Format("ExitLine_{0}_{1}_{2}", signal.Index, signal.ExitIndex, _signalStatsSettings.ChartObjectNamesSuffix);
 
@@ -208,6 +208,15 @@ namespace cAlgo.API.Extensions.Models
                         Color lineColor = signal.TradeType == TradeType.Buy ? _signalStatsSettings.BuySignalExitLineColor : _signalStatsSettings.SellSignalExitLineColor;
 
                         _signalStatsSettings.Chart.DrawTrendLine(lineObjectName, signal.Index, y1, signal.ExitIndex, y2, lineColor);
+
+                        if (signal.TradeType == TradeType.Buy && _signalStatsSettings.BuyExit != null)
+                        {
+                            _signalStatsSettings.BuyExit[index] = _signalStatsSettings.MarketSeries.High[index] + _newSignalSettings.SignalDistance;
+                        }
+                        else if (signal.TradeType == TradeType.Sell && _signalStatsSettings.SellExit != null)
+                        {
+                            _signalStatsSettings.SellExit[index] = _signalStatsSettings.MarketSeries.Low[index] - _newSignalSettings.SignalDistance;
+                        }
                     }
                 }
 
@@ -221,22 +230,22 @@ namespace cAlgo.API.Extensions.Models
                 {
                     if (_signalStatsSettings.MarketSeries.Close[index] > _signalStatsSettings.MarketSeries.Close[signal.Index])
                     {
-                        _signalStatsSettings.ProfitableSignal[signal.Index] = _newSignalSettings.BuySignal[signal.Index] - _signalStatsSettings.SignalDistance;
+                        _signalStatsSettings.ProfitableSignal[signal.Index] = _newSignalSettings.BuyEntry[signal.Index] - _signalStatsSettings.SignalDistance;
                     }
                     else
                     {
-                        _signalStatsSettings.LosingSignal[signal.Index] = _newSignalSettings.BuySignal[signal.Index] - _signalStatsSettings.SignalDistance;
+                        _signalStatsSettings.LosingSignal[signal.Index] = _newSignalSettings.BuyEntry[signal.Index] - _signalStatsSettings.SignalDistance;
                     }
                 }
                 else
                 {
                     if (_signalStatsSettings.MarketSeries.Close[index] < _signalStatsSettings.MarketSeries.Close[signal.Index])
                     {
-                        _signalStatsSettings.ProfitableSignal[signal.Index] = _newSignalSettings.SellSignal[signal.Index] + _signalStatsSettings.SignalDistance;
+                        _signalStatsSettings.ProfitableSignal[signal.Index] = _newSignalSettings.SellEntry[signal.Index] + _signalStatsSettings.SignalDistance;
                     }
                     else
                     {
-                        _signalStatsSettings.LosingSignal[signal.Index] = _newSignalSettings.SellSignal[signal.Index] + _signalStatsSettings.SignalDistance;
+                        _signalStatsSettings.LosingSignal[signal.Index] = _newSignalSettings.SellEntry[signal.Index] + _signalStatsSettings.SignalDistance;
                     }
                 }
             }
