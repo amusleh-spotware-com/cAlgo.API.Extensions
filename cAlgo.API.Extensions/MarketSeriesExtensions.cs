@@ -165,6 +165,32 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
+        /// Returns the maximum bar range in a market series
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">The start bar index</param>
+        /// <param name="periods">The number of previous bars</param>
+        /// <param name="barType">The type of bars</param>
+        /// <param name="useBarBody">Use bar open and close price instead of high and low?</param>
+        /// <returns>double</returns>
+        public static double GetMaxBarRange(this MarketSeries marketSeries, int index, int periods, BarType barType, bool useBarBody = false)
+        {
+            double maxRange = double.MinValue;
+
+            for (int i = index; i >= index - periods; i--)
+            {
+                if (marketSeries.GetBarType(i) != barType)
+                {
+                    continue;
+                }
+
+                maxRange = Math.Max(maxRange, marketSeries.GetBarRange(i, useBarBody: useBarBody));
+            }
+
+            return maxRange;
+        }
+
+        /// <summary>
         /// Returns the minimum bar range in a market series
         /// </summary>
         /// <param name="marketSeries"></param>
@@ -185,23 +211,29 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Returns the mean bar range in a market series
+        /// Returns the minimum bar range in a market series
         /// </summary>
         /// <param name="marketSeries"></param>
         /// <param name="index">The start bar index</param>
         /// <param name="periods">The number of previous bars</param>
+        /// <param name="barType">The type of bars</param>
         /// <param name="useBarBody">Use bar open and close price instead of high and low?</param>
         /// <returns>double</returns>
-        public static double GetMeanBarRange(this MarketSeries marketSeries, int index, int periods, bool useBarBody = false)
+        public static double GetMinBarRange(this MarketSeries marketSeries, int index, int periods, BarType barType, bool useBarBody = false)
         {
-            List<double> ranges = new List<double>();
+            double minRange = double.MaxValue;
 
             for (int i = index; i >= index - periods; i--)
             {
-                ranges.Add(marketSeries.GetBarRange(i, useBarBody));
+                if (marketSeries.GetBarType(i) != barType)
+                {
+                    continue;
+                }
+
+                minRange = Math.Min(minRange, marketSeries.GetBarRange(i, useBarBody: useBarBody));
             }
 
-            return ranges.Average();
+            return minRange;
         }
 
         /// <summary>
@@ -234,7 +266,7 @@ namespace cAlgo.API.Extensions
 
             BarType barType = marketSeries.GetBarType(index);
 
-            double meanBarRange = marketSeries.GetMeanBarRange(index - 1, 50);
+            double meanBarRange = marketSeries.GetAverageBarRange(index - 1, 50);
 
             if (barBodyRange / barRange < 0.3 && barRange > meanBarRange)
             {
@@ -263,7 +295,7 @@ namespace cAlgo.API.Extensions
             double barBodyRange = marketSeries.GetBarRange(index, true);
             double barRange = marketSeries.GetBarRange(index);
 
-            double meanBarRange = marketSeries.GetMeanBarRange(index - 1, 50);
+            double meanBarRange = marketSeries.GetAverageBarRange(index - 1, 50);
 
             return barRange < meanBarRange / 3 && barBodyRange / barRange < 0.5 ? true : false;
         }
@@ -698,7 +730,7 @@ namespace cAlgo.API.Extensions
 
             for (int iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
             {
-                double iBarRange = Math.Abs(marketSeries.GetBarRange(iBarIndex, useBarBody));
+                double iBarRange = marketSeries.GetBarRange(iBarIndex, useBarBody);
 
                 barRanges.Add(iBarRange);
             }
@@ -712,18 +744,21 @@ namespace cAlgo.API.Extensions
         /// <param name="marketSeries"></param>
         /// <param name="index">Bar index in market series, the calculation will begin from this bar</param>
         /// <param name="periods">The number of x previous bars or look back bars</param>
-        /// <param name="symbol">The market series symbol</param>
-        /// <param name="returnType">The return type</param>
+        /// <param name="barType">The type of bars</param>
         /// <param name="useBarBody">Use bar open and close price instead of high and low?</param>
         /// <returns>double</returns>
-        public static double GetAverageBarRange(this MarketSeries marketSeries, int index, int periods, Symbol symbol, PriceValueType returnType,
-            bool useBarBody = false)
+        public static double GetAverageBarRange(this MarketSeries marketSeries, int index, int periods, BarType barType, bool useBarBody = false)
         {
             List<double> barRanges = new List<double>();
 
             for (int iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
             {
-                double iBarRange = Math.Abs(marketSeries.GetBarRange(iBarIndex, symbol, returnType, useBarBody));
+                if (marketSeries.GetBarType(iBarIndex) != barType)
+                {
+                    continue;
+                }
+
+                double iBarRange = marketSeries.GetBarRange(iBarIndex, useBarBody);
 
                 barRanges.Add(iBarRange);
             }
