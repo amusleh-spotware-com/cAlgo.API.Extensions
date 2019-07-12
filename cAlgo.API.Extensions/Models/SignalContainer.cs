@@ -228,18 +228,22 @@ namespace cAlgo.API.Extensions.Models
 
                 if (signal.TradeType == TradeType.Buy)
                 {
-                    if (_signalStatsSettings.MarketSeries.Close[index] > _signalStatsSettings.MarketSeries.Close[signal.Index])
+                    signal.ProfitInPips = _symbol.ToPips(_signalStatsSettings.MarketSeries.Close[index] - _signalStatsSettings.MarketSeries.Close[signal.Index]);
+
+                    if (signal.ProfitInPips > 0)
                     {
                         _signalStatsSettings.ProfitableSignal[signal.Index] = _newSignalSettings.BuyEntry[signal.Index] - _signalStatsSettings.SignalDistance;
                     }
                     else
                     {
                         _signalStatsSettings.LosingSignal[signal.Index] = _newSignalSettings.BuyEntry[signal.Index] - _signalStatsSettings.SignalDistance;
-                    }
+                    }                    
                 }
                 else
                 {
-                    if (_signalStatsSettings.MarketSeries.Close[index] < _signalStatsSettings.MarketSeries.Close[signal.Index])
+                    signal.ProfitInPips = _symbol.ToPips(_signalStatsSettings.MarketSeries.Close[signal.Index] - _signalStatsSettings.MarketSeries.Close[index]);
+
+                    if (signal.ProfitInPips > 0)
                     {
                         _signalStatsSettings.ProfitableSignal[signal.Index] = _newSignalSettings.SellEntry[signal.Index] + _signalStatsSettings.SignalDistance;
                     }

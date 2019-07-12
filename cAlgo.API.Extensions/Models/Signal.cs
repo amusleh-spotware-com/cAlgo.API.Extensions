@@ -53,5 +53,8 @@ namespace cAlgo.API.Extensions.Models
 
         [XmlIgnore]
         public TimeSpan HoldingTime { get; set; }
+
+        [XmlIgnore]
+        public double ProfitInPips { get; set; }
     }
 }
