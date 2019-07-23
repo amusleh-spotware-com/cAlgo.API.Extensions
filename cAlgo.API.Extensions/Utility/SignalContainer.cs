@@ -1,4 +1,5 @@
-﻿using cAlgo.API.Internals;
+﻿using cAlgo.API.Extensions.Models;
+using cAlgo.API.Internals;
 using Stats.Net;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace cAlgo.API.Extensions.Models
+namespace cAlgo.API.Extensions.Utility
 {
     public class SignalContainer
     {
@@ -100,22 +101,22 @@ namespace cAlgo.API.Extensions.Models
             }
         }
 
-        public void AddSignal(int index, TradeType tradeType)
+        public Signal AddSignal(int index, TradeType tradeType)
         {
-            AddSignal(index, tradeType, string.Empty);
+            return AddSignal(index, tradeType, string.Empty);
         }
 
-        public void AddSignal(int index, TradeType tradeType, string comment)
+        public Signal AddSignal(int index, TradeType tradeType, string comment)
         {
-            AddSignal(index, tradeType, null, null, comment);
+            return AddSignal(index, tradeType, null, null, comment);
         }
 
-        public void AddSignal(int index, TradeType tradeType, double? stopLoss, double? takeProfit)
+        public Signal AddSignal(int index, TradeType tradeType, double? stopLoss, double? takeProfit)
         {
-            AddSignal(index, tradeType, stopLoss, takeProfit, string.Empty);
+            return AddSignal(index, tradeType, stopLoss, takeProfit, string.Empty);
         }
 
-        public void AddSignal(int index, TradeType tradeType, double? stopLoss, double? takeProfit, string comment)
+        public Signal AddSignal(int index, TradeType tradeType, double? stopLoss, double? takeProfit, string comment)
         {
             if (_newSignalSettings == null)
             {
@@ -152,6 +153,8 @@ namespace cAlgo.API.Extensions.Models
             {
                 Export();
             }
+
+            return signal;
         }
 
         public void CalculateStats(int index)
@@ -237,7 +240,7 @@ namespace cAlgo.API.Extensions.Models
                     else
                     {
                         _signalStatsSettings.LosingSignal[signal.Index] = _newSignalSettings.BuyEntry[signal.Index] - _signalStatsSettings.SignalDistance;
-                    }                    
+                    }
                 }
                 else
                 {

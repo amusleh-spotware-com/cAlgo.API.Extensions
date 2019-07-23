@@ -54,7 +54,7 @@
     <Compile Include="Models\SignalStatsSettings.cs" />
     <Compile Include="Models\NewSignalSettings.cs" />
     <Compile Include="Models\Signal.cs" />
-    <Compile Include="Models\SignalContainer.cs" />
+    <Compile Include="Utility\SignalContainer.cs" />
     <Compile Include="Models\TdBar.cs" />
     <Compile Include="Utility\ColorTools.cs" />
     <Compile Include="Models\BarVolume.cs" />
