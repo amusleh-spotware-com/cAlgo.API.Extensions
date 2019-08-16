@@ -2,6 +2,9 @@
 using cAlgo.API.Extensions.Models;
 using System.Collections.Generic;
 using System;
+using System.Linq;
+using cAlgo.API;
+using cAlgo.API.Internals;
 
 namespace cAlgo.API.Extensions.Utility
 {
@@ -9,141 +12,300 @@ namespace cAlgo.API.Extensions.Utility
     {
         #region Fields
 
-        private readonly int _maxBarNumber;
+        private readonly DataSeries _source;
 
-        private readonly int _period;
-
-        private readonly DataSeries _series;
-
-        private SortedSet<TdBar> _bars;
-
-        private TdBar _lastBar;
+        private readonly MarketSeries _marketSeries;
 
         #endregion Fields
 
-        public TdBarCounter(int maxBarNumber, int period, DataSeries series)
+        public TdBarCounter(DataSeries source, MarketSeries marketSeries)
         {
-            _maxBarNumber = maxBarNumber;
+            _source = source;
 
-            _period = period;
+            _marketSeries = marketSeries;
 
-            _series = series;
+            SequentialBars = new SortedSet<TdBar>();
 
-            _bars = new SortedSet<TdBar>();
+            CountdownBars = new SortedSet<TdBar>();
+
+            ReversalSetups = new SortedSet<TdReversalSetup>();
         }
 
         #region Properties
 
-        public SortedSet<TdBar> Bars
-        {
-            get
-            {
-                return _bars;
-            }
-        }
+        public int MaxSequentialBarsNumber { get; set; } = 9;
 
-        public TdBar LastBar
-        {
-            get
-            {
-                return _lastBar;
-            }
-        }
+        public int MaxCountdownBarsNumber { get; set; } = 13;
+
+        public int Period { get; set; } = 4;
+
+        public bool PriceFlip { get; set; }
+
+        public SortedSet<TdBar> SequentialBars { get; }
+
+        public SortedSet<TdBar> CountdownBars { get; }
+
+        public SortedSet<TdReversalSetup> ReversalSetups { get; }
+
+        public TdBar LastSequentialBar { get; private set; }
+
+        public int AlertOnCountdownBarNumber { get; set; } = -1;
+
+        public int AlertOnSequentialBarNumber { get; set; } = -1;
+
+        public Action<int, TradeType, bool> TriggerAlertAction { get; set; }
+
+        public Action<TdReversalSetup> PlotPerfectReversalSetupAction { get; set; }
+
+        public Action<int, TdPriceFlipType> PlotPriceFlipAction { get; set; }
+
+        public Action<TdBar> PlotSequentialBarNumberAction { get; set; }
+
+        public Action<TdBar> PlotCountdownBarNumberAction { get; set; }
 
         public Action<string> Print { get; set; }
 
         #endregion Properties
 
         #region Methods
+        public TdPriceFlipType GetPriceFlipType(int index)
+        {
+            if (_source[index - 1] < _source[index - (Period + 1)] && _source[index] > _source[index - Period])
+            {
+                return TdPriceFlipType.Bullish;
+            }
+            else if (_source[index - 1] > _source[index - (Period + 1)] && _source[index] < _source[index - Period])
+            {
+                return TdPriceFlipType.Bearish;
+            }
+
+            return TdPriceFlipType.None;
+        }
 
         public void Calculate(int index)
         {
             // Sets last sequential bar to Null if the setup interrupted
-            if (_lastBar != null)
+            if (LastSequentialBar != null)
             {
-                if (index > _lastBar.Index)
+                if (index > LastSequentialBar.Index)
                 {
-                    _bars.Add(_lastBar);
+                    SequentialBars.Add(LastSequentialBar);
                 }
 
                 CancelCountIfInvalidated(index);
             }
 
+            TdPriceFlipType priceFlipType = GetPriceFlipType(index);
+
+            PlotPriceFlipAction?.Invoke(index, priceFlipType);
+
             // Start new counting
-            if (_lastBar == null)
+            if (LastSequentialBar == null)
             {
-                StartNewCount(index);
+                StartNewSequentialCount(index, priceFlipType);
             }
             // Continue count
             else
             {
-                bool continueResult = ContinueCount(index);
+                bool continueResult = ContinueSequentialCount(index, priceFlipType);
 
                 if (!continueResult)
                 {
-                    StartNewCount(index);
+                    StartNewSequentialCount(index, priceFlipType);
+
+                    TdReversalSetup reversalSetup = new TdReversalSetup
+                    {
+                        Type = LastSequentialBar.Type == BarType.Bullish ? TdReversalSetupType.Sell : TdReversalSetupType.Buy,
+                        FirstSequentialBarIndex = LastSequentialBar.Index - MaxSequentialBarsNumber,
+                        LastSequentialBarIndex = LastSequentialBar.Index
+                    };
+
+                    if (IsReversalSetupPerfect(reversalSetup))
+                    {
+                        PlotPerfectReversalSetupAction?.Invoke(reversalSetup);
+                    }
+
+                    ReversalSetups.Add(reversalSetup);
                 }
             }
+
+            if (LastSequentialBar != null)
+            {
+                PlotSequentialBarNumberAction?.Invoke(LastSequentialBar);
+            }
+
+            ContinueCountdownCount(index - 1);
         }
 
         private void CancelCountIfInvalidated(int index)
         {
-            if (_lastBar.Type == BarType.Bullish && _series[index] <= _series[index - _period])
+            if (LastSequentialBar.Type == BarType.Bullish && _source[index] <= _source[index - Period])
             {
-                _lastBar = null;
+                LastSequentialBar = null;
             }
-            else if (_lastBar.Type == BarType.Bearish && _series[index] >= _series[index - _period])
+            else if (LastSequentialBar.Type == BarType.Bearish && _source[index] >= _source[index - Period])
             {
-                _lastBar = null;
+                LastSequentialBar = null;
             }
         }
 
-        private void StartNewCount(int index)
+        private void StartNewSequentialCount(int index, TdPriceFlipType priceFlipType)
         {
-            if (_series[index] > _series[index - _period])
+            if (PriceFlip && priceFlipType != TdPriceFlipType.None)
             {
-                _lastBar = new TdBar
+                LastSequentialBar = new TdBar
                 {
-                    Type = BarType.Bullish
+                    Type = priceFlipType == TdPriceFlipType.Bullish ? BarType.Bullish : BarType.Bearish
                 };
             }
-            else if (_series[index] < _series[index - _period])
+            else if (!PriceFlip)
             {
-                _lastBar = new TdBar
+                if (_source[index] > _source[index - Period])
                 {
-                    Type = BarType.Bearish
-                };
+                    LastSequentialBar = new TdBar
+                    {
+                        Type = BarType.Bullish
+                    };
+                }
+                else if (_source[index] < _source[index - Period])
+                {
+                    LastSequentialBar = new TdBar
+                    {
+                        Type = BarType.Bearish
+                    };
+                }
             }
 
-            if (_lastBar != null)
+            if (LastSequentialBar != null)
             {
-                _lastBar.Index = index;
-                _lastBar.Number = 1;
+                LastSequentialBar.Index = index;
+                LastSequentialBar.Number = 1;
             }
         }
 
-        private bool ContinueCount(int index)
+        private bool ContinueSequentialCount(int index, TdPriceFlipType priceFlipType)
         {
             bool result = true;
 
-            if (index == _lastBar.Index)
+            if (index == LastSequentialBar.Index)
             {
                 return result;
             }
 
             // Setup completed
-            if (_lastBar.Number >= _maxBarNumber)
+            if (LastSequentialBar.Number >= MaxSequentialBarsNumber)
             {
                 result = false;
             }
             // Not completed yet
             else
             {
-                _lastBar.Index = index;
-                _lastBar.Number += 1;
+                LastSequentialBar.Index = index;
+                LastSequentialBar.Number += 1;
+            }
+
+            if (LastSequentialBar.Number == AlertOnSequentialBarNumber)
+            {
+                TriggerAlertAction?.Invoke(index, LastSequentialBar.Type == BarType.Bullish ? TradeType.Sell : TradeType.Buy, false);
             }
 
             return result;
+        }
+
+        private void ContinueCountdownCount(int index)
+        {
+            List<TdReversalSetup> setupsCopy = ReversalSetups.ToList();
+
+            foreach (TdReversalSetup setup in setupsCopy)
+            {
+                int lastCountdownBarNumber = setup.CountdownBarNumber;
+
+                if (setup.Type == TdReversalSetupType.Buy && _source[index] <= _marketSeries.Low[index - 1] && _source[index] <= _marketSeries.Low[index - 2])
+                {
+                    if (setup.CountdownBarNumber == MaxCountdownBarsNumber - 1 && _marketSeries.Low[index] > _source[setup.EighthCountdownBarIndex])
+                    {
+                        continue;
+                    }
+
+                    setup.CountdownBarNumber += 1;
+                }
+                else if (setup.Type == TdReversalSetupType.Sell && _source[index] >= _marketSeries.High[index - 1] && _source[index] >= _marketSeries.High[index - 2])
+                {
+                    if (setup.CountdownBarNumber == MaxCountdownBarsNumber - 1 && _marketSeries.High[index] < _source[setup.EighthCountdownBarIndex])
+                    {
+                        continue;
+                    }
+
+                    setup.CountdownBarNumber += 1;
+                }
+
+                if (lastCountdownBarNumber == setup.CountdownBarNumber)
+                {
+                    continue;
+                }
+
+                TdBar bar = new TdBar
+                {
+                    Index = index,
+                    Number = setup.CountdownBarNumber,
+                    Type = setup.Type == TdReversalSetupType.Buy ? BarType.Bearish : BarType.Bullish
+                };
+
+                CountdownBars.Add(bar);
+
+                PlotCountdownBarNumberAction?.Invoke(bar);
+
+                if (setup.CountdownBarNumber == 1)
+                {
+                    setup.FirstCountdownBarIndex = index;
+                }
+                else if (setup.CountdownBarNumber == 8)
+                {
+                    setup.EighthCountdownBarIndex = index;
+                }
+
+                if (setup.CountdownBarNumber == MaxCountdownBarsNumber)
+                {
+                    setup.LastCountdownBarIndex = MaxCountdownBarsNumber;
+
+                    ReversalSetups.Remove(setup);
+                }
+
+                if (setup.CountdownBarNumber == AlertOnCountdownBarNumber)
+                {
+                    TriggerAlertAction?.Invoke(index, setup.Type == TdReversalSetupType.Buy ? TradeType.Buy : TradeType.Sell, true);
+                }
+            }
+        }
+
+        private bool IsReversalSetupPerfect(TdReversalSetup setup)
+        {
+            if (setup.Type == TdReversalSetupType.Buy)
+            {
+                double lastBarLow = _marketSeries.Low[setup.LastSequentialBarIndex];
+                double previousBarLow = _marketSeries.Low[setup.LastSequentialBarIndex - 1];
+                double sixthBarLow = _marketSeries.Low[setup.FirstSequentialBarIndex + 5];
+                double seventhBarLow = _marketSeries.Low[setup.FirstSequentialBarIndex + 6];
+
+                if ((lastBarLow <= sixthBarLow && lastBarLow <= seventhBarLow) || (previousBarLow <= sixthBarLow && previousBarLow <= seventhBarLow))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                double lastBarHigh = _marketSeries.High[setup.LastSequentialBarIndex];
+                double previousBarHigh = _marketSeries.High[setup.LastSequentialBarIndex - 1];
+                double sixthBarHigh = _marketSeries.High[setup.FirstSequentialBarIndex + 5];
+                double seventhBarHigh = _marketSeries.High[setup.FirstSequentialBarIndex + 6];
+
+                if ((lastBarHigh >= sixthBarHigh && lastBarHigh >= seventhBarHigh) || (previousBarHigh >= sixthBarHigh && previousBarHigh >= seventhBarHigh))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion Methods

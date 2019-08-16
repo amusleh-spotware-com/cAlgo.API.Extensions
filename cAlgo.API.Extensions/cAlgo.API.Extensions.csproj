@@ -51,9 +51,12 @@
     <Compile Include="Enums\PriceValueType.cs" />
     <Compile Include="Enums\BarType.cs" />
     <Compile Include="Enums\CandlePattern.cs" />
+    <Compile Include="Enums\TdPriceFlipType.cs" />
+    <Compile Include="Enums\TdReversalSetupType.cs" />
     <Compile Include="Models\SignalStatsSettings.cs" />
     <Compile Include="Models\NewSignalSettings.cs" />
     <Compile Include="Models\Signal.cs" />
+    <Compile Include="Models\TdReversalSetup.cs" />
     <Compile Include="Utility\SignalContainer.cs" />
     <Compile Include="Models\TdBar.cs" />
     <Compile Include="Utility\ColorTools.cs" />
