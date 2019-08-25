@@ -53,6 +53,7 @@
     <Compile Include="Enums\CandlePattern.cs" />
     <Compile Include="Enums\TdPriceFlipType.cs" />
     <Compile Include="Enums\TdReversalSetupType.cs" />
+    <Compile Include="Models\Bar.cs" />
     <Compile Include="Models\SignalStatsSettings.cs" />
     <Compile Include="Models\NewSignalSettings.cs" />
     <Compile Include="Models\Signal.cs" />

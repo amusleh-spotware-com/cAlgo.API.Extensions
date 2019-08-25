@@ -880,5 +880,33 @@ namespace cAlgo.API.Extensions
 
             return true;
         }
+
+        /// <summary>
+        /// Transform a market series data to a Bar objects collection
+        /// </summary>
+        /// <param name="marketSeries">Market series</param>
+        /// <returns>List<Bar></returns>
+        public static List<Bar> GetBars(this MarketSeries marketSeries)
+        {
+            var result = new List<Bar>();
+
+            for (int iBarIndex = 0; iBarIndex < marketSeries.Close.Count; iBarIndex++)
+            {
+                var bar = new Bar
+                {
+                    Index = iBarIndex,
+                    Open = marketSeries.Open[iBarIndex],
+                    High = marketSeries.High[iBarIndex],
+                    Low = marketSeries.Low[iBarIndex],
+                    Close = marketSeries.Close[iBarIndex],
+                    Volume = marketSeries.TickVolume[iBarIndex],
+                    Type = marketSeries.GetBarType(iBarIndex)
+                };
+
+                result.Add(bar);
+            }
+
+            return result;
+        }
     }
 }
