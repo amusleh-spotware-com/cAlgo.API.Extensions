@@ -908,5 +908,16 @@ namespace cAlgo.API.Extensions
 
             return result;
         }
+
+        /// <summary>
+        /// Returns a bar volume strength
+        /// </summary>
+        /// <param name="marketSeries"></param>
+        /// <param name="index">Bar index</param>
+        /// <returns>double</returns>
+        public static double GetBarVolumeStrength(this MarketSeries marketSeries, int index)
+        {
+            return marketSeries.GetBarRange(index) / marketSeries.TickVolume[index]; ;
+        }
     }
 }
