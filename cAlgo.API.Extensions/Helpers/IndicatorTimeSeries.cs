@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace cAlgo.API.Extensions
+namespace cAlgo.API.Extensions.Helpers
 {
     public class IndicatorTimeSeries : TimeSeries
     {
@@ -63,14 +63,26 @@ namespace cAlgo.API.Extensions
 
         #region Methods
 
-        public int GetIndexByExactTime(DateTime dateTime)
+        public void Insert(int index, DateTime dateTime)
         {
-            return _series.IndexOf(dateTime);
+            if (_series.Count > index)
+            {
+                _series.RemoveAt(index);
+            }
+
+            _series.Insert(index, dateTime);
         }
 
-        public int GetIndexByTime(DateTime dateTime)
+        public int GetIndexByExactTime(DateTime time)
         {
-            return _series.FindIndex(dt => dt == dateTime);
+            return _series.IndexOf(time);
+        }
+
+        public int GetIndexByTime(DateTime time)
+        {
+            TimeSpan minTimeDiff = _series.Where(iTime => iTime <= time).Select(iTime => time - iTime).Min();
+
+            return _series.FindIndex(iTime => time - iTime == minTimeDiff);
         }
 
         public DateTime Last(int index)

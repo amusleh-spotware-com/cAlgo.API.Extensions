@@ -1,10 +1,13 @@
 ﻿using cAlgo.API.Extensions.Enums;
+using System;
 
 namespace cAlgo.API.Extensions.Models
 {
     public class Bar
     {
         public int Index { get; set; }
+
+        public DateTime Time { get; set; }
         public double Open { get; set; }
 
         public double High { get; set; }

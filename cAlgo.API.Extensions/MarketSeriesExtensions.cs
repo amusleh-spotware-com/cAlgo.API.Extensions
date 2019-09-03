@@ -882,6 +882,29 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
+        /// Returns a bar object from a market series
+        /// </summary>
+        /// <param name="marketSeries">Market series</param>
+        /// <param name="index">The bar index in market series</param>
+        /// <returns>Bar</returns>
+        public static Bar GetBar(this MarketSeries marketSeries, int index)
+        {
+            var result = new Bar
+            {
+                Index = index,
+                Time = marketSeries.OpenTime[index],
+                Open = marketSeries.Open[index],
+                High = marketSeries.High[index],
+                Low = marketSeries.Low[index],
+                Close = marketSeries.Close[index],
+                Volume = marketSeries.TickVolume[index],
+                Type = marketSeries.GetBarType(index)
+            };
+
+            return result;
+        }
+
+        /// <summary>
         /// Transform a market series data to a Bar objects collection
         /// </summary>
         /// <param name="marketSeries">Market series</param>
@@ -892,16 +915,7 @@ namespace cAlgo.API.Extensions
 
             for (int iBarIndex = 0; iBarIndex < marketSeries.Close.Count; iBarIndex++)
             {
-                var bar = new Bar
-                {
-                    Index = iBarIndex,
-                    Open = marketSeries.Open[iBarIndex],
-                    High = marketSeries.High[iBarIndex],
-                    Low = marketSeries.Low[iBarIndex],
-                    Close = marketSeries.Close[iBarIndex],
-                    Volume = marketSeries.TickVolume[iBarIndex],
-                    Type = marketSeries.GetBarType(iBarIndex)
-                };
+                var bar = marketSeries.GetBar(iBarIndex);
 
                 result.Add(bar);
             }

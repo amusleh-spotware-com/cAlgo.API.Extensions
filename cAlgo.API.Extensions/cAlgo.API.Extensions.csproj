@@ -53,11 +53,13 @@
     <Compile Include="Enums\CandlePattern.cs" />
     <Compile Include="Enums\TdPriceFlipType.cs" />
     <Compile Include="Enums\TdReversalSetupType.cs" />
+    <Compile Include="Helpers\CustomMarketSeries.cs" />
     <Compile Include="Models\Bar.cs" />
     <Compile Include="Models\SignalStatsSettings.cs" />
     <Compile Include="Models\NewSignalSettings.cs" />
     <Compile Include="Models\Signal.cs" />
     <Compile Include="Models\TdReversalSetup.cs" />
+    <Compile Include="TimeFrameExtensions.cs" />
     <Compile Include="Utility\SignalContainer.cs" />
     <Compile Include="Models\TdBar.cs" />
     <Compile Include="Utility\ColorTools.cs" />
@@ -65,8 +67,8 @@
     <Compile Include="Models\LeastSquares.cs" />
     <Compile Include="Enums\Direction.cs" />
     <Compile Include="Enums\SeriesType.cs" />
-    <Compile Include="IndicatorMarketSeries.cs" />
-    <Compile Include="IndicatorTimeSeries.cs" />
+    <Compile Include="Helpers\IndicatorMarketSeries.cs" />
+    <Compile Include="Helpers\IndicatorTimeSeries.cs" />
     <Compile Include="Models\LegendOutput.cs" />
     <Compile Include="PositionExtensions.cs" />
     <Compile Include="ChartAreaExtensions.cs" />

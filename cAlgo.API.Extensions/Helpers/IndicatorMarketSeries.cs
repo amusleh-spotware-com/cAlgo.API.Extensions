@@ -2,8 +2,9 @@
 using cAlgo.API.Indicators;
 using cAlgo.API.Internals;
 using System;
+using cAlgo.API.Extensions.Models;
 
-namespace cAlgo.API.Extensions
+namespace cAlgo.API.Extensions.Helpers
 {
     public class IndicatorMarketSeries : MarketSeries
     {
@@ -165,12 +166,23 @@ namespace cAlgo.API.Extensions
             ((IndicatorDataSeries)this.GetSeries(seriesType))[index] = value;
         }
 
-        public void Insert(int index, double open, double high, double low, double close, DateTime openTime)
+        public void Insert(Bar bar)
+        {
+            Insert(bar.Index, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, bar.Time);
+        }
+
+        public void Insert(int index, double open, double high, double low, double close, double volume, DateTime openTime)
         {
             Insert(index, open, SeriesType.Open);
             Insert(index, high, SeriesType.High);
             Insert(index, low, SeriesType.Low);
             Insert(index, close, SeriesType.Close);
+            Insert(index, volume, SeriesType.TickVolume);
+
+            if (_openTime is IndicatorTimeSeries)
+            {
+                (_openTime as IndicatorTimeSeries).Insert(index, openTime);
+            }
         }
 
         public void CalculateHeikenAshi(MarketSeries marketSeries, int periods = 1)
