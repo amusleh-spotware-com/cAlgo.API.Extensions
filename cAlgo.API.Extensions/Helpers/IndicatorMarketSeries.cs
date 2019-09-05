@@ -53,6 +53,14 @@ namespace cAlgo.API.Extensions.Helpers
 
         #region Properties
 
+        protected Algo Algo
+        {
+            get
+            {
+                return _algo;
+            }
+        }
+
         public DataSeries Open
         {
             get
