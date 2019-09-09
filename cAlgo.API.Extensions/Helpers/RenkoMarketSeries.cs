@@ -17,14 +17,14 @@ namespace cAlgo.API.Extensions.Helpers
 
         public RenkoMarketSeries(double sizeInPips, Symbol symbol, Algo algo) : base(TimeFrame.Minute, symbol.Name, new IndicatorTimeSeries(), algo)
         {
-            _size = sizeInPips * _symbol.PipSize;
-
             _symbol = symbol;
+
+            _size = sizeInPips * _symbol.PipSize;
         }
 
         #region Delegates
 
-        public delegate void OnBarHandler(object sender, Bar bar);
+        public delegate void OnBarHandler(object sender, Bar newBar, Bar oldBar);
 
         #endregion Delegates
 
@@ -62,7 +62,7 @@ namespace cAlgo.API.Extensions.Helpers
 
                 Insert(bar);
 
-                OnBar?.Invoke(this, bar);
+                OnBar?.Invoke(this, bar, this.GetBar(Index));
             }
 
             Insert(Index, _symbol.ToTicks(range), SeriesType.TickVolume);
