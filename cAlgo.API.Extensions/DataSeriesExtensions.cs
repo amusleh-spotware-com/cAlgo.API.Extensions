@@ -308,26 +308,26 @@ namespace cAlgo.API.Extensions
         /// <param name="firstPointIndex">The first point index in data series</param>
         /// <param name="secondPointIndex">The second point index in data series</param>
         /// <returns></returns>
-        public static bool IsDiverged(this DataSeries firstSeries, DataSeries secondSeries, int firstPointIndex, int secondPointIndex)
+        public static bool IsDiverged(this DataSeries firstSeries, DataSeries secondSeries, int startIndex, int endIndex)
         {
-            if (firstPointIndex >= secondPointIndex)
+            if (startIndex >= endIndex)
             {
-                throw new ArgumentException("The 'firstPointIndex' must be less than 'secondPointIndex'");
+                throw new ArgumentException("The 'startIndex' must be less than 'secondPointIndex'");
             }
 
-            if (firstSeries[firstPointIndex] >= firstSeries[secondPointIndex] && secondSeries[firstPointIndex] < secondSeries[secondPointIndex])
+            if (firstSeries[startIndex] >= firstSeries[endIndex] && secondSeries[startIndex] < secondSeries[endIndex])
             {
                 return true;
             }
-            else if (firstSeries[firstPointIndex] <= firstSeries[secondPointIndex] && secondSeries[firstPointIndex] > secondSeries[secondPointIndex])
+            else if (firstSeries[startIndex] <= firstSeries[endIndex] && secondSeries[startIndex] > secondSeries[endIndex])
             {
                 return true;
             }
-            else if (firstSeries[firstPointIndex] > firstSeries[secondPointIndex] && secondSeries[firstPointIndex] <= secondSeries[secondPointIndex])
+            else if (firstSeries[startIndex] > firstSeries[endIndex] && secondSeries[startIndex] <= secondSeries[endIndex])
             {
                 return true;
             }
-            else if (firstSeries[firstPointIndex] < firstSeries[secondPointIndex] && secondSeries[firstPointIndex] >= secondSeries[secondPointIndex])
+            else if (firstSeries[startIndex] < firstSeries[endIndex] && secondSeries[startIndex] >= secondSeries[endIndex])
             {
                 return true;
             }
@@ -343,26 +343,26 @@ namespace cAlgo.API.Extensions
         /// <param name="secondPointIndex">The second point index in data series</param>
         /// <param name="direction">The line direction, is it on up direction or low direction?</param>
         /// <returns>bool</returns>
-        public static bool IsConnectionPossible(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex, Direction direction)
+        public static bool IsConnectionPossible(this DataSeries dataSeries, int startIndex, int endIndex, Direction direction)
         {
-            if (firstPointIndex >= secondPointIndex)
+            if (startIndex >= endIndex)
             {
-                throw new ArgumentException("The 'firstPointIndex' must be less than 'secondPointIndex'");
+                throw new ArgumentException("The 'startIndex' must be less than 'secondPointIndex'");
             }
 
-            double slope = dataSeries.GetSlope(firstPointIndex, secondPointIndex);
+            double slope = dataSeries.GetSlope(startIndex, endIndex);
 
             int counter = 0;
 
-            for (int i = firstPointIndex + 1; i <= secondPointIndex; i++)
+            for (int i = startIndex + 1; i <= endIndex; i++)
             {
                 counter++;
 
-                if (direction == Direction.Up && dataSeries[i] < dataSeries[firstPointIndex] + (slope * counter))
+                if (direction == Direction.Up && dataSeries[i] < dataSeries[startIndex] + (slope * counter))
                 {
                     return false;
                 }
-                else if (direction == Direction.Down && dataSeries[i] > dataSeries[firstPointIndex] + (slope * counter))
+                else if (direction == Direction.Down && dataSeries[i] > dataSeries[startIndex] + (slope * counter))
                 {
                     return false;
                 }
@@ -378,9 +378,9 @@ namespace cAlgo.API.Extensions
         /// <param name="firstPointIndex">The first point index in data series</param>
         /// <param name="secondPointIndex">The second point index in data series</param>
         /// <returns>double</returns>
-        public static double GetSlope(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex)
+        public static double GetSlope(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            return (dataSeries[secondPointIndex] - dataSeries[firstPointIndex]) / (secondPointIndex - firstPointIndex);
+            return (dataSeries[endIndex] - dataSeries[startIndex]) / (endIndex - startIndex);
         }
 
         /// <summary>
@@ -617,12 +617,12 @@ namespace cAlgo.API.Extensions
         /// <param name="firstPointIndex">The first point index</param>
         /// <param name="secondPointIndex">The second point index</param>
         /// <returns>LeastSquares</returns>
-        public static LeastSquares GetLeastSquaresRegression(this DataSeries dataSeries, int firstPointIndex, int secondPointIndex)
+        public static LeastSquares GetLeastSquaresRegression(this DataSeries dataSeries, int startIndex, int endIndex)
         {
             List<int> xValues = new List<int>();
             List<double> yValues = new List<double>();
 
-            for (int x = firstPointIndex; x <= secondPointIndex; x++)
+            for (int x = startIndex; x <= endIndex; x++)
             {
                 xValues.Add(x);
                 yValues.Add(dataSeries[x]);
@@ -645,5 +645,25 @@ namespace cAlgo.API.Extensions
 
             return new LeastSquares { Slope = slope, Intercept = intercept };
         }
+
+        /// <summary>
+        /// Returns the sum of values between to index
+        /// </summary>
+        /// <param name="dataSeries">The data series</param>
+        /// <param name="startIndex">The first index</param>
+        /// <param name="endIndex">The second index</param>
+        /// <returns>double</returns>
+        public static double Sum(this DataSeries dataSeries, int startIndex, int endIndex)
+        {
+            double sum = 0;
+
+            for (int iIndex = startIndex; iIndex <= endIndex; iIndex++)
+            {
+                sum += dataSeries[iIndex];
+            }
+
+            return sum;
+        }
+
     }
 }
