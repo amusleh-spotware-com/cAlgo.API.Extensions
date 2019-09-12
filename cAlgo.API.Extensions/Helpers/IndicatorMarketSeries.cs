@@ -201,17 +201,17 @@ namespace cAlgo.API.Extensions.Helpers
             double barOhlcSum = marketSeries.Open[seriesIndex] + marketSeries.Low[seriesIndex] +
                 marketSeries.High[seriesIndex] + marketSeries.Close[seriesIndex];
 
-            _close[seriesIndex] = Round(barOhlcSum / 4);
+            _close[seriesIndex] = _algo.Symbol.Round(barOhlcSum / 4);
 
             if (_open.Count < periods || double.IsNaN(_open[seriesIndex - 1]))
             {
-                _open[seriesIndex] = Round((marketSeries.Open[seriesIndex] + marketSeries.Close[seriesIndex]) / 2);
+                _open[seriesIndex] = _algo.Symbol.Round((marketSeries.Open[seriesIndex] + marketSeries.Close[seriesIndex]) / 2);
                 _high[seriesIndex] = marketSeries.High[seriesIndex];
                 _low[seriesIndex] = marketSeries.Low[seriesIndex];
             }
             else
             {
-                _open[seriesIndex] = Round((_open[seriesIndex - 1] + _close[seriesIndex - 1]) / 2);
+                _open[seriesIndex] = _algo.Symbol.Round((_open[seriesIndex - 1] + _close[seriesIndex - 1]) / 2);
                 _high[seriesIndex] = Math.Max(marketSeries.High[seriesIndex], Math.Max(Open[seriesIndex], Close[seriesIndex]));
                 _low[seriesIndex] = Math.Min(marketSeries.Low[seriesIndex], Math.Min(Open[seriesIndex], Close[seriesIndex]));
             }
@@ -256,11 +256,6 @@ namespace cAlgo.API.Extensions.Helpers
             MovingAverage ma = _algo.Indicators.MovingAverage(series, periods, type);
 
             return ma.Result[index];
-        }
-
-        public double Round(double input)
-        {
-            return Math.Round(input, _algo.Symbol.Digits);
         }
 
         #endregion Methods

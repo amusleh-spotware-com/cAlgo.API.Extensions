@@ -99,5 +99,16 @@ namespace cAlgo.API.Extensions
         {
             return riskPercentage / (((Math.Abs(stopLossInPips) * symbol.PipValue) / accountBalance) * 100);
         }
+
+        /// <summary>
+        /// Rounds a price level to the number of symbol digits
+        /// </summary>
+        /// <param name="symbol">The symbol</param>
+        /// <param name="price">The price level</param>
+        /// <returns>double</returns>
+        public static double Round(this Symbol symbol, double price)
+        {
+            return Math.Round(price, symbol.Digits);
+        }
     }
 }
