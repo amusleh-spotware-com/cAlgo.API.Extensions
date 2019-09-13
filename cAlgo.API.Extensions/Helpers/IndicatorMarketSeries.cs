@@ -212,8 +212,8 @@ namespace cAlgo.API.Extensions.Helpers
             else
             {
                 _open[seriesIndex] = _algo.Symbol.Round((_open[seriesIndex - periods] + _close[seriesIndex - periods]) / 2);
-                _high[seriesIndex] = Math.Max(marketSeries.High[seriesIndex], Math.Max(Open[seriesIndex], Close[seriesIndex]));
-                _low[seriesIndex] = Math.Min(marketSeries.Low[seriesIndex], Math.Min(Open[seriesIndex], Close[seriesIndex]));
+                _high[seriesIndex] = Math.Max(marketSeries.High[seriesIndex], Math.Max(_open[seriesIndex], _close[seriesIndex]));
+                _low[seriesIndex] = Math.Min(marketSeries.Low[seriesIndex], Math.Min(_open[seriesIndex], _close[seriesIndex]));
             }
         }
 
