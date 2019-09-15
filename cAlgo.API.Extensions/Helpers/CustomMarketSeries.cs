@@ -14,7 +14,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         private int _barStartIndex, _barEndIndex;
 
-        private DateTime _barStartTime, _barEndTime;
+        private DateTime _barStartTime, _barEndTime, _nextBarTime;
 
         private Bar _lastBar;
 
@@ -53,15 +53,13 @@ namespace cAlgo.API.Extensions.Helpers
         {
             DateTime barOpenTime = _marketSeries.OpenTime[barIndex].Add(-_gmtOffset);
 
-            if (_lastBar == null || _barEndTime - _barStartTime >= _timeFrameSpan)
+            if (_lastBar == null || barOpenTime >= _nextBarTime)
             {
                 _barStartIndex = barIndex;
-
                 _barEndIndex = barIndex + 1;
 
-                _barStartTime = _marketSeries.OpenTime[barIndex];
-
-                _barEndTime = _marketSeries.OpenTime[barIndex].Add(_marketSeriesTimeFrameSpan);
+                _barStartTime = _marketSeries.OpenTime[_barStartIndex];
+                _barEndTime = _marketSeries.OpenTime[_barStartIndex].Add(_marketSeriesTimeFrameSpan);
 
                 _lastBar = new Bar
                 {
@@ -69,6 +67,8 @@ namespace cAlgo.API.Extensions.Helpers
                     Index = Index + 1,
                     Time = _marketSeries.OpenTime[barIndex].Add(-_gmtOffset)
                 };
+
+                _nextBarTime = _lastBar.Time.Add(_timeFrameSpan);
             }
             else
             {
