@@ -24,6 +24,25 @@ namespace cAlgo.API.Extensions.Helpers
 
         #region Constructor
 
+        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode)
+        {
+            _open = new CustomDataSeries();
+            _close = new CustomDataSeries();
+            _high = new CustomDataSeries();
+            _low = new CustomDataSeries();
+            _tickVolume = new CustomDataSeries();
+            _median = new CustomDataSeries();
+            _typical = new CustomDataSeries();
+            _weighted = new CustomDataSeries();
+            _weightedClose = new CustomDataSeries();
+
+            _openTime = new IndicatorTimeSeries();
+
+            _timeFrame = timeFrame;
+
+            _symbolCode = symbolCode;
+        }
+
         public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode, Algo algo) : this(timeFrame, symbolCode, new IndicatorTimeSeries(), algo)
         {
         }
