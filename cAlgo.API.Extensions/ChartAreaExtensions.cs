@@ -41,7 +41,7 @@ namespace cAlgo.API.Extensions
         {
             objectSuffix = objectSuffix ?? string.Format("No_Suffix_{0}", DateTime.Now.Ticks);
 
-            string chartObjectName = string.Format("Message_{0}", objectSuffix);
+            string chartObjectName = string.Format("Message_{0}_{1}", DateTime.Now.Ticks, objectSuffix);
 
             return chartArea.DrawStaticText(chartObjectName, message, verticalAlignment, horizontalAlignment, color);
         }
