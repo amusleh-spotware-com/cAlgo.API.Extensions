@@ -27,5 +27,13 @@ namespace cAlgo.API.Extensions.Models
                 return High - Low;
             }
         }
+
+        public double BodyRange
+        {
+            get
+            {
+                return Math.Abs(Close - Open);
+            }
+        }
     }
 }

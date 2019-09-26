@@ -13,6 +13,8 @@ namespace cAlgo.API.Extensions.Helpers
 
         private readonly double _size;
 
+        private double _previousBidPrice;
+
         #endregion Fields
 
         public RenkoMarketSeries(double sizeInPips, Symbol symbol, Algo algo) : base(TimeFrame.Minute, symbol.Name, new IndicatorTimeSeries(), algo)
@@ -40,6 +42,13 @@ namespace cAlgo.API.Extensions.Helpers
         {
             double price = _symbol.Bid;
 
+            if (price == _previousBidPrice)
+            {
+                return;
+            }
+
+            _previousBidPrice = price;
+
             if (double.IsNaN(Open.LastValue))
             {
                 Insert(0, price, price, price, price, 0, Algo.Server.TimeInUtc);
@@ -62,10 +71,10 @@ namespace cAlgo.API.Extensions.Helpers
 
                 Insert(bar);
 
-                OnBar?.Invoke(this, bar, this.GetBar(Index));
+                OnBar?.Invoke(this, bar, this.GetBar(Index - 1));
             }
 
-            Insert(Index, _symbol.ToTicks(range), SeriesType.TickVolume);
+            Insert(Index, TickVolume.LastValue + 1, SeriesType.TickVolume);
 
             Insert(Index, price, SeriesType.Close);
 
