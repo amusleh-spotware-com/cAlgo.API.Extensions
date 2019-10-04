@@ -1,8 +1,8 @@
 ﻿using cAlgo.API.Extensions.Enums;
+using cAlgo.API.Extensions.Models;
 using cAlgo.API.Indicators;
 using cAlgo.API.Internals;
 using System;
-using cAlgo.API.Extensions.Models;
 
 namespace cAlgo.API.Extensions.Helpers
 {
@@ -18,13 +18,13 @@ namespace cAlgo.API.Extensions.Helpers
 
         private readonly TimeFrame _timeFrame;
 
-        private readonly string _symbolCode;
+        private readonly string _symbolName;
 
         #endregion Fields
 
         #region Constructor
 
-        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode)
+        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolName)
         {
             _open = new CustomDataSeries();
             _close = new CustomDataSeries();
@@ -40,14 +40,14 @@ namespace cAlgo.API.Extensions.Helpers
 
             _timeFrame = timeFrame;
 
-            _symbolCode = symbolCode;
+            _symbolName = symbolName;
         }
 
-        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode, Algo algo) : this(timeFrame, symbolCode, new IndicatorTimeSeries(), algo)
+        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolName, Algo algo) : this(timeFrame, symbolName, new IndicatorTimeSeries(), algo)
         {
         }
 
-        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolCode, TimeSeries timeSeries, Algo algo)
+        public IndicatorMarketSeries(TimeFrame timeFrame, string symbolName, TimeSeries timeSeries, Algo algo)
         {
             _algo = algo;
 
@@ -65,7 +65,7 @@ namespace cAlgo.API.Extensions.Helpers
 
             _timeFrame = timeFrame;
 
-            _symbolCode = symbolCode;
+            _symbolName = symbolName;
         }
 
         #endregion Constructor
@@ -168,19 +168,27 @@ namespace cAlgo.API.Extensions.Helpers
             }
         }
 
-        public string SymbolCode
-        {
-            get
-            {
-                return _symbolCode;
-            }
-        }
-
         public int Index
         {
             get
             {
                 return Close.Count - 1;
+            }
+        }
+
+        public string SymbolName
+        {
+            get
+            {
+                return _symbolName;
+            }
+        }
+
+        public string SymbolCode
+        {
+            get
+            {
+                return SymbolName;
             }
         }
 

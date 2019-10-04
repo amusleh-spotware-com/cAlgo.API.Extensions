@@ -20,7 +20,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         #endregion Fields
 
-        public CustomMarketSeries(MarketSeries marketSeries, TimeFrame timeFrame, TimeSpan gmtOffset) : base(timeFrame, marketSeries.SymbolCode)
+        public CustomMarketSeries(MarketSeries marketSeries, TimeFrame timeFrame, TimeSpan gmtOffset) : base(timeFrame, marketSeries.SymbolName)
         {
             _marketSeries = marketSeries;
 
