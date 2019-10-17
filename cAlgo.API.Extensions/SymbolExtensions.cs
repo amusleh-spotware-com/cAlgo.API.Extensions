@@ -97,7 +97,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetVolume(this Symbol symbol, double riskPercentage, double accountBalance, double stopLossInPips)
         {
-            return riskPercentage / (((Math.Abs(stopLossInPips) * symbol.PipValue) / accountBalance) * 100);
+            return symbol.NormalizeVolumeInUnits(riskPercentage / (((Math.Abs(stopLossInPips) * symbol.PipValue) / accountBalance) * 100));
         }
 
         /// <summary>
