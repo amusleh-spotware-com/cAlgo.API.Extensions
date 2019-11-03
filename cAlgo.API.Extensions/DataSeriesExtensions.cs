@@ -665,5 +665,17 @@ namespace cAlgo.API.Extensions
             return sum;
         }
 
+        /// <summary>
+        /// Returns the percentage change amount between two value on a data series
+        /// </summary>
+        /// <param name="dataSeries">The data series</param>
+        /// <param name="startIndex">The first index</param>
+        /// <param name="endIndex">The second index</param>
+        /// <returns>double</returns>
+        public static double PercentageChange(this DataSeries dataSeries, int startIndex, int endIndex)
+        {
+            return (dataSeries[endIndex] - dataSeries[startIndex]) / dataSeries[startIndex] * 100;
+        }
+
     }
 }
