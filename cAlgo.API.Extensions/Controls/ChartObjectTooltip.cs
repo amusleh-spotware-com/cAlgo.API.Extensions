@@ -19,6 +19,12 @@
             _chart = chart;
             _chartObject = chartObject;
 
+            VerticalAlignment = VerticalAlignment.Top;
+            HorizontalAlignment = HorizontalAlignment.Left;
+            IsVisible = false;
+            Width = 120;
+            Height = 50;
+
             _border = new Border
             {
                 BackgroundColor = "#3F3F3F",
@@ -26,6 +32,12 @@
                 BorderThickness = 1,
                 CornerRadius = 5
             };
+
+            VerticalAlignment = VerticalAlignment.Top;
+            HorizontalAlignment = HorizontalAlignment.Left;
+            IsVisible = false;
+            Width = 120;
+            Height = 50;
 
             AddChild(_border);
 
