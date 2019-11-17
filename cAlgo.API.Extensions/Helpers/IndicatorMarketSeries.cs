@@ -220,10 +220,9 @@ namespace cAlgo.API.Extensions.Helpers
             }
         }
 
-        public void CalculateHeikenAshi(MarketSeries marketSeries, int periods = 1)
+        public void CalculateHeikenAshi(MarketSeries marketSeries, int index, int periods = 1)
         {
-            int index = _algo.MarketSeries.GetIndex();
-            int seriesIndex = marketSeries.OpenTime.GetIndexByTime(_algo.MarketSeries.OpenTime[index]);
+            int seriesIndex = marketSeries.OpenTime.GetIndexByTime(marketSeries.OpenTime[index]);
 
             double barOhlcSum = marketSeries.Open[seriesIndex] + marketSeries.Low[seriesIndex] +
                 marketSeries.High[seriesIndex] + marketSeries.Close[seriesIndex];
@@ -244,10 +243,9 @@ namespace cAlgo.API.Extensions.Helpers
             }
         }
 
-        public void CalculateHeikenAshiSmoothed(MarketSeries marketSeries, int maPeriods, MovingAverageType maType, int periods = 1)
+        public void CalculateHeikenAshi(MarketSeries marketSeries, int index, int maPeriods, MovingAverageType maType, int periods = 1)
         {
-            int index = _algo.MarketSeries.GetIndex();
-            int seriesIndex = marketSeries.OpenTime.GetIndexByTime(_algo.MarketSeries.OpenTime[index]);
+            int seriesIndex = marketSeries.OpenTime.GetIndexByTime(marketSeries.OpenTime[index]);
 
             if (seriesIndex <= maPeriods)
             {
