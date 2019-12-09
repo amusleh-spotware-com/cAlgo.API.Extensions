@@ -889,7 +889,7 @@ namespace cAlgo.API.Extensions
         /// <returns>Bar</returns>
         public static Bar GetBar(this MarketSeries marketSeries, int index)
         {
-            var result = new Bar
+            var result = marketSeries.Close.Count > index ? new Bar
             {
                 Index = index,
                 Time = marketSeries.OpenTime[index],
@@ -899,7 +899,7 @@ namespace cAlgo.API.Extensions
                 Close = marketSeries.Close[index],
                 Volume = marketSeries.TickVolume[index],
                 Type = marketSeries.GetBarType(index)
-            };
+            } : null;
 
             return result;
         }
