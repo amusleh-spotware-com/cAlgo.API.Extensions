@@ -3,7 +3,7 @@ using System;
 
 namespace cAlgo.API.Extensions.Models
 {
-    public class Bar
+    public class OhlcBar
     {
         public int Index { get; set; }
 

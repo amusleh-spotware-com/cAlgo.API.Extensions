@@ -26,7 +26,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         #region Delegates
 
-        public delegate void OnBarHandler(object sender, Bar newBar, Bar oldBar);
+        public delegate void OnBarHandler(object sender, OhlcBar newBar, OhlcBar oldBar);
 
         #endregion Delegates
 
@@ -58,7 +58,7 @@ namespace cAlgo.API.Extensions.Helpers
 
             if ((range >= _size && (Index == 0 || this.GetBarType(Index) == this.GetBarType(Index - 1))) || (range >= _size * 2))
             {
-                Bar bar = new Bar
+                OhlcBar bar = new OhlcBar
                 {
                     Index = Index + 1,
                     Open = Close[Index],

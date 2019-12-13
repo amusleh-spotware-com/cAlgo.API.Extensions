@@ -887,9 +887,9 @@ namespace cAlgo.API.Extensions
         /// <param name="marketSeries">Market series</param>
         /// <param name="index">The bar index in market series</param>
         /// <returns>Bar</returns>
-        public static Bar GetBar(this MarketSeries marketSeries, int index)
+        public static OhlcBar GetBar(this MarketSeries marketSeries, int index)
         {
-            var result = marketSeries.Close.Count > index ? new Bar
+            var result = marketSeries.Close.Count > index ? new OhlcBar
             {
                 Index = index,
                 Time = marketSeries.OpenTime[index],
@@ -909,9 +909,9 @@ namespace cAlgo.API.Extensions
         /// </summary>
         /// <param name="marketSeries">Market series</param>
         /// <returns>List<Bar></returns>
-        public static List<Bar> GetBars(this MarketSeries marketSeries)
+        public static List<OhlcBar> GetBars(this MarketSeries marketSeries)
         {
-            var result = new List<Bar>();
+            var result = new List<OhlcBar>();
 
             for (int iBarIndex = 0; iBarIndex < marketSeries.Close.Count; iBarIndex++)
             {

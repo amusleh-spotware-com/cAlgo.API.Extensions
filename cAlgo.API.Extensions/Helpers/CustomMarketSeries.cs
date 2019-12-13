@@ -16,11 +16,11 @@ namespace cAlgo.API.Extensions.Helpers
 
         private DateTime _barStartTime, _barEndTime, _nextBarTime;
 
-        private Bar _lastBar;
+        private OhlcBar _lastBar;
 
         #endregion Fields
 
-        public CustomMarketSeries(MarketSeries marketSeries, TimeFrame timeFrame, TimeSpan gmtOffset) : base(timeFrame, marketSeries.SymbolCode)
+        public CustomMarketSeries(MarketSeries marketSeries, TimeFrame timeFrame, TimeSpan gmtOffset) : base(timeFrame, marketSeries.SymbolName)
         {
             _marketSeries = marketSeries;
 
@@ -41,7 +41,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         public DateTime BarEndTime => _barEndTime;
 
-        public Bar LastBar => _lastBar;
+        public OhlcBar LastBar => _lastBar;
 
         public Action<string> Print { get; set; }
 
@@ -61,7 +61,7 @@ namespace cAlgo.API.Extensions.Helpers
                 _barStartTime = _marketSeries.OpenTime[_barStartIndex];
                 _barEndTime = _marketSeries.OpenTime[_barStartIndex].Add(_marketSeriesTimeFrameSpan);
 
-                _lastBar = new Bar
+                _lastBar = new OhlcBar
                 {
                     Open = _marketSeries.Open[barIndex],
                     Index = Index + 1,

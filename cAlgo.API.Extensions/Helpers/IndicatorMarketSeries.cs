@@ -201,7 +201,7 @@ namespace cAlgo.API.Extensions.Helpers
             ((IndicatorDataSeries)this.GetSeries(seriesType))[index] = value;
         }
 
-        public void Insert(Bar bar)
+        public void Insert(OhlcBar bar)
         {
             Insert(bar.Index, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, bar.Time);
         }

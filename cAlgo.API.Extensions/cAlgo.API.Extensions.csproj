@@ -57,7 +57,7 @@
     <Compile Include="Helpers\CustomDataSeries.cs" />
     <Compile Include="Helpers\CustomMarketSeries.cs" />
     <Compile Include="Helpers\RenkoMarketSeries.cs" />
-    <Compile Include="Models\Bar.cs" />
+    <Compile Include="Models\OhlcBar.cs" />
     <Compile Include="Models\SignalStatsSettings.cs" />
     <Compile Include="Models\NewSignalSettings.cs" />
     <Compile Include="Models\Signal.cs" />
