@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -96,6 +97,16 @@ namespace cAlgo.API.Extensions.Helpers
             {
                 _series.Add(timeSeries[i]);
             }
+        }
+
+        public IEnumerator<DateTime> GetEnumerator()
+        {
+            return _series.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _series.GetEnumerator();
         }
 
         #endregion Methods

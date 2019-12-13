@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace cAlgo.API.Extensions.Helpers
@@ -32,6 +33,16 @@ namespace cAlgo.API.Extensions.Helpers
             int index = (Count - 1) - lastIndex;
 
             return this[index];
+        }
+
+        public IEnumerator<double> GetEnumerator()
+        {
+            return _data.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _data.Values.GetEnumerator();
         }
     }
 }
