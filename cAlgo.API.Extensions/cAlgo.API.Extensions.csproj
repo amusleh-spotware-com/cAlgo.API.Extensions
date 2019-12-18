@@ -56,8 +56,8 @@
     <Compile Include="Enums\TdReversalSetupType.cs" />
     <Compile Include="Helpers\CustomDataSeries.cs" />
     <Compile Include="Helpers\CustomMarketSeries.cs" />
+    <Compile Include="Helpers\RangeMarketSeries.cs" />
     <Compile Include="Helpers\RenkoMarketSeries.cs" />
-    <Compile Include="BarsExtensions.cs" />
     <Compile Include="Models\OhlcBar.cs" />
     <Compile Include="Models\SignalStatsSettings.cs" />
     <Compile Include="Models\NewSignalSettings.cs" />

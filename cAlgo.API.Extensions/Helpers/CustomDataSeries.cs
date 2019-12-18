@@ -35,6 +35,7 @@ namespace cAlgo.API.Extensions.Helpers
             return this[index];
         }
 
+        /*
         public IEnumerator<double> GetEnumerator()
         {
             return _data.Values.GetEnumerator();
@@ -44,5 +45,6 @@ namespace cAlgo.API.Extensions.Helpers
         {
             return _data.Values.GetEnumerator();
         }
+        */
     }
 }

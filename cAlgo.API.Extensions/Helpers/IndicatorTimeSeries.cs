@@ -99,6 +99,7 @@ namespace cAlgo.API.Extensions.Helpers
             }
         }
 
+        /*
         public IEnumerator<DateTime> GetEnumerator()
         {
             return _series.GetEnumerator();
@@ -108,6 +109,7 @@ namespace cAlgo.API.Extensions.Helpers
         {
             return _series.GetEnumerator();
         }
+        */
 
         #endregion Methods
     }
