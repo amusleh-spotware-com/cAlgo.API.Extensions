@@ -9,7 +9,7 @@ namespace cAlgo.API.Extensions.Helpers
     {
         #region Fields
 
-        private List<DateTime> _series;
+        private readonly List<DateTime> _series;
 
         #endregion Fields
 
@@ -99,7 +99,6 @@ namespace cAlgo.API.Extensions.Helpers
             }
         }
 
-        /*
         public IEnumerator<DateTime> GetEnumerator()
         {
             return _series.GetEnumerator();
@@ -109,7 +108,6 @@ namespace cAlgo.API.Extensions.Helpers
         {
             return _series.GetEnumerator();
         }
-        */
 
         #endregion Methods
     }

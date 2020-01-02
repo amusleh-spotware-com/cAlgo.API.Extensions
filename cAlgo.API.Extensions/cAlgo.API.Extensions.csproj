@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BarsExtensions.cs" />
     <Compile Include="Controls\ChartObjectTooltip.cs" />
     <Compile Include="Enums\PriceValueType.cs" />
     <Compile Include="Enums\BarType.cs" />

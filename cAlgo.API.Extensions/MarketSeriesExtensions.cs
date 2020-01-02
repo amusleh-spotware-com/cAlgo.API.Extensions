@@ -898,7 +898,6 @@ namespace cAlgo.API.Extensions
                 Low = marketSeries.Low[index],
                 Close = marketSeries.Close[index],
                 Volume = marketSeries.TickVolume[index],
-                Type = marketSeries.GetBarType(index)
             } : null;
 
             return result;
