@@ -56,9 +56,9 @@
     <Compile Include="Enums\TdPriceFlipType.cs" />
     <Compile Include="Enums\TdReversalSetupType.cs" />
     <Compile Include="Helpers\CustomDataSeries.cs" />
-    <Compile Include="Helpers\CustomMarketSeries.cs" />
-    <Compile Include="Helpers\RangeMarketSeries.cs" />
-    <Compile Include="Helpers\RenkoMarketSeries.cs" />
+    <Compile Include="Helpers\CustomBars.cs" />
+    <Compile Include="Helpers\RangeBars.cs" />
+    <Compile Include="Helpers\RenkoBars.cs" />
     <Compile Include="Models\OhlcBar.cs" />
     <Compile Include="Models\SignalStatsSettings.cs" />
     <Compile Include="Models\NewSignalSettings.cs" />
@@ -72,7 +72,7 @@
     <Compile Include="Models\LeastSquares.cs" />
     <Compile Include="Enums\Direction.cs" />
     <Compile Include="Enums\SeriesType.cs" />
-    <Compile Include="Helpers\IndicatorMarketSeries.cs" />
+    <Compile Include="Helpers\IndicatorBars.cs" />
     <Compile Include="Helpers\IndicatorTimeSeries.cs" />
     <Compile Include="Models\LegendOutput.cs" />
     <Compile Include="PositionExtensions.cs" />
@@ -80,7 +80,6 @@
     <Compile Include="SymbolExtensions.cs" />
     <Compile Include="Models\Divergence.cs" />
     <Compile Include="Enums\DivergenceType.cs" />
-    <Compile Include="MarketSeriesExtensions.cs" />
     <Compile Include="DataSeriesExtensions.cs" />
     <Compile Include="Models\PriceLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

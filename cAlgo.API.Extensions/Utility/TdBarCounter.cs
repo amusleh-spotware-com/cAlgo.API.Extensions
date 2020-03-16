@@ -1,10 +1,8 @@
 ﻿using cAlgo.API.Extensions.Enums;
 using cAlgo.API.Extensions.Models;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using cAlgo.API;
-using cAlgo.API.Internals;
 
 namespace cAlgo.API.Extensions.Utility
 {
@@ -14,15 +12,15 @@ namespace cAlgo.API.Extensions.Utility
 
         private readonly DataSeries _source;
 
-        private readonly MarketSeries _marketSeries;
+        private readonly Bars _bars;
 
         #endregion Fields
 
-        public TdBarCounter(DataSeries source, MarketSeries marketSeries)
+        public TdBarCounter(DataSeries source, Bars bars)
         {
             _source = source;
 
-            _marketSeries = marketSeries;
+            _bars = bars;
 
             SequentialBars = new SortedSet<TdBar>();
 
@@ -68,6 +66,7 @@ namespace cAlgo.API.Extensions.Utility
         #endregion Properties
 
         #region Methods
+
         public TdPriceFlipType GetPriceFlipType(int index)
         {
             if (_source[index - 1] < _source[index - (Period + 1)] && _source[index] > _source[index - Period])
@@ -107,7 +106,7 @@ namespace cAlgo.API.Extensions.Utility
             // Continue count
             else
             {
-                bool continueResult = ContinueSequentialCount(index, priceFlipType);
+                bool continueResult = ContinueSequentialCount(index);
 
                 if (!continueResult)
                 {
@@ -183,7 +182,7 @@ namespace cAlgo.API.Extensions.Utility
             }
         }
 
-        private bool ContinueSequentialCount(int index, TdPriceFlipType priceFlipType)
+        private bool ContinueSequentialCount(int index)
         {
             bool result = true;
 
@@ -220,18 +219,18 @@ namespace cAlgo.API.Extensions.Utility
             {
                 int lastCountdownBarNumber = setup.CountdownBarNumber;
 
-                if (setup.Type == TdReversalSetupType.Buy && _source[index] <= _marketSeries.Low[index - 1] && _source[index] <= _marketSeries.Low[index - 2])
+                if (setup.Type == TdReversalSetupType.Buy && _source[index] <= _bars.LowPrices[index - 1] && _source[index] <= _bars.LowPrices[index - 2])
                 {
-                    if (setup.CountdownBarNumber == MaxCountdownBarsNumber - 1 && _marketSeries.Low[index] > _source[setup.EighthCountdownBarIndex])
+                    if (setup.CountdownBarNumber == MaxCountdownBarsNumber - 1 && _bars.LowPrices[index] > _source[setup.EighthCountdownBarIndex])
                     {
                         continue;
                     }
 
                     setup.CountdownBarNumber += 1;
                 }
-                else if (setup.Type == TdReversalSetupType.Sell && _source[index] >= _marketSeries.High[index - 1] && _source[index] >= _marketSeries.High[index - 2])
+                else if (setup.Type == TdReversalSetupType.Sell && _source[index] >= _bars.HighPrices[index - 1] && _source[index] >= _bars.HighPrices[index - 2])
                 {
-                    if (setup.CountdownBarNumber == MaxCountdownBarsNumber - 1 && _marketSeries.High[index] < _source[setup.EighthCountdownBarIndex])
+                    if (setup.CountdownBarNumber == MaxCountdownBarsNumber - 1 && _bars.HighPrices[index] < _source[setup.EighthCountdownBarIndex])
                     {
                         continue;
                     }
@@ -282,10 +281,10 @@ namespace cAlgo.API.Extensions.Utility
         {
             if (setup.Type == TdReversalSetupType.Buy)
             {
-                double lastBarLow = _marketSeries.Low[setup.LastSequentialBarIndex];
-                double previousBarLow = _marketSeries.Low[setup.LastSequentialBarIndex - 1];
-                double sixthBarLow = _marketSeries.Low[setup.FirstSequentialBarIndex + 5];
-                double seventhBarLow = _marketSeries.Low[setup.FirstSequentialBarIndex + 6];
+                double lastBarLow = _bars.LowPrices[setup.LastSequentialBarIndex];
+                double previousBarLow = _bars.LowPrices[setup.LastSequentialBarIndex - 1];
+                double sixthBarLow = _bars.LowPrices[setup.FirstSequentialBarIndex + 5];
+                double seventhBarLow = _bars.LowPrices[setup.FirstSequentialBarIndex + 6];
 
                 if ((lastBarLow <= sixthBarLow && lastBarLow <= seventhBarLow) || (previousBarLow <= sixthBarLow && previousBarLow <= seventhBarLow))
                 {
@@ -294,10 +293,10 @@ namespace cAlgo.API.Extensions.Utility
             }
             else
             {
-                double lastBarHigh = _marketSeries.High[setup.LastSequentialBarIndex];
-                double previousBarHigh = _marketSeries.High[setup.LastSequentialBarIndex - 1];
-                double sixthBarHigh = _marketSeries.High[setup.FirstSequentialBarIndex + 5];
-                double seventhBarHigh = _marketSeries.High[setup.FirstSequentialBarIndex + 6];
+                double lastBarHigh = _bars.HighPrices[setup.LastSequentialBarIndex];
+                double previousBarHigh = _bars.HighPrices[setup.LastSequentialBarIndex - 1];
+                double sixthBarHigh = _bars.HighPrices[setup.FirstSequentialBarIndex + 5];
+                double seventhBarHigh = _bars.HighPrices[setup.FirstSequentialBarIndex + 6];
 
                 if ((lastBarHigh >= sixthBarHigh && lastBarHigh >= seventhBarHigh) || (previousBarHigh >= sixthBarHigh && previousBarHigh >= seventhBarHigh))
                 {

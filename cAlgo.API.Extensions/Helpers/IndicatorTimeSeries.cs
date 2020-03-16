@@ -98,7 +98,6 @@ namespace cAlgo.API.Extensions.Helpers
                 _series.Add(timeSeries[i]);
             }
         }
-
         public IEnumerator<DateTime> GetEnumerator()
         {
             return _series.GetEnumerator();
@@ -108,7 +107,6 @@ namespace cAlgo.API.Extensions.Helpers
         {
             return _series.GetEnumerator();
         }
-
         #endregion Methods
     }
 }

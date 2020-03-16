@@ -128,7 +128,7 @@ namespace cAlgo.API.Extensions.Utility
             Signal signal = new Signal
             {
                 Index = index,
-                Time = _newSignalSettings.MarketSeries.OpenTime[index],
+                Time = _newSignalSettings.Bars.OpenTimes[index],
                 Symbol = _symbol,
                 TradeType = tradeType,
                 StopLoss = stopLoss,
@@ -142,11 +142,11 @@ namespace cAlgo.API.Extensions.Utility
 
             if (tradeType == TradeType.Buy && _newSignalSettings.BuyEntry != null)
             {
-                _newSignalSettings.BuyEntry[index] = _newSignalSettings.MarketSeries.Low[index] - _newSignalSettings.SignalDistance;
+                _newSignalSettings.BuyEntry[index] = _newSignalSettings.Bars.LowPrices[index] - _newSignalSettings.SignalDistance;
             }
             else if (tradeType == TradeType.Sell && _newSignalSettings.SellEntry != null)
             {
-                _newSignalSettings.SellEntry[index] = _newSignalSettings.MarketSeries.High[index] + _newSignalSettings.SignalDistance;
+                _newSignalSettings.SellEntry[index] = _newSignalSettings.Bars.HighPrices[index] + _newSignalSettings.SignalDistance;
             }
 
             if (_newSignalSettings.IsExportEnabled)
@@ -168,7 +168,7 @@ namespace cAlgo.API.Extensions.Utility
                 throw new NullReferenceException("The signal container SignalStatsSettings object is null");
             }
 
-            if (_signalStatsSettings.MarketSeries.GetIndex() == index)
+            if (_signalStatsSettings.Bars.GetIndex() == index)
             {
                 index--;
             }
@@ -180,12 +180,12 @@ namespace cAlgo.API.Extensions.Utility
                     continue;
                 }
 
-                if (signal.StopLoss.HasValue && ((signal.TradeType == TradeType.Buy && _signalStatsSettings.MarketSeries.Low[index] <= signal.StopLoss) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.MarketSeries.High[index] >= signal.StopLoss)))
+                if (signal.StopLoss.HasValue && ((signal.TradeType == TradeType.Buy && _signalStatsSettings.Bars.LowPrices[index] <= signal.StopLoss) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.Bars.HighPrices[index] >= signal.StopLoss)))
                 {
                     signal.Exited = true;
                 }
 
-                if (signal.TakeProfit.HasValue && ((signal.TradeType == TradeType.Buy && _signalStatsSettings.MarketSeries.High[index] >= signal.TakeProfit) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.MarketSeries.Low[index] <= signal.TakeProfit)))
+                if (signal.TakeProfit.HasValue && ((signal.TradeType == TradeType.Buy && _signalStatsSettings.Bars.HighPrices[index] >= signal.TakeProfit) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.Bars.LowPrices[index] <= signal.TakeProfit)))
                 {
                     signal.Exited = true;
                 }
@@ -199,14 +199,14 @@ namespace cAlgo.API.Extensions.Utility
                 {
                     signal.ExitIndex = index;
 
-                    signal.HoldingTime = _signalStatsSettings.MarketSeries.OpenTime[signal.ExitIndex] - _signalStatsSettings.MarketSeries.OpenTime[signal.Index];
+                    signal.HoldingTime = _signalStatsSettings.Bars.OpenTimes[signal.ExitIndex] - _signalStatsSettings.Bars.OpenTimes[signal.Index];
 
                     if (_signalStatsSettings.ShowExits)
                     {
                         string lineObjectName = string.Format("ExitLine_{0}_{1}_{2}", signal.Index, signal.ExitIndex, _signalStatsSettings.ChartObjectNamesSuffix);
 
-                        double y1 = _signalStatsSettings.MarketSeries.Close[signal.Index];
-                        double y2 = _signalStatsSettings.MarketSeries.Close[signal.ExitIndex];
+                        double y1 = _signalStatsSettings.Bars.ClosePrices[signal.Index];
+                        double y2 = _signalStatsSettings.Bars.ClosePrices[signal.ExitIndex];
 
                         Color lineColor = signal.TradeType == TradeType.Buy ? _signalStatsSettings.BuySignalExitLineColor : _signalStatsSettings.SellSignalExitLineColor;
 
@@ -214,24 +214,24 @@ namespace cAlgo.API.Extensions.Utility
 
                         if (signal.TradeType == TradeType.Buy && _signalStatsSettings.BuyExit != null)
                         {
-                            _signalStatsSettings.BuyExit[index] = _signalStatsSettings.MarketSeries.High[index] + _newSignalSettings.SignalDistance;
+                            _signalStatsSettings.BuyExit[index] = _signalStatsSettings.Bars.HighPrices[index] + _newSignalSettings.SignalDistance;
                         }
                         else if (signal.TradeType == TradeType.Sell && _signalStatsSettings.SellExit != null)
                         {
-                            _signalStatsSettings.SellExit[index] = _signalStatsSettings.MarketSeries.Low[index] - _newSignalSettings.SignalDistance;
+                            _signalStatsSettings.SellExit[index] = _signalStatsSettings.Bars.LowPrices[index] - _newSignalSettings.SignalDistance;
                         }
                     }
                 }
 
-                signal.MaxUpMove = _signalStatsSettings.MarketSeries.High.Maximum(signal.Index, index) - _signalStatsSettings.MarketSeries.Close[signal.Index];
-                signal.MaxDownMove = _signalStatsSettings.MarketSeries.Close[signal.Index] - _signalStatsSettings.MarketSeries.Low.Minimum(signal.Index, index);
+                signal.MaxUpMove = _signalStatsSettings.Bars.HighPrices.Maximum(signal.Index, index) - _signalStatsSettings.Bars.ClosePrices[signal.Index];
+                signal.MaxDownMove = _signalStatsSettings.Bars.ClosePrices[signal.Index] - _signalStatsSettings.Bars.LowPrices.Minimum(signal.Index, index);
 
                 _signalStatsSettings.ProfitableSignal[signal.Index] = double.NaN;
                 _signalStatsSettings.LosingSignal[signal.Index] = double.NaN;
 
                 if (signal.TradeType == TradeType.Buy)
                 {
-                    signal.ProfitInPips = _symbol.ToPips(_signalStatsSettings.MarketSeries.Close[index] - _signalStatsSettings.MarketSeries.Close[signal.Index]);
+                    signal.ProfitInPips = _symbol.ToPips(_signalStatsSettings.Bars.ClosePrices[index] - _signalStatsSettings.Bars.ClosePrices[signal.Index]);
 
                     if (signal.ProfitInPips > 0)
                     {
@@ -244,7 +244,7 @@ namespace cAlgo.API.Extensions.Utility
                 }
                 else
                 {
-                    signal.ProfitInPips = _symbol.ToPips(_signalStatsSettings.MarketSeries.Close[signal.Index] - _signalStatsSettings.MarketSeries.Close[index]);
+                    signal.ProfitInPips = _symbol.ToPips(_signalStatsSettings.Bars.ClosePrices[signal.Index] - _signalStatsSettings.Bars.ClosePrices[index]);
 
                     if (signal.ProfitInPips > 0)
                     {
@@ -389,21 +389,21 @@ namespace cAlgo.API.Extensions.Utility
         {
             int exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
 
-            return signal.TradeType == TradeType.Buy ? _signalStatsSettings.MarketSeries.Close[exitBarIndex] - _signalStatsSettings.MarketSeries.Close[signal.Index] : _signalStatsSettings.MarketSeries.Close[signal.Index] - _signalStatsSettings.MarketSeries.Close[exitBarIndex];
+            return signal.TradeType == TradeType.Buy ? _signalStatsSettings.Bars.ClosePrices[exitBarIndex] - _signalStatsSettings.Bars.ClosePrices[signal.Index] : _signalStatsSettings.Bars.ClosePrices[signal.Index] - _signalStatsSettings.Bars.ClosePrices[exitBarIndex];
         }
 
         private double CalculateLoss(Signal signal, int index)
         {
             int exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
 
-            return signal.TradeType == TradeType.Buy ? _signalStatsSettings.MarketSeries.Close[signal.Index] - _signalStatsSettings.MarketSeries.Close[exitBarIndex] : _signalStatsSettings.MarketSeries.Close[exitBarIndex] - _signalStatsSettings.MarketSeries.Close[signal.Index];
+            return signal.TradeType == TradeType.Buy ? _signalStatsSettings.Bars.ClosePrices[signal.Index] - _signalStatsSettings.Bars.ClosePrices[exitBarIndex] : _signalStatsSettings.Bars.ClosePrices[exitBarIndex] - _signalStatsSettings.Bars.ClosePrices[signal.Index];
         }
 
         private bool IsProfitable(Signal signal, int index)
         {
             int exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
 
-            return (signal.TradeType == TradeType.Buy && _signalStatsSettings.MarketSeries.Close[exitBarIndex] > _signalStatsSettings.MarketSeries.Close[signal.Index]) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.MarketSeries.Close[exitBarIndex] < _signalStatsSettings.MarketSeries.Close[signal.Index]);
+            return (signal.TradeType == TradeType.Buy && _signalStatsSettings.Bars.ClosePrices[exitBarIndex] > _signalStatsSettings.Bars.ClosePrices[signal.Index]) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.Bars.ClosePrices[exitBarIndex] < _signalStatsSettings.Bars.ClosePrices[signal.Index]);
         }
 
         #endregion Methods

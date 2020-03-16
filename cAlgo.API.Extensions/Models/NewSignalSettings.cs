@@ -9,7 +9,7 @@ namespace cAlgo.API.Extensions.Models
 
         public IndicatorDataSeries SellEntry { get; set; }
 
-        public MarketSeries MarketSeries { get; set; }
+        public Bars Bars { get; set; }
 
         public double SignalDistance { get; set; }
 

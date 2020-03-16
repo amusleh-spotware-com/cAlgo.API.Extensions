@@ -5,7 +5,7 @@ using System;
 
 namespace cAlgo.API.Extensions.Helpers
 {
-    public class RenkoMarketSeries : IndicatorMarketSeries
+    public class RenkoBars : IndicatorBars
     {
         #region Fields
 
@@ -17,7 +17,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         #endregion Fields
 
-        public RenkoMarketSeries(double sizeInPips, Symbol symbol, Algo algo) : base(TimeFrame.Minute, symbol.Name, new IndicatorTimeSeries(), algo)
+        public RenkoBars(double sizeInPips, Symbol symbol, Algo algo) : base(TimeFrame.Minute, symbol.Name, new IndicatorTimeSeries(), algo)
         {
             _symbol = symbol;
 
