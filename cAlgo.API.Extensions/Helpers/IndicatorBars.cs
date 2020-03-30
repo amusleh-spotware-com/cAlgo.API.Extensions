@@ -201,25 +201,25 @@ namespace cAlgo.API.Extensions.Helpers
 
         public Bar LastBar => throw new NotImplementedException();
 
-        public int Count => throw new NotImplementedException();
+        public int Count => Close.Count;
 
-        public DataSeries OpenPrices => throw new NotImplementedException();
+        public DataSeries OpenPrices => Open;
 
-        public DataSeries HighPrices => throw new NotImplementedException();
+        public DataSeries HighPrices => High;
 
-        public DataSeries LowPrices => throw new NotImplementedException();
+        public DataSeries LowPrices => Low;
 
-        public DataSeries ClosePrices => throw new NotImplementedException();
+        public DataSeries ClosePrices => Close;
 
-        public DataSeries TickVolumes => throw new NotImplementedException();
+        public DataSeries TickVolumes => TickVolume;
 
-        public DataSeries MedianPrices => throw new NotImplementedException();
+        public DataSeries MedianPrices => Median;
 
-        public DataSeries TypicalPrices => throw new NotImplementedException();
+        public DataSeries TypicalPrices => Typical;
 
-        public DataSeries WeightedPrices => throw new NotImplementedException();
+        public DataSeries WeightedPrices => Weighted;
 
-        public TimeSeries OpenTimes => throw new NotImplementedException();
+        public TimeSeries OpenTimes => OpenTime;
 
         public Bar this[int index] => throw new NotImplementedException();
 
