@@ -932,5 +932,36 @@ namespace cAlgo.API.Extensions
         {
             return bars.GetBarRange(index) / bars.TickVolumes[index]; ;
         }
+
+        /// <summary>
+        /// Returns a data series of bars based on your provided data source type
+        /// </summary>
+        /// <param name="bars">Current Bars</param>
+        /// <param name="dataSource">The data source type</param>
+        /// <returns>DataSeries</returns>
+        public static DataSeries GetSeries(this Bars bars, DataSource dataSource)
+        {
+            switch (dataSource)
+            {
+                case DataSource.Open:
+                    return bars.OpenPrices;
+                case DataSource.High:
+                    return bars.HighPrices;
+                case DataSource.Low:
+                    return bars.LowPrices;
+                case DataSource.Close:
+                    return bars.ClosePrices;
+                case DataSource.Volume:
+                    return bars.TickVolumes;
+                case DataSource.Typical:
+                    return bars.TypicalPrices;
+                case DataSource.Weighted:
+                    return bars.WeightedPrices;
+                case DataSource.Median:
+                    return bars.MedianPrices;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dataSource));
+            }
+        }
     }
 }
