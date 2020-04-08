@@ -60,6 +60,7 @@
     <Compile Include="Helpers\CustomBars.cs" />
     <Compile Include="Helpers\RangeBars.cs" />
     <Compile Include="Helpers\RenkoBars.cs" />
+    <Compile Include="MarketDataExtensions.cs" />
     <Compile Include="Models\OhlcBar.cs" />
     <Compile Include="Models\SignalStatsSettings.cs" />
     <Compile Include="Models\NewSignalSettings.cs" />
