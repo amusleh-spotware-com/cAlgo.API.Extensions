@@ -963,5 +963,22 @@ namespace cAlgo.API.Extensions
                     throw new ArgumentOutOfRangeException(nameof(dataSource));
             }
         }
+
+        /// <summary>
+        /// Returns the bar elapsed time or open time - close time
+        /// </summary>
+        /// <param name="bars">Bars</param>
+        /// <param name="index">Bar index</param>
+        /// <returns>TimeSpane</returns>
+        public static TimeSpan GetBarElapsedTime(this Bars bars, int index)
+        {
+            if (bars.GetIndex() <= index)
+            {
+                throw new ArgumentException("There must be another bar available after the current bar to calculate its" +
+                    " elapsed time");
+            }
+
+            return bars.OpenTimes[index + 1] - bars.OpenTimes[index];
+        }
     }
 }
