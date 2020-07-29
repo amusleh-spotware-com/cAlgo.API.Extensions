@@ -1,6 +1,5 @@
 ﻿using cAlgo.API.Extensions.Models;
 using cAlgo.API.Internals;
-using Stats.Net;
 using System;
 using System.Collections.Generic;
 using System.IO;

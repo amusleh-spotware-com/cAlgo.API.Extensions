@@ -36,9 +36,6 @@
     <Reference Include="cAlgo.API">
       <HintPath>..\..\..\..\Documents\cAlgo\API\cAlgo.API.dll</HintPath>
     </Reference>
-    <Reference Include="Stats.Net">
-      <HintPath>..\..\Stats.Net\Stats.Net\bin\Release\Stats.Net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -61,6 +58,7 @@
     <Compile Include="Helpers\CustomBars.cs" />
     <Compile Include="Helpers\RangeBars.cs" />
     <Compile Include="Helpers\RenkoBars.cs" />
+    <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="MarketDataExtensions.cs" />
     <Compile Include="Models\OhlcBar.cs" />
     <Compile Include="Models\SignalStatsSettings.cs" />

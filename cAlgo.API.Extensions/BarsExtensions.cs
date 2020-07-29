@@ -250,7 +250,7 @@ namespace cAlgo.API.Extensions
             BarType barType = bars.GetBarType(index);
             BarType previousBarType = bars.GetBarType(index - 1);
 
-            return barBodyRange > previousBarRange && barType != previousBarType ? true : false;
+            return barBodyRange > previousBarRange && barType != previousBarType;
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace cAlgo.API.Extensions
 
             double meanBarRange = bars.GetAverageBarRange(index - 1, 50);
 
-            return barRange < meanBarRange / 3 && barBodyRange / barRange < 0.5 ? true : false;
+            return barRange < meanBarRange / 3 && barBodyRange / barRange < 0.5;
         }
 
         /// <summary>
