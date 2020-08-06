@@ -27,11 +27,9 @@ namespace cAlgo.API.Extensions
         /// <param name="periods">Number of previous bars before provided index</param>
         /// <param name="symbol">The market series symbol</param>
         /// <returns>List<PriceVolume></returns>
-        public static List<PriceLevel> GetVolumeProfile(this Bars bars, int index, int periods, Symbol symbol, double stepInPips)
+        public static List<PriceLevel> GetVolumeProfile(this Bars bars, int index, int periods, Symbol symbol)
         {
             List<PriceLevel> result = new List<PriceLevel>();
-
-            double step = stepInPips * symbol.PipSize;
 
             for (int i = index; i > index - periods; i--)
             {
@@ -55,10 +53,7 @@ namespace cAlgo.API.Extensions
                 double bullishVolumePerPips = bullishVolume / barRangeInPips;
                 double bearishVolumePerPips = bearishVolume / barRangeInPips;
 
-                long bullishVolumePerLevel = (long)(bullishVolumePerPips * stepInPips);
-                long bearishVolumePerLevel = (long)(bearishVolumePerPips * stepInPips);
-
-                for (double level = bars.LowPrices[i]; level <= bars.HighPrices[i]; level += step)
+                for (double level = bars.LowPrices[i]; level <= bars.HighPrices[i]; level += symbol.PipSize)
                 {
                     level = Math.Round(level, symbol.Digits);
 
@@ -74,8 +69,8 @@ namespace cAlgo.API.Extensions
                         result.Add(priceLevel);
                     }
 
-                    priceLevel.BullishVolume += bullishVolumePerLevel;
-                    priceLevel.BearishVolume += bearishVolumePerLevel;
+                    priceLevel.BullishVolume += bullishVolumePerPips;
+                    priceLevel.BearishVolume += bearishVolumePerPips;
                 }
             }
 
@@ -662,17 +657,14 @@ namespace cAlgo.API.Extensions
         /// <param name="index">Last Bar Index</param>
         /// <param name="periods">Number of previous bars before provided index</param>
         /// <param name="symbol">The market series symbol</param>
-        /// <param name="step">The price increment step in Pips</param>
         /// <returns>List<PriceVolume></returns>
-        public static List<PriceLevel> GetMarketProfile(this Bars bars, int index, int periods, Symbol symbol, double stepInPips)
+        public static List<PriceLevel> GetMarketProfile(this Bars bars, int index, int periods, Symbol symbol)
         {
-            double step = stepInPips * symbol.PipSize;
-
             List<PriceLevel> result = new List<PriceLevel>();
 
             for (int i = index; i > index - periods; i--)
             {
-                for (double level = bars.LowPrices[i]; level <= bars.HighPrices[i]; level += step)
+                for (double level = bars.LowPrices[i]; level <= bars.HighPrices[i]; level += symbol.PipSize)
                 {
                     level = Math.Round(level, symbol.Digits);
 
