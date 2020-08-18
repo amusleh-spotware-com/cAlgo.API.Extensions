@@ -759,6 +759,56 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
+        /// Returns the median bar range of x previous bars on a market series
+        /// </summary>
+        /// <param name="bars"></param>
+        /// <param name="index">Bar index in market series, the calculation will begin from this bar</param>
+        /// <param name="periods">The number of x previous bars or look back bars</param>
+        /// <param name="useBarBody">Use bar open and close price instead of high and low?</param>
+        /// <returns>double</returns>
+        public static double GetMedianBarRange(this Bars bars, int index, int periods, bool useBarBody = false)
+        {
+            List<double> barRanges = new List<double>();
+
+            for (int iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
+            {
+                double iBarRange = bars.GetBarRange(iBarIndex, useBarBody);
+
+                barRanges.Add(iBarRange);
+            }
+
+            return barRanges.Median();
+        }
+
+        /// <summary>
+        /// Returns the median bar range of x previous bars on a market series
+        /// </summary>
+        /// <param name="bars"></param>
+        /// <param name="index">Bar index in market series, the calculation will begin from this bar</param>
+        /// <param name="periods">The number of x previous bars or look back bars</param>
+        /// <param name="barType">The type of bars</param>
+        /// <param name="useBarBody">Use bar open and close price instead of high and low?</param>
+        /// <returns>double</returns>
+        public static double GetMedianBarRange(this Bars bars, int index, int periods, BarType barType, bool useBarBody = false)
+        {
+            List<double> barRanges = new List<double>();
+
+            for (int iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
+            {
+                if (bars.GetBarType(iBarIndex) != barType)
+                {
+                    continue;
+                }
+
+                double iBarRange = bars.GetBarRange(iBarIndex, useBarBody);
+
+                barRanges.Add(iBarRange);
+            }
+
+            return barRanges.Median();
+        }
+
+        /// <summary>
         /// Returns the high value of a bar body
         /// </summary>
         /// <param name="bars"></param>
@@ -937,20 +987,28 @@ namespace cAlgo.API.Extensions
             {
                 case DataSource.Open:
                     return bars.OpenPrices;
+
                 case DataSource.High:
                     return bars.HighPrices;
+
                 case DataSource.Low:
                     return bars.LowPrices;
+
                 case DataSource.Close:
                     return bars.ClosePrices;
+
                 case DataSource.Volume:
                     return bars.TickVolumes;
+
                 case DataSource.Typical:
                     return bars.TypicalPrices;
+
                 case DataSource.Weighted:
                     return bars.WeightedPrices;
+
                 case DataSource.Median:
                     return bars.MedianPrices;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(dataSource));
             }
