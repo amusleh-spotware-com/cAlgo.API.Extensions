@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="BarsExtensions.cs" />
     <Compile Include="Controls\ChartObjectTooltip.cs" />
-    <Compile Include="Enums\AlertMode.cs" />
     <Compile Include="Enums\ChartPeriodType.cs" />
     <Compile Include="Enums\DataSource.cs" />
     <Compile Include="Enums\PriceValueType.cs" />
