@@ -81,7 +81,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         public int GetIndexByTime(DateTime time)
         {
-            TimeSpan minTimeDiff = _series.Where(iTime => iTime <= time).Select(iTime => time - iTime).Min();
+            var minTimeDiff = _series.Where(iTime => iTime <= time).Select(iTime => time - iTime).Min();
 
             return _series.FindIndex(iTime => time - iTime == minTimeDiff);
         }
@@ -93,7 +93,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         public void Populate(TimeSeries timeSeries)
         {
-            for (int i = 0; i < timeSeries.Count; i++)
+            for (var i = 0; i < timeSeries.Count; i++)
             {
                 _series.Add(timeSeries[i]);
             }

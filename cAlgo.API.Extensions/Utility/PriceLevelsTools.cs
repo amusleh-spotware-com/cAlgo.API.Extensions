@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using cAlgo.API;
 
 namespace cAlgo.API.Extensions.Utility
 {
@@ -18,11 +15,11 @@ namespace cAlgo.API.Extensions.Utility
         /// <returns>List<PriceLevel></returns>
         public static List<PriceLevel> GetCombinedLevels(List<PriceLevel> data, double width)
         {
-            List<PriceLevel> ordered = data.OrderBy(priceLevel => priceLevel.Level).ToList();
+            var ordered = data.OrderBy(priceLevel => priceLevel.Level).ToList();
 
-            List<PriceLevel> dataCombined = new List<PriceLevel>();
+            var dataCombined = new List<PriceLevel>();
 
-            PriceLevel currentLevel = new PriceLevel
+            var currentLevel = new PriceLevel
             {
                 Level = ordered.First().Level,
                 Profile = new List<int>()

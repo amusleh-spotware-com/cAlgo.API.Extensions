@@ -71,9 +71,9 @@ namespace cAlgo.API.Extensions.Utility
 
             if (string.IsNullOrEmpty(_newSignalSettings.ExportFilePath))
             {
-                string doucmentsDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var doucmentsDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-                string symbolSignalsDirecotryPath = Path.Combine(doucmentsDirectoryPath, "cAlgo", AlgoName, SymbolName);
+                var symbolSignalsDirecotryPath = Path.Combine(doucmentsDirectoryPath, "cAlgo", AlgoName, SymbolName);
 
                 if (!Directory.Exists(symbolSignalsDirecotryPath))
                 {
@@ -87,14 +87,14 @@ namespace cAlgo.API.Extensions.Utility
                 filePath = _newSignalSettings.ExportFilePath;
             }
 
-            SignalContainer signalContainer = new SignalContainer(AlgoName, _symbol, _timeFrame, _newSignalSettings, _signalStatsSettings)
+            var signalContainer = new SignalContainer(AlgoName, _symbol, _timeFrame, _newSignalSettings, _signalStatsSettings)
             {
                 Signals = _newSignalSettings.SignalsNumberToExport > 0 ? Signals.Skip(Signals.Count - _newSignalSettings.SignalsNumberToExport).ToList() : Signals,
             };
 
-            using (FileStream fileStream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+            using (var fileStream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(SignalContainer));
+                var serializer = new XmlSerializer(typeof(SignalContainer));
 
                 serializer.Serialize(fileStream, signalContainer);
             }
@@ -124,7 +124,7 @@ namespace cAlgo.API.Extensions.Utility
 
             RemoveSignal(index, tradeType);
 
-            Signal signal = new Signal
+            var signal = new Signal
             {
                 Index = index,
                 Time = _newSignalSettings.Bars.OpenTimes[index],
@@ -172,19 +172,19 @@ namespace cAlgo.API.Extensions.Utility
                 index--;
             }
 
-            foreach (Signal signal in Signals)
+            foreach (var signal in Signals)
             {
                 if (signal.Exited)
                 {
                     continue;
                 }
 
-                if (signal.StopLoss.HasValue && ((signal.TradeType == TradeType.Buy && _signalStatsSettings.Bars.LowPrices[index] <= signal.StopLoss) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.Bars.HighPrices[index] >= signal.StopLoss)))
+                if (signal.StopLoss.HasValue && (signal.TradeType == TradeType.Buy && _signalStatsSettings.Bars.LowPrices[index] <= signal.StopLoss || signal.TradeType == TradeType.Sell && _signalStatsSettings.Bars.HighPrices[index] >= signal.StopLoss))
                 {
                     signal.Exited = true;
                 }
 
-                if (signal.TakeProfit.HasValue && ((signal.TradeType == TradeType.Buy && _signalStatsSettings.Bars.HighPrices[index] >= signal.TakeProfit) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.Bars.LowPrices[index] <= signal.TakeProfit)))
+                if (signal.TakeProfit.HasValue && (signal.TradeType == TradeType.Buy && _signalStatsSettings.Bars.HighPrices[index] >= signal.TakeProfit || signal.TradeType == TradeType.Sell && _signalStatsSettings.Bars.LowPrices[index] <= signal.TakeProfit))
                 {
                     signal.Exited = true;
                 }
@@ -202,12 +202,12 @@ namespace cAlgo.API.Extensions.Utility
 
                     if (_signalStatsSettings.ShowExits)
                     {
-                        string lineObjectName = string.Format("ExitLine_{0}_{1}_{2}", signal.Index, signal.ExitIndex, _signalStatsSettings.ChartObjectNamesSuffix);
+                        var lineObjectName = string.Format("ExitLine_{0}_{1}_{2}", signal.Index, signal.ExitIndex, _signalStatsSettings.ChartObjectNamesSuffix);
 
-                        double y1 = _signalStatsSettings.Bars.ClosePrices[signal.Index];
-                        double y2 = _signalStatsSettings.Bars.ClosePrices[signal.ExitIndex];
+                        var y1 = _signalStatsSettings.Bars.ClosePrices[signal.Index];
+                        var y2 = _signalStatsSettings.Bars.ClosePrices[signal.ExitIndex];
 
-                        Color lineColor = signal.TradeType == TradeType.Buy ? _signalStatsSettings.BuySignalExitLineColor : _signalStatsSettings.SellSignalExitLineColor;
+                        var lineColor = signal.TradeType == TradeType.Buy ? _signalStatsSettings.BuySignalExitLineColor : _signalStatsSettings.SellSignalExitLineColor;
 
                         _signalStatsSettings.Chart.DrawTrendLine(lineObjectName, signal.Index, y1, signal.ExitIndex, y2, lineColor);
 
@@ -278,11 +278,11 @@ namespace cAlgo.API.Extensions.Utility
                 return;
             }
 
-            IEnumerable<Signal> profitableSignals = Signals.Where(iSignal => IsProfitable(iSignal, index));
+            var profitableSignals = Signals.Where(iSignal => IsProfitable(iSignal, index));
 
-            IEnumerable<Signal> losingSignals = Signals.Where(iSignal => !profitableSignals.Contains(iSignal));
+            var losingSignals = Signals.Where(iSignal => !profitableSignals.Contains(iSignal));
 
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
             if (!string.IsNullOrEmpty(title))
             {
@@ -292,30 +292,30 @@ namespace cAlgo.API.Extensions.Utility
             }
 
             // Strong signals statistics
-            double strongSignalsAccuracy = (profitableSignals.Count() / (double)Signals.Count) * 100;
+            var strongSignalsAccuracy = profitableSignals.Count() / (double)Signals.Count * 100;
 
-            double strongProfitableSignalsMedianRiskRewardRatio = profitableSignals.Select(iSignal => iSignal.RewardRiskRatio).Median();
-            double strongLosingSignalsMedianRiskRewardRatio = losingSignals.Select(iSignal => iSignal.RewardRiskRatio).Median();
+            var strongProfitableSignalsMedianRiskRewardRatio = profitableSignals.Select(iSignal => iSignal.RewardRiskRatio).Median();
+            var strongLosingSignalsMedianRiskRewardRatio = losingSignals.Select(iSignal => iSignal.RewardRiskRatio).Median();
 
-            double strongProfitableSignalsMedianLossInPips = _symbol.ToPips(profitableSignals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxDownMove : iSignal.MaxUpMove).Median());
-            double strongProfitableSignalsMedianGainInPips = _symbol.ToPips(profitableSignals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxUpMove : iSignal.MaxDownMove).Median());
+            var strongProfitableSignalsMedianLossInPips = _symbol.ToPips(profitableSignals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxDownMove : iSignal.MaxUpMove).Median());
+            var strongProfitableSignalsMedianGainInPips = _symbol.ToPips(profitableSignals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxUpMove : iSignal.MaxDownMove).Median());
 
-            double strongLosingSignalsMedianLossInPips = _symbol.ToPips(losingSignals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxDownMove : iSignal.MaxUpMove).Median());
-            double strongLosingSignalsMedianGainInPips = _symbol.ToPips(losingSignals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxUpMove : iSignal.MaxDownMove).Median());
+            var strongLosingSignalsMedianLossInPips = _symbol.ToPips(losingSignals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxDownMove : iSignal.MaxUpMove).Median());
+            var strongLosingSignalsMedianGainInPips = _symbol.ToPips(losingSignals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxUpMove : iSignal.MaxDownMove).Median());
 
-            double strongAllSignalsMedianLossInPips = _symbol.ToPips(Signals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxDownMove : iSignal.MaxUpMove).Median());
-            double strongAllSignalsMedianGainInPips = _symbol.ToPips(Signals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxUpMove : iSignal.MaxDownMove).Median());
+            var strongAllSignalsMedianLossInPips = _symbol.ToPips(Signals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxDownMove : iSignal.MaxUpMove).Median());
+            var strongAllSignalsMedianGainInPips = _symbol.ToPips(Signals.Select(iSignal => iSignal.TradeType == TradeType.Buy ? iSignal.MaxUpMove : iSignal.MaxDownMove).Median());
 
-            double profitableSignalsTotalGainInPips = _symbol.ToPips(profitableSignals.Select(iSignal => CalculateGain(iSignal, index)).Sum());
-            double losingSignalsGainInPips = _symbol.ToPips(losingSignals.Select(iSignal => CalculateLoss(iSignal, index)).Sum());
+            var profitableSignalsTotalGainInPips = _symbol.ToPips(profitableSignals.Select(iSignal => CalculateGain(iSignal, index)).Sum());
+            var losingSignalsGainInPips = _symbol.ToPips(losingSignals.Select(iSignal => CalculateLoss(iSignal, index)).Sum());
 
-            double proftiableSignalsMedianHoldingTimeInMinutes = profitableSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median();
-            double losingSignalsMedianHoldingTimeInMinutes = losingSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median();
-            double allSignalsMedianHoldingTimeInMinutes = Signals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median();
+            var proftiableSignalsMedianHoldingTimeInMinutes = profitableSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median();
+            var losingSignalsMedianHoldingTimeInMinutes = losingSignals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median();
+            var allSignalsMedianHoldingTimeInMinutes = Signals.Select(iSignal => iSignal.HoldingTime.TotalMinutes).Median();
 
-            TimeSpan profitableSignalsMedianHoldingTime = TimeSpan.FromMinutes(double.IsNaN(proftiableSignalsMedianHoldingTimeInMinutes) ? 0 : proftiableSignalsMedianHoldingTimeInMinutes);
-            TimeSpan losingSignalsMedianHoldingTime = TimeSpan.FromMinutes(double.IsNaN(losingSignalsMedianHoldingTimeInMinutes) ? 0 : losingSignalsMedianHoldingTimeInMinutes);
-            TimeSpan allSignalsMedianHoldingTime = TimeSpan.FromMinutes(double.IsNaN(allSignalsMedianHoldingTimeInMinutes) ? 0 : allSignalsMedianHoldingTimeInMinutes);
+            var profitableSignalsMedianHoldingTime = TimeSpan.FromMinutes(double.IsNaN(proftiableSignalsMedianHoldingTimeInMinutes) ? 0 : proftiableSignalsMedianHoldingTimeInMinutes);
+            var losingSignalsMedianHoldingTime = TimeSpan.FromMinutes(double.IsNaN(losingSignalsMedianHoldingTimeInMinutes) ? 0 : losingSignalsMedianHoldingTimeInMinutes);
+            var allSignalsMedianHoldingTime = TimeSpan.FromMinutes(double.IsNaN(allSignalsMedianHoldingTimeInMinutes) ? 0 : allSignalsMedianHoldingTimeInMinutes);
 
             stringBuilder.AppendLine(string.Format("Signals #: {0}", Signals.Count));
             stringBuilder.AppendLine(string.Format("Signals Accuracy: {0}%", Math.Round(strongSignalsAccuracy, 2)));
@@ -334,16 +334,16 @@ namespace cAlgo.API.Extensions.Utility
 
             stringBuilder.AppendLine();
 
-            string text = stringBuilder.ToString();
+            var text = stringBuilder.ToString();
 
-            string objectName = string.Format("Stats_{0}", _signalStatsSettings.ChartObjectNamesSuffix);
+            var objectName = string.Format("Stats_{0}", _signalStatsSettings.ChartObjectNamesSuffix);
 
             _signalStatsSettings.Chart.DrawStaticText(objectName, text, _signalStatsSettings.StatsVerticalAlignment, _signalStatsSettings.StatsHorizontalAlignment, _signalStatsSettings.StatsColor);
         }
 
         public void RemoveSignal(int index, TradeType tradeType)
         {
-            Signal signal = Signals.FirstOrDefault(iSignal => iSignal.Index == index && iSignal.TradeType == tradeType);
+            var signal = Signals.FirstOrDefault(iSignal => iSignal.Index == index && iSignal.TradeType == tradeType);
 
             if (signal != null)
             {
@@ -353,16 +353,16 @@ namespace cAlgo.API.Extensions.Utility
 
         public void LoadSignals()
         {
-            string doucmentsDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var doucmentsDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            string symbolSignalsDirecotryPath = Path.Combine(doucmentsDirectoryPath, "cAlgo", AlgoName, _symbol.Name);
+            var symbolSignalsDirecotryPath = Path.Combine(doucmentsDirectoryPath, "cAlgo", AlgoName, _symbol.Name);
 
             if (!Directory.Exists(symbolSignalsDirecotryPath))
             {
                 throw new DirectoryNotFoundException(string.Format("Couldn't find the symbol signal files directory at: {0}", symbolSignalsDirecotryPath));
             }
 
-            string filePath = Path.Combine(symbolSignalsDirecotryPath, string.Format("{0}.xml", _timeFrame));
+            var filePath = Path.Combine(symbolSignalsDirecotryPath, string.Format("{0}.xml", _timeFrame));
 
             LoadSignals(filePath);
         }
@@ -374,11 +374,11 @@ namespace cAlgo.API.Extensions.Utility
                 throw new FileNotFoundException(string.Format("The signals file doesn't exist at: {0}", filePath));
             }
 
-            using (FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                XmlSerializer serializer = new XmlSerializer(this.GetType());
+                var serializer = new XmlSerializer(this.GetType());
 
-                List<Signal> signals = (serializer.Deserialize(fileStream) as SignalContainer).Signals;
+                var signals = (serializer.Deserialize(fileStream) as SignalContainer).Signals;
 
                 Signals.AddRange(signals);
             }
@@ -386,23 +386,23 @@ namespace cAlgo.API.Extensions.Utility
 
         private double CalculateGain(Signal signal, int index)
         {
-            int exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
+            var exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
 
             return signal.TradeType == TradeType.Buy ? _signalStatsSettings.Bars.ClosePrices[exitBarIndex] - _signalStatsSettings.Bars.ClosePrices[signal.Index] : _signalStatsSettings.Bars.ClosePrices[signal.Index] - _signalStatsSettings.Bars.ClosePrices[exitBarIndex];
         }
 
         private double CalculateLoss(Signal signal, int index)
         {
-            int exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
+            var exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
 
             return signal.TradeType == TradeType.Buy ? _signalStatsSettings.Bars.ClosePrices[signal.Index] - _signalStatsSettings.Bars.ClosePrices[exitBarIndex] : _signalStatsSettings.Bars.ClosePrices[exitBarIndex] - _signalStatsSettings.Bars.ClosePrices[signal.Index];
         }
 
         private bool IsProfitable(Signal signal, int index)
         {
-            int exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
+            var exitBarIndex = signal.ExitIndex > index ? index : signal.ExitIndex;
 
-            return (signal.TradeType == TradeType.Buy && _signalStatsSettings.Bars.ClosePrices[exitBarIndex] > _signalStatsSettings.Bars.ClosePrices[signal.Index]) || (signal.TradeType == TradeType.Sell && _signalStatsSettings.Bars.ClosePrices[exitBarIndex] < _signalStatsSettings.Bars.ClosePrices[signal.Index]);
+            return signal.TradeType == TradeType.Buy && _signalStatsSettings.Bars.ClosePrices[exitBarIndex] > _signalStatsSettings.Bars.ClosePrices[signal.Index] || signal.TradeType == TradeType.Sell && _signalStatsSettings.Bars.ClosePrices[exitBarIndex] < _signalStatsSettings.Bars.ClosePrices[signal.Index];
         }
 
         #endregion Methods

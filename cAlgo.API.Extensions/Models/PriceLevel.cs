@@ -69,9 +69,9 @@ namespace cAlgo.API.Extensions
 
         public override int GetHashCode()
         {
-            int hash = 17;
+            var hash = 17;
 
-            hash += (hash * 31) + Level.GetHashCode();
+            hash += hash * 31 + Level.GetHashCode();
 
             return hash;
         }

@@ -94,7 +94,7 @@ namespace cAlgo.API.Extensions.Utility
                 CancelCountIfInvalidated(index);
             }
 
-            TdPriceFlipType priceFlipType = GetPriceFlipType(index);
+            var priceFlipType = GetPriceFlipType(index);
 
             PlotPriceFlipAction?.Invoke(index, priceFlipType);
 
@@ -106,13 +106,13 @@ namespace cAlgo.API.Extensions.Utility
             // Continue count
             else
             {
-                bool continueResult = ContinueSequentialCount(index);
+                var continueResult = ContinueSequentialCount(index);
 
                 if (!continueResult)
                 {
                     StartNewSequentialCount(index, priceFlipType);
 
-                    TdReversalSetup reversalSetup = new TdReversalSetup
+                    var reversalSetup = new TdReversalSetup
                     {
                         Type = LastSequentialBar.Type == BarType.Bullish ? TdReversalSetupType.Sell : TdReversalSetupType.Buy,
                         FirstSequentialBarIndex = LastSequentialBar.Index - MaxSequentialBarsNumber,
@@ -184,7 +184,7 @@ namespace cAlgo.API.Extensions.Utility
 
         private bool ContinueSequentialCount(int index)
         {
-            bool result = true;
+            var result = true;
 
             if (index == LastSequentialBar.Index)
             {
@@ -213,11 +213,11 @@ namespace cAlgo.API.Extensions.Utility
 
         private void ContinueCountdownCount(int index)
         {
-            List<TdReversalSetup> setupsCopy = ReversalSetups.ToList();
+            var setupsCopy = ReversalSetups.ToList();
 
-            foreach (TdReversalSetup setup in setupsCopy)
+            foreach (var setup in setupsCopy)
             {
-                int lastCountdownBarNumber = setup.CountdownBarNumber;
+                var lastCountdownBarNumber = setup.CountdownBarNumber;
 
                 if (setup.Type == TdReversalSetupType.Buy && _source[index] <= _bars.LowPrices[index - 1] && _source[index] <= _bars.LowPrices[index - 2])
                 {
@@ -243,7 +243,7 @@ namespace cAlgo.API.Extensions.Utility
                     continue;
                 }
 
-                TdBar bar = new TdBar
+                var bar = new TdBar
                 {
                     Index = index,
                     Number = setup.CountdownBarNumber,
@@ -281,24 +281,24 @@ namespace cAlgo.API.Extensions.Utility
         {
             if (setup.Type == TdReversalSetupType.Buy)
             {
-                double lastBarLow = _bars.LowPrices[setup.LastSequentialBarIndex];
-                double previousBarLow = _bars.LowPrices[setup.LastSequentialBarIndex - 1];
-                double sixthBarLow = _bars.LowPrices[setup.FirstSequentialBarIndex + 5];
-                double seventhBarLow = _bars.LowPrices[setup.FirstSequentialBarIndex + 6];
+                var lastBarLow = _bars.LowPrices[setup.LastSequentialBarIndex];
+                var previousBarLow = _bars.LowPrices[setup.LastSequentialBarIndex - 1];
+                var sixthBarLow = _bars.LowPrices[setup.FirstSequentialBarIndex + 5];
+                var seventhBarLow = _bars.LowPrices[setup.FirstSequentialBarIndex + 6];
 
-                if ((lastBarLow <= sixthBarLow && lastBarLow <= seventhBarLow) || (previousBarLow <= sixthBarLow && previousBarLow <= seventhBarLow))
+                if (lastBarLow <= sixthBarLow && lastBarLow <= seventhBarLow || previousBarLow <= sixthBarLow && previousBarLow <= seventhBarLow)
                 {
                     return true;
                 }
             }
             else
             {
-                double lastBarHigh = _bars.HighPrices[setup.LastSequentialBarIndex];
-                double previousBarHigh = _bars.HighPrices[setup.LastSequentialBarIndex - 1];
-                double sixthBarHigh = _bars.HighPrices[setup.FirstSequentialBarIndex + 5];
-                double seventhBarHigh = _bars.HighPrices[setup.FirstSequentialBarIndex + 6];
+                var lastBarHigh = _bars.HighPrices[setup.LastSequentialBarIndex];
+                var previousBarHigh = _bars.HighPrices[setup.LastSequentialBarIndex - 1];
+                var sixthBarHigh = _bars.HighPrices[setup.FirstSequentialBarIndex + 5];
+                var seventhBarHigh = _bars.HighPrices[setup.FirstSequentialBarIndex + 6];
 
-                if ((lastBarHigh >= sixthBarHigh && lastBarHigh >= seventhBarHigh) || (previousBarHigh >= sixthBarHigh && previousBarHigh >= seventhBarHigh))
+                if (lastBarHigh >= sixthBarHigh && lastBarHigh >= seventhBarHigh || previousBarHigh >= sixthBarHigh && previousBarHigh >= seventhBarHigh)
                 {
                     return true;
                 }

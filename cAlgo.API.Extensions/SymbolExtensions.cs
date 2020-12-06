@@ -13,7 +13,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetPip(this Symbol symbol)
         {
-            return (symbol.TickSize / symbol.PipSize) * Math.Pow(10, symbol.Digits);
+            return symbol.TickSize / symbol.PipSize * Math.Pow(10, symbol.Digits);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetRiskPercentage(this Symbol symbol, double stopLossInPips, double accountBalance, double volume)
         {
-            return (((Math.Abs(stopLossInPips) * symbol.PipValue) / accountBalance) * 100.0) * volume;
+            return Math.Abs(stopLossInPips) * symbol.PipValue / accountBalance * 100.0 * volume;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetStopLoss(this Symbol symbol, double riskPercentage, double accountBalance, double volume)
         {
-            return riskPercentage / (((symbol.PipValue / accountBalance) * 100.0) * volume);
+            return riskPercentage / (symbol.PipValue / accountBalance * 100.0 * volume);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetVolume(this Symbol symbol, double riskPercentage, double accountBalance, double stopLossInPips)
         {
-            return symbol.NormalizeVolumeInUnits(riskPercentage / (((Math.Abs(stopLossInPips) * symbol.PipValue) / accountBalance) * 100));
+            return symbol.NormalizeVolumeInUnits(riskPercentage / (Math.Abs(stopLossInPips) * symbol.PipValue / accountBalance * 100));
         }
 
         /// <summary>

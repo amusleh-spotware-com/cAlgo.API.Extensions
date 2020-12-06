@@ -1,5 +1,4 @@
-﻿using cAlgo.API.Internals;
-using System;
+﻿using System;
 
 namespace cAlgo.API.Extensions.Models
 {

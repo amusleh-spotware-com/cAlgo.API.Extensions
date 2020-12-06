@@ -1,6 +1,5 @@
 ﻿using cAlgo.API.Extensions.Enums;
 using cAlgo.API.Extensions.Models;
-using cAlgo.API.Indicators;
 using cAlgo.API.Internals;
 using System;
 using System.Collections;
@@ -253,10 +252,10 @@ namespace cAlgo.API.Extensions.Helpers
 
         public void CalculateHeikenAshi(Bars bars, int index, int periods = 1)
         {
-            int seriesIndex = bars.OpenTimes.GetIndexByTime(bars.OpenTimes[index]);
+            var seriesIndex = bars.OpenTimes.GetIndexByTime(bars.OpenTimes[index]);
 
-            double barOhlcSum = bars.OpenPrices[seriesIndex] + bars.LowPrices[seriesIndex] +
-                bars.HighPrices[seriesIndex] + bars.ClosePrices[seriesIndex];
+            var barOhlcSum = bars.OpenPrices[seriesIndex] + bars.LowPrices[seriesIndex] +
+                             bars.HighPrices[seriesIndex] + bars.ClosePrices[seriesIndex];
 
             _close[seriesIndex] = _algo.Symbol.Round(barOhlcSum / 4);
 
@@ -276,17 +275,17 @@ namespace cAlgo.API.Extensions.Helpers
 
         public void CalculateHeikenAshi(Bars bars, int index, int maPeriods, MovingAverageType maType, int periods = 1)
         {
-            int seriesIndex = bars.OpenTimes.GetIndexByTime(bars.OpenTimes[index]);
+            var seriesIndex = bars.OpenTimes.GetIndexByTime(bars.OpenTimes[index]);
 
             if (seriesIndex <= maPeriods)
             {
                 return;
             }
 
-            double barMaOpen = GetSeriesMovingAverageValue(bars, SeriesType.Open, maPeriods, maType, seriesIndex);
-            double barMaHigh = GetSeriesMovingAverageValue(bars, SeriesType.High, maPeriods, maType, seriesIndex);
-            double barMaLow = GetSeriesMovingAverageValue(bars, SeriesType.Low, maPeriods, maType, seriesIndex);
-            double barMaClose = GetSeriesMovingAverageValue(bars, SeriesType.Close, maPeriods, maType, seriesIndex);
+            var barMaOpen = GetSeriesMovingAverageValue(bars, SeriesType.Open, maPeriods, maType, seriesIndex);
+            var barMaHigh = GetSeriesMovingAverageValue(bars, SeriesType.High, maPeriods, maType, seriesIndex);
+            var barMaLow = GetSeriesMovingAverageValue(bars, SeriesType.Low, maPeriods, maType, seriesIndex);
+            var barMaClose = GetSeriesMovingAverageValue(bars, SeriesType.Close, maPeriods, maType, seriesIndex);
 
             _close[seriesIndex] = (barMaOpen + barMaClose + barMaHigh + barMaLow) / 4;
 
@@ -307,9 +306,9 @@ namespace cAlgo.API.Extensions.Helpers
         public double GetSeriesMovingAverageValue(
             Bars bars, SeriesType seriesType, int periods, MovingAverageType type, int index)
         {
-            DataSeries series = bars.GetSeries(seriesType);
+            var series = bars.GetSeries(seriesType);
 
-            MovingAverage ma = _algo.Indicators.MovingAverage(series, periods, type);
+            var ma = _algo.Indicators.MovingAverage(series, periods, type);
 
             return ma.Result[index];
         }

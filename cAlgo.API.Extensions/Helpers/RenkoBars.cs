@@ -40,7 +40,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         public void OnTick()
         {
-            double price = _symbol.Bid;
+            var price = _symbol.Bid;
 
             if (price == _previousBidPrice)
             {
@@ -54,11 +54,11 @@ namespace cAlgo.API.Extensions.Helpers
                 Insert(0, price, price, price, price, 0, Algo.Server.TimeInUtc);
             }
 
-            double range = Math.Abs(this.GetBarRange(Index, true));
+            var range = Math.Abs(this.GetBarRange(Index, true));
 
-            if ((range >= _size && (Index == 0 || this.GetBarType(Index) == this.GetBarType(Index - 1))) || (range >= _size * 2))
+            if (range >= _size && (Index == 0 || this.GetBarType(Index) == this.GetBarType(Index - 1)) || range >= _size * 2)
             {
-                OhlcBar bar = new OhlcBar
+                var bar = new OhlcBar
                 {
                     Index = Index + 1,
                     Open = Close[Index],

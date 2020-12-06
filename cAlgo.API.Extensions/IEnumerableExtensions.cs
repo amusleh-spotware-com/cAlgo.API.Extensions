@@ -19,10 +19,10 @@ namespace cAlgo.API.Extensions
                 throw new InvalidOperationException("current and other collections count must be equal");
             }
 
-            double xMean = current.Average();
-            double yMean = other.Average();
+            var xMean = current.Average();
+            var yMean = other.Average();
 
-            double xAndySum = current.Zip(other, (value1, value2) => (value1 - xMean) * (value2 - yMean)).Sum();
+            var xAndySum = current.Zip(other, (value1, value2) => (value1 - xMean) * (value2 - yMean)).Sum();
 
             return xAndySum / (current.Count() - 1);
         }
@@ -40,20 +40,20 @@ namespace cAlgo.API.Extensions
                 return double.NaN;
             }
 
-            double xSum = x.Sum();
-            double ySum = y.Sum();
+            var xSum = x.Sum();
+            var ySum = y.Sum();
 
-            double xSumSquared = Math.Pow(xSum, 2);
-            double ySumSquared = Math.Pow(ySum, 2);
+            var xSumSquared = Math.Pow(xSum, 2);
+            var ySumSquared = Math.Pow(ySum, 2);
 
-            double xSquaredSum = x.Select(value => Math.Pow(value, 2)).Sum();
-            double ySquaredSum = y.Select(value => Math.Pow(value, 2)).Sum();
+            var xSquaredSum = x.Select(value => Math.Pow(value, 2)).Sum();
+            var ySquaredSum = y.Select(value => Math.Pow(value, 2)).Sum();
 
-            double xAndyProductSum = x.Zip(y, (value1, value2) => value1 * value2).Sum();
+            var xAndyProductSum = x.Zip(y, (value1, value2) => value1 * value2).Sum();
 
             double n = x.Count();
 
-            return ((n * xAndyProductSum) - (xSum * ySum)) / Math.Sqrt(((n * xSquaredSum) - xSumSquared) * ((n * ySquaredSum) - ySumSquared));
+            return (n * xAndyProductSum - xSum * ySum) / Math.Sqrt((n * xSquaredSum - xSumSquared) * (n * ySquaredSum - ySumSquared));
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace cAlgo.API.Extensions
                 return double.NaN;
             }
 
-            int collectionCount = isSample ? collection.Count() - 1 : collection.Count();
+            var collectionCount = isSample ? collection.Count() - 1 : collection.Count();
 
             return collection.Select(value => Math.Pow(value - collection.Average(), 2)).Sum() / collectionCount;
         }
@@ -102,9 +102,9 @@ namespace cAlgo.API.Extensions
                 return double.NaN;
             }
 
-            List<double> sortedCollection = collection.OrderBy(value => value).ToList();
+            var sortedCollection = collection.OrderBy(value => value).ToList();
 
-            int median = (int)(((sortedCollection.Count() + 1) / 2) - 1);
+            var median = (int)((sortedCollection.Count() + 1) / 2 - 1);
 
             return sortedCollection.Count() % 2 == 0 ? (sortedCollection[median] + sortedCollection[median + 1]) / 2 :
                 sortedCollection[median];
@@ -123,19 +123,19 @@ namespace cAlgo.API.Extensions
                 return double.NaN;
             }
 
-            List<double> sortedCollection = collection.OrderBy(value => value).ToList();
+            var sortedCollection = collection.OrderBy(value => value).ToList();
 
-            double percentReal = percent / 100;
+            var percentReal = percent / 100;
 
-            double entryIndex = percentReal * (sortedCollection.Count - 1) + 1;
+            var entryIndex = percentReal * (sortedCollection.Count - 1) + 1;
 
-            int entryIndexInt = (int)entryIndex;
+            var entryIndexInt = (int)entryIndex;
 
-            double indexDiff = entryIndex - entryIndexInt;
+            var indexDiff = entryIndex - entryIndexInt;
 
             if (entryIndexInt - 1 >= 0 && entryIndexInt < sortedCollection.Count)
             {
-                double entryDataDiff = sortedCollection[entryIndexInt] - sortedCollection[entryIndexInt - 1];
+                var entryDataDiff = sortedCollection[entryIndexInt] - sortedCollection[entryIndexInt - 1];
 
                 return sortedCollection[entryIndexInt - 1] + indexDiff * entryDataDiff;
             }
@@ -166,7 +166,7 @@ namespace cAlgo.API.Extensions
                 return double.NaN;
             }
 
-            int numberOfValuesLessThanGivenValue = collection.Where(iValue => iValue <= value).Count();
+            var numberOfValuesLessThanGivenValue = collection.Where(iValue => iValue <= value).Count();
 
             return 100.0 * numberOfValuesLessThanGivenValue / collection.Count();
         }
@@ -190,9 +190,9 @@ namespace cAlgo.API.Extensions
         {
             double cum = 0;
 
-            List<T> result = new List<T>();
+            var result = new List<T>();
 
-            foreach (T item in collection)
+            foreach (var item in collection)
             {
                 cum += selector(item);
 
@@ -214,9 +214,9 @@ namespace cAlgo.API.Extensions
         {
             double cum = 1;
 
-            List<T> result = new List<T>();
+            var result = new List<T>();
 
-            foreach (T item in collection)
+            foreach (var item in collection)
             {
                 cum *= selector(item);
 
@@ -237,14 +237,14 @@ namespace cAlgo.API.Extensions
         /// <returns>IEnumerable<T></returns>
         public static IEnumerable<T> Diff<T>(this IEnumerable<T> collection, Func<T, double> selector, Func<T, double, T> function, int lag = 1)
         {
-            List<T> collectionList = collection.ToList();
+            var collectionList = collection.ToList();
 
-            List<T> result = new List<T>();
+            var result = new List<T>();
 
-            for (int i = lag; i < collectionList.Count; i++)
+            for (var i = lag; i < collectionList.Count; i++)
             {
-                double itemValue = selector(collectionList[i]);
-                double lagItemValue = selector(collectionList[i - lag]);
+                var itemValue = selector(collectionList[i]);
+                var lagItemValue = selector(collectionList[i - lag]);
 
                 result.Add(function(collectionList[i], itemValue - lagItemValue));
             }
@@ -266,10 +266,10 @@ namespace cAlgo.API.Extensions
             return collection.Skip(periods)
                 .Zip(collection, (current, previous) =>
                 {
-                    double currnetValue = selector(current);
-                    double previousValue = selector(previous);
+                    var currnetValue = selector(current);
+                    var previousValue = selector(previous);
 
-                    double change = previousValue == 0 ? 0 : Math.Round(((currnetValue - previousValue) / previousValue) * 100, 2);
+                    var change = previousValue == 0 ? 0 : Math.Round((currnetValue - previousValue) / previousValue * 100, 2);
 
                     return function(current, change);
                 });
@@ -285,17 +285,17 @@ namespace cAlgo.API.Extensions
         /// <returns>IEnumerable<T></returns>
         public static IEnumerable<T> Bootstrap<T>(this IEnumerable<T> collection, int count, int seed = 1)
         {
-            Random random = new Random(seed);
+            var random = new Random(seed);
 
-            List<T> result = new List<T>();
+            var result = new List<T>();
 
-            int maxIndex = collection.Count() - 1;
+            var maxIndex = collection.Count() - 1;
 
-            List<T> collectionList = collection.ToList();
+            var collectionList = collection.ToList();
 
-            for (int i = 1; i <= count; i++)
+            for (var i = 1; i <= count; i++)
             {
-                int index = random.Next(0, maxIndex);
+                var index = random.Next(0, maxIndex);
 
                 result.Add(collectionList[index]);
             }
@@ -315,20 +315,20 @@ namespace cAlgo.API.Extensions
         public static IEnumerable<T> MinMax<T>(this IEnumerable<T> collection, double minAllowed, double maxAllowed, Func<T, double> selector,
             Func<T, double, T> function)
         {
-            double min = collection.Min(item => selector(item));
-            double max = collection.Max(item => selector(item));
+            var min = collection.Min(item => selector(item));
+            var max = collection.Max(item => selector(item));
 
-            double bValue = (max - min) != 0 ? max - min : 1 / max;
+            var bValue = max - min != 0 ? max - min : 1 / max;
 
-            List<T> result = new List<T>();
+            var result = new List<T>();
 
-            foreach (T item in collection)
+            foreach (var item in collection)
             {
-                double itemValue = selector(item);
-                double uninterpolate = (itemValue - min) / bValue;
-                double itemScaledValue = minAllowed * (1 - uninterpolate) + maxAllowed * uninterpolate;
+                var itemValue = selector(item);
+                var uninterpolate = (itemValue - min) / bValue;
+                var itemScaledValue = minAllowed * (1 - uninterpolate) + maxAllowed * uninterpolate;
 
-                T newItem = function(item, itemScaledValue);
+                var newItem = function(item, itemScaledValue);
 
                 result.Add(newItem);
             }
@@ -345,7 +345,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double Skewness<T>(this IEnumerable<T> collection, Func<T, double> selector)
         {
-            IEnumerable<double> data = collection.Select(iDataPoint => selector(iDataPoint));
+            var data = collection.Select(iDataPoint => selector(iDataPoint));
 
             var dataMean = data.Average();
 
@@ -353,7 +353,7 @@ namespace cAlgo.API.Extensions
 
             var dataStd = data.StandardDeviation();
 
-            return (3 * (dataMean - dataMedian)) / dataStd;
+            return 3 * (dataMean - dataMedian) / dataStd;
         }
 
         /// <summary>
@@ -365,11 +365,11 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double MeanMoment<T>(this IEnumerable<T> collection, Func<T, double> selector, double moment)
         {
-            IEnumerable<double> data = collection.Select(iDataPoint => selector(iDataPoint));
+            var data = collection.Select(iDataPoint => selector(iDataPoint));
 
             var dataMean = data.Average();
 
-            int count = data.Count();
+            var count = data.Count();
 
             return data.Select(iDataPoint => Math.Pow(iDataPoint - dataMean, moment)).Sum() / count;
         }
@@ -383,7 +383,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double Kurtosis<T>(this IEnumerable<T> collection, Func<T, double> selector)
         {
-            IEnumerable<double> data = collection.Select(iDataPoint => selector(iDataPoint));
+            var data = collection.Select(iDataPoint => selector(iDataPoint));
 
             return collection.MeanMoment(selector, 4) / Math.Pow(data.Variance(), 2);
         }

@@ -30,7 +30,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         public double Last(int lastIndex)
         {
-            int index = (Count - 1) - lastIndex;
+            var index = Count - 1 - lastIndex;
 
             return this[index];
         }

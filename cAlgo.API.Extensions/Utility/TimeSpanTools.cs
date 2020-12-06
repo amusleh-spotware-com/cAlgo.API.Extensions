@@ -14,7 +14,7 @@ namespace cAlgo.API.Extensions.Utility
         public static bool TryParse(string value, string parameterName, Chart chart, string chartObjectsSuffix,
             TimeSpan offset, out TimeSpan result)
         {
-            bool parseResult = TimeSpan.TryParse(value, CultureInfo.InvariantCulture, out result);
+            var parseResult = TimeSpan.TryParse(value, CultureInfo.InvariantCulture, out result);
 
             if (!parseResult)
             {

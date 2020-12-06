@@ -11,7 +11,7 @@ namespace cAlgo.API.Extensions
         /// <param name="message">The message</param>
         public static ChartStaticText ShowMessage(this ChartArea chartArea, string message)
         {
-            string objectSuffix = string.Format("No_Suffix_{0}", DateTime.Now.Ticks);
+            var objectSuffix = string.Format("No_Suffix_{0}", DateTime.Now.Ticks);
 
             return chartArea.ShowMessage(message, objectSuffix);
         }
@@ -41,7 +41,7 @@ namespace cAlgo.API.Extensions
         {
             objectSuffix = objectSuffix ?? string.Format("No_Suffix_{0}", DateTime.Now.Ticks);
 
-            string chartObjectName = string.Format("Message_{0}_{1}", DateTime.Now.Ticks, objectSuffix);
+            var chartObjectName = string.Format("Message_{0}_{1}", DateTime.Now.Ticks, objectSuffix);
 
             return chartArea.DrawStaticText(chartObjectName, message, verticalAlignment, horizontalAlignment, color);
         }
@@ -84,7 +84,7 @@ namespace cAlgo.API.Extensions
         public static ChartStaticText ShowInvalidParameterMessage(this ChartArea chartArea, string parameterName, object parameterValue,
             VerticalAlignment verticalAlignment, HorizontalAlignment horizontalAlignment, Color color)
         {
-            string chartObjectsSuffix = string.Format("InvalidParameterValue_{0}_{1}_{2}", parameterName, parameterValue, DateTime.Now.Ticks);
+            var chartObjectsSuffix = string.Format("InvalidParameterValue_{0}_{1}_{2}", parameterName, parameterValue, DateTime.Now.Ticks);
 
             return chartArea.ShowInvalidParameterMessage(parameterName, parameterValue, chartObjectsSuffix, verticalAlignment,
                 horizontalAlignment, color);
@@ -102,7 +102,7 @@ namespace cAlgo.API.Extensions
         public static ChartStaticText ShowInvalidParameterMessage(this ChartArea chartArea, string parameterName, object parameterValue,
             string chartObjectsSuffix, VerticalAlignment verticalAlignment, HorizontalAlignment horizontalAlignment, Color color)
         {
-            string message = string.Format("The value ({0}) you provided for '{1}' isn't valid", parameterValue, parameterName);
+            var message = string.Format("The value ({0}) you provided for '{1}' isn't valid", parameterValue, parameterName);
 
             return chartArea.ShowMessage(message, chartObjectsSuffix, verticalAlignment, horizontalAlignment, color);
         }

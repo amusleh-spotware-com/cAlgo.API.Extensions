@@ -1,5 +1,4 @@
 ﻿using cAlgo.API.Extensions.Models;
-using cAlgo.API.Internals;
 using System;
 
 namespace cAlgo.API.Extensions.Helpers
@@ -51,7 +50,7 @@ namespace cAlgo.API.Extensions.Helpers
 
         public void Calculate(int barIndex)
         {
-            DateTime barOpenTime = _bars.OpenTimes[barIndex].Add(-_gmtOffset);
+            var barOpenTime = _bars.OpenTimes[barIndex].Add(-_gmtOffset);
 
             if (_lastBar == null || barOpenTime >= _nextBarTime)
             {

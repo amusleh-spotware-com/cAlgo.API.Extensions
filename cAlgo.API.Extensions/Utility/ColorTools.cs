@@ -4,7 +4,7 @@
     {
         public static Color GetColor(string colorString, int alpha = 255)
         {
-            Color color = colorString[0] == '#' ? Color.FromHex(colorString) : Color.FromName(colorString);
+            var color = colorString[0] == '#' ? Color.FromHex(colorString) : Color.FromName(colorString);
 
             return Color.FromArgb(alpha, color);
         }

@@ -1,5 +1,4 @@
-﻿using cAlgo.API;
-using cAlgo.API.Extensions.Enums;
+﻿using cAlgo.API.Extensions.Enums;
 using cAlgo.API.Extensions.Models;
 using System;
 using System.Collections.Generic;
@@ -10,15 +9,15 @@ namespace cAlgo.API.Extensions
     public static class DataSeriesExtensions
     {
         /// <summary>
-        /// Creates a List<double> from a DataSeries
+        /// Creates a List from a DataSeries
         /// </summary>
         /// <param name="dataSeries"></param>
-        /// <returns>List<double></returns>
+        /// <returns>List</returns>
         public static List<double> ToList(this DataSeries dataSeries)
         {
-            List<double> data = new List<double>();
+            var data = new List<double>();
 
-            for (int i = 0; i < dataSeries.Count; i++)
+            for (var i = 0; i < dataSeries.Count; i++)
             {
                 data.Add(dataSeries[i]);
             }
@@ -35,9 +34,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double Maximum(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            double max = double.NegativeInfinity;
+            var max = double.NegativeInfinity;
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
                 max = Math.Max(dataSeries[i], max);
             }
@@ -54,11 +53,11 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static int MaximumBarIndex(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            double max = double.NegativeInfinity;
+            var max = double.NegativeInfinity;
 
-            int maxBarIndex = startIndex;
+            var maxBarIndex = startIndex;
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
                 if (dataSeries[i] >= max)
                 {
@@ -79,9 +78,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double Minimum(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            double min = double.PositiveInfinity;
+            var min = double.PositiveInfinity;
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
                 min = Math.Min(dataSeries[i], min);
             }
@@ -98,11 +97,11 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static int MinimumBarIndex(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            double min = double.PositiveInfinity;
+            var min = double.PositiveInfinity;
 
-            int minBarIndex = startIndex;
+            var minBarIndex = startIndex;
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
                 if (dataSeries[i] <= min)
                 {
@@ -126,8 +125,8 @@ namespace cAlgo.API.Extensions
         public static bool IsHigher(
             this DataSeries dataSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
-            double previousBarsHighest = previousValues > 0 ? dataSeries.Maximum(index - previousValues, index - 1) : double.NegativeInfinity;
-            double futureBarsHighest = futureValues > 0 ? dataSeries.Maximum(index + 1, index + futureValues) : double.NegativeInfinity;
+            var previousBarsHighest = previousValues > 0 ? dataSeries.Maximum(index - previousValues, index - 1) : double.NegativeInfinity;
+            var futureBarsHighest = futureValues > 0 ? dataSeries.Maximum(index + 1, index + futureValues) : double.NegativeInfinity;
 
             if (equal)
             {
@@ -152,8 +151,8 @@ namespace cAlgo.API.Extensions
         public static bool IsHigher(
             this DataSeries dataSeries, DataSeries otherSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
-            double previousBarsHighest = previousValues > 0 ? otherSeries.Maximum(index - previousValues, index - 1) : double.NegativeInfinity;
-            double futureBarsHighest = futureValues > 0 ? otherSeries.Maximum(index + 1, index + futureValues) : double.NegativeInfinity;
+            var previousBarsHighest = previousValues > 0 ? otherSeries.Maximum(index - previousValues, index - 1) : double.NegativeInfinity;
+            var futureBarsHighest = futureValues > 0 ? otherSeries.Maximum(index + 1, index + futureValues) : double.NegativeInfinity;
 
             if (equal)
             {
@@ -177,8 +176,8 @@ namespace cAlgo.API.Extensions
         public static bool IsLower(
             this DataSeries dataSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
-            double previousBarsLowest = previousValues > 0 ? dataSeries.Minimum(index - previousValues, index - 1) : double.PositiveInfinity;
-            double futureBarsLowest = futureValues > 0 ? dataSeries.Minimum(index + 1, index + futureValues) : double.PositiveInfinity;
+            var previousBarsLowest = previousValues > 0 ? dataSeries.Minimum(index - previousValues, index - 1) : double.PositiveInfinity;
+            var futureBarsLowest = futureValues > 0 ? dataSeries.Minimum(index + 1, index + futureValues) : double.PositiveInfinity;
 
             if (equal)
             {
@@ -203,8 +202,8 @@ namespace cAlgo.API.Extensions
         public static bool IsLower(
             this DataSeries dataSeries, DataSeries otherSeries, int index, int previousValues = 0, int futureValues = 0, bool equal = true)
         {
-            double previousBarsLowest = previousValues > 0 ? otherSeries.Minimum(index - previousValues, index - 1) : double.PositiveInfinity;
-            double futureBarsLowest = futureValues > 0 ? otherSeries.Minimum(index + 1, index + futureValues) : double.PositiveInfinity;
+            var previousBarsLowest = previousValues > 0 ? otherSeries.Minimum(index - previousValues, index - 1) : double.PositiveInfinity;
+            var futureBarsLowest = futureValues > 0 ? otherSeries.Minimum(index + 1, index + futureValues) : double.PositiveInfinity;
 
             if (equal)
             {
@@ -225,7 +224,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetDistanceWithHigherHigh(this DataSeries dataSeries, int index, int periods)
         {
-            double highValue = dataSeries.Maximum(index - periods, index - 1);
+            var highValue = dataSeries.Maximum(index - periods, index - 1);
 
             return dataSeries[index] - highValue;
         }
@@ -239,7 +238,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetDistanceWithLowerLow(this DataSeries dataSeries, int index, int periods)
         {
-            double lowValue = dataSeries.Minimum(index - periods, index - 1);
+            var lowValue = dataSeries.Minimum(index - periods, index - 1);
 
             return dataSeries[index] - lowValue;
         }
@@ -251,30 +250,29 @@ namespace cAlgo.API.Extensions
         /// <param name="secondSeries">The second data series</param>
         /// <param name="index">Index of the value you want to get its divergences</param>
         /// <param name="periods">This number of previous values from index will be checked to find divergence in both data series</param>
-        /// <returns>List<Divergence></returns>
+        /// <param name="minDistance">The minimum distance in bars between start and end of divergence</param>
+        /// <returns>List of divergences</returns>
         public static List<Divergence> GetDivergence(
-            this DataSeries firstSeries, DataSeries secondSeries, int index, int periods, int minDistance, double firstSeriesMinSlope, double secondSeriesMinSlope)
+            this DataSeries firstSeries, DataSeries secondSeries, int index, int periods, int minDistance)
         {
-            List<Divergence> result = new List<Divergence>();
+            var result = new List<Divergence>();
 
-            for (int i = index - minDistance; i >= index - periods; i--)
+            for (var i = index - minDistance; i >= index - periods; i--)
             {
-                bool isDiverged = firstSeries.IsDiverged(secondSeries, i, index);
-                bool isSlopeEnough = Math.Abs(firstSeries.GetSlope(i, index)) >= firstSeriesMinSlope &&
-                    Math.Abs(secondSeries.GetSlope(i, index)) >= secondSeriesMinSlope;
+                var isDiverged = firstSeries.IsDiverged(secondSeries, i, index);
 
-                if (!isDiverged || !isSlopeEnough)
+                if (!isDiverged)
                 {
                     continue;
                 }
 
-                bool isHigherHigh = firstSeries.IsHigher(i, minDistance);
-                bool islowerLow = firstSeries.IsLower(i, minDistance);
+                var isHigherHigh = firstSeries.IsHigher(i, minDistance);
+                var isLowerLow = firstSeries.IsLower(i, minDistance);
 
                 if (firstSeries[i] < firstSeries[index] && firstSeries.IsConnectionPossible(i, index, Direction.Up) &&
-                    secondSeries.IsConnectionPossible(i, index, Direction.Up) && islowerLow)
+                    secondSeries.IsConnectionPossible(i, index, Direction.Up) && isLowerLow)
                 {
-                    Divergence divergence = new Divergence
+                    var divergence = new Divergence
                     {
                         StartIndex = i,
                         EndIndex = index,
@@ -286,7 +284,7 @@ namespace cAlgo.API.Extensions
                 else if (firstSeries[i] > firstSeries[index] && firstSeries.IsConnectionPossible(i, index, Direction.Down) &&
                     secondSeries.IsConnectionPossible(i, index, Direction.Down) && isHigherHigh)
                 {
-                    Divergence divergence = new Divergence
+                    var divergence = new Divergence
                     {
                         StartIndex = i,
                         EndIndex = index,
@@ -305,8 +303,8 @@ namespace cAlgo.API.Extensions
         /// </summary>
         /// <param name="firstSeries">The first data series</param>
         /// <param name="secondSeries">The second data series</param>
-        /// <param name="firstPointIndex">The first point index in data series</param>
-        /// <param name="secondPointIndex">The second point index in data series</param>
+        /// <param name="startIndex">The first point index in data series</param>
+        /// <param name="endIndex">The second point index in data series</param>
         /// <returns></returns>
         public static bool IsDiverged(this DataSeries firstSeries, DataSeries secondSeries, int startIndex, int endIndex)
         {
@@ -319,15 +317,18 @@ namespace cAlgo.API.Extensions
             {
                 return true;
             }
-            else if (firstSeries[startIndex] <= firstSeries[endIndex] && secondSeries[startIndex] > secondSeries[endIndex])
+
+            if (firstSeries[startIndex] <= firstSeries[endIndex] && secondSeries[startIndex] > secondSeries[endIndex])
             {
                 return true;
             }
-            else if (firstSeries[startIndex] > firstSeries[endIndex] && secondSeries[startIndex] <= secondSeries[endIndex])
+
+            if (firstSeries[startIndex] > firstSeries[endIndex] && secondSeries[startIndex] <= secondSeries[endIndex])
             {
                 return true;
             }
-            else if (firstSeries[startIndex] < firstSeries[endIndex] && secondSeries[startIndex] >= secondSeries[endIndex])
+
+            if (firstSeries[startIndex] < firstSeries[endIndex] && secondSeries[startIndex] >= secondSeries[endIndex])
             {
                 return true;
             }
@@ -339,8 +340,8 @@ namespace cAlgo.API.Extensions
         /// Returns True if connecting two provided data point based on cross side is possible otherwise False
         /// </summary>
         /// <param name="dataSeries"></param>
-        /// <param name="firstPointIndex">The first point index in data series</param>
-        /// <param name="secondPointIndex">The second point index in data series</param>
+        /// <param name="startIndex">The first point index in data series</param>
+        /// <param name="endIndex">The second point index in data series</param>
         /// <param name="direction">The line direction, is it on up direction or low direction?</param>
         /// <returns>bool</returns>
         public static bool IsConnectionPossible(this DataSeries dataSeries, int startIndex, int endIndex, Direction direction)
@@ -350,19 +351,19 @@ namespace cAlgo.API.Extensions
                 throw new ArgumentException("The 'startIndex' must be less than 'secondPointIndex'");
             }
 
-            double slope = dataSeries.GetSlope(startIndex, endIndex);
+            var slope = dataSeries.GetSlope(startIndex, endIndex);
 
-            int counter = 0;
+            var counter = 0;
 
-            for (int i = startIndex + 1; i <= endIndex; i++)
+            for (var i = startIndex + 1; i <= endIndex; i++)
             {
                 counter++;
 
-                if (direction == Direction.Up && dataSeries[i] < dataSeries[startIndex] + (slope * counter))
+                if (direction == Direction.Up && dataSeries[i] < dataSeries[startIndex] + slope * counter)
                 {
                     return false;
                 }
-                else if (direction == Direction.Down && dataSeries[i] > dataSeries[startIndex] + (slope * counter))
+                else if (direction == Direction.Down && dataSeries[i] > dataSeries[startIndex] + slope * counter)
                 {
                     return false;
                 }
@@ -375,8 +376,8 @@ namespace cAlgo.API.Extensions
         /// Returns the amount of slope between two level in a data series
         /// </summary>
         /// <param name="dataSeries"></param>
-        /// <param name="firstPointIndex">The first point index in data series</param>
-        /// <param name="secondPointIndex">The second point index in data series</param>
+        /// <param name="startIndex">The first point index in data series</param>
+        /// <param name="endIndex">The second point index in data series</param>
         /// <returns>double</returns>
         public static double GetSlope(this DataSeries dataSeries, int startIndex, int endIndex)
         {
@@ -387,7 +388,7 @@ namespace cAlgo.API.Extensions
         /// Returns sorted values of a dataseries in ascending order
         /// </summary>
         /// <param name="dataSeries"></param>
-        /// <returns>List<double></returns>
+        /// <returns>List of sorted data values</returns>
         public static List<double> Sort(this DataSeries dataSeries)
         {
             return dataSeries.ToList().OrderBy(value => value).ToList();
@@ -402,19 +403,19 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetPercentile(this DataSeries dataSeries, double percent, int periods)
         {
-            List<double> data = dataSeries.ToList().Skip(dataSeries.Count - periods).OrderBy(value => value).ToList();
+            var data = dataSeries.ToList().Skip(dataSeries.Count - periods).OrderBy(value => value).ToList();
 
-            double percentFraction = percent / 100;
+            var percentFraction = percent / 100;
 
-            double entryIndex = percentFraction * (data.Count - 1) + 1;
+            var entryIndex = percentFraction * (data.Count - 1) + 1;
 
-            int entryIndexInt = (int)entryIndex;
+            var entryIndexInt = (int)entryIndex;
 
-            double indexDiff = entryIndex - entryIndexInt;
+            var indexDiff = entryIndex - entryIndexInt;
 
             if (entryIndexInt - 1 >= 0 && entryIndexInt < data.Count)
             {
-                double entryDataDiff = data[entryIndexInt] - data[entryIndexInt - 1];
+                var entryDataDiff = data[entryIndexInt] - data[entryIndexInt - 1];
 
                 return data[entryIndexInt - 1] + indexDiff * entryDataDiff;
             }
@@ -443,15 +444,15 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetCorrelation(this DataSeries dataSeries, DataSeries otherDataSeries, int periods, int lag, bool percentageChange)
         {
-            double[] firstSeries = new double[periods];
-            double[] secondSeries = new double[periods];
+            var firstSeries = new double[periods];
+            var secondSeries = new double[periods];
 
-            for (int i = 0; i < periods; i++)
+            for (var i = 0; i < periods; i++)
             {
                 if (percentageChange)
                 {
-                    firstSeries[i] = double.IsNaN(dataSeries.Last(i + 1)) ? 0 : ((dataSeries.Last(i) - dataSeries.Last(i + 1)) / dataSeries.Last(i + 1)) * 100;
-                    secondSeries[i] = double.IsNaN(otherDataSeries.Last(i + 1 + lag)) ? 0 : ((otherDataSeries.Last(i + lag) - otherDataSeries.Last(i + 1 + lag)) / otherDataSeries.Last(i + 1 + lag)) * 100;
+                    firstSeries[i] = double.IsNaN(dataSeries.Last(i + 1)) ? 0 : (dataSeries.Last(i) - dataSeries.Last(i + 1)) / dataSeries.Last(i + 1) * 100;
+                    secondSeries[i] = double.IsNaN(otherDataSeries.Last(i + 1 + lag)) ? 0 : (otherDataSeries.Last(i + lag) - otherDataSeries.Last(i + 1 + lag)) / otherDataSeries.Last(i + 1 + lag) * 100;
                 }
                 else
                 {
@@ -465,8 +466,8 @@ namespace cAlgo.API.Extensions
 
             var sum = firstSeries.Zip(secondSeries, (x1, y1) => (x1 - avg1) * (y1 - avg2)).Sum();
 
-            var sumSqr1 = firstSeries.Sum(x => Math.Pow((x - avg1), 2.0));
-            var sumSqr2 = secondSeries.Sum(y => Math.Pow((y - avg2), 2.0));
+            var sumSqr1 = firstSeries.Sum(x => Math.Pow(x - avg1, 2.0));
+            var sumSqr2 = secondSeries.Sum(y => Math.Pow(y - avg2, 2.0));
 
             return Math.Round(sum / Math.Sqrt(sumSqr1 * sumSqr2), 2);
         }
@@ -481,7 +482,7 @@ namespace cAlgo.API.Extensions
         public static double GetAngle(this DataSeries dataSeries, int index, int periods)
         {
             double xDiff = index - (index - periods);
-            double yDiff = dataSeries[index] - dataSeries[index - periods];
+            var yDiff = dataSeries[index] - dataSeries[index - periods];
 
             return Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI;
         }
@@ -496,10 +497,10 @@ namespace cAlgo.API.Extensions
         /// <returns>Direction</returns>
         public static Direction GetTrendDirection(this DataSeries dataSeries, int startIndex, int endIndex, int step = 3)
         {
-            bool isTrendingUp = true;
-            bool isTrendingDown = true;
+            var isTrendingUp = true;
+            var isTrendingDown = true;
 
-            for (int i = startIndex + step; i <= endIndex; i += step)
+            for (var i = startIndex + step; i <= endIndex; i += step)
             {
                 if (isTrendingDown && dataSeries[i] >= dataSeries[i - step])
                 {
@@ -535,14 +536,14 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetVariance(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            List<double> data = new List<double>();
+            var data = new List<double>();
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
                 data.Add(dataSeries[i]);
             }
 
-            double average = data.Average();
+            var average = data.Average();
 
             double n = endIndex - startIndex - 1;
 
@@ -563,7 +564,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetStandardDeviation(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            double variance = dataSeries.GetVariance(startIndex, endIndex);
+            var variance = dataSeries.GetVariance(startIndex, endIndex);
 
             return Math.Sqrt(variance);
         }
@@ -577,16 +578,16 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetMedian(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            List<double> data = new List<double>();
+            var data = new List<double>();
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
                 data.Add(dataSeries[i]);
             }
 
             data.Sort();
 
-            int median = (int)(((data.Count() + 1) / 2) - 1);
+            var median = (data.Count() + 1) / 2 - 1;
 
             return data.Count() % 2 == 0 ? (data[median] + data[median + 1]) / 2 : data[median];
         }
@@ -600,9 +601,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetRange(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            List<double> data = new List<double>();
+            var data = new List<double>();
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
                 data.Add(dataSeries[i]);
             }
@@ -614,34 +615,34 @@ namespace cAlgo.API.Extensions
         /// Returns the slope and intercept by using the least squares method
         /// </summary>
         /// <param name="dataSeries">Data series</param>
-        /// <param name="firstPointIndex">The first point index</param>
-        /// <param name="secondPointIndex">The second point index</param>
+        /// <param name="startIndex">The first point index</param>
+        /// <param name="endIndex">The second point index</param>
         /// <returns>LeastSquares</returns>
         public static LeastSquares GetLeastSquaresRegression(this DataSeries dataSeries, int startIndex, int endIndex)
         {
-            List<int> xValues = new List<int>();
-            List<double> yValues = new List<double>();
+            var xValues = new List<int>();
+            var yValues = new List<double>();
 
-            for (int x = startIndex; x <= endIndex; x++)
+            for (var x = startIndex; x <= endIndex; x++)
             {
                 xValues.Add(x);
                 yValues.Add(dataSeries[x]);
             }
 
-            List<double> xSquared = xValues.Select(x => Math.Pow(x, 2)).ToList();
-            List<double> xyProducts = xValues.Zip(yValues, (x, y) => x * y).ToList();
+            var xSquared = xValues.Select(x => Math.Pow(x, 2)).ToList();
+            var xyProducts = xValues.Zip(yValues, (x, y) => x * y).ToList();
 
             double xSum = xValues.Sum();
-            double ySum = yValues.Sum();
+            var ySum = yValues.Sum();
 
-            double xSqauredSum = xSquared.Sum();
+            var xSqauredSum = xSquared.Sum();
 
-            double xyProductsSum = xyProducts.Sum();
+            var xyProductsSum = xyProducts.Sum();
 
-            int n = xValues.Count;
+            var n = xValues.Count;
 
-            double slope = ((n * xyProductsSum) - (xSum * ySum)) / ((n * xSqauredSum) - Math.Pow(xSum, 2));
-            double intercept = (ySum - (slope * xSum)) / n;
+            var slope = (n * xyProductsSum - xSum * ySum) / (n * xSqauredSum - Math.Pow(xSum, 2));
+            var intercept = (ySum - slope * xSum) / n;
 
             return new LeastSquares { Slope = slope, Intercept = intercept };
         }
@@ -657,7 +658,7 @@ namespace cAlgo.API.Extensions
         {
             double sum = 0;
 
-            for (int iIndex = startIndex; iIndex <= endIndex; iIndex++)
+            for (var iIndex = startIndex; iIndex <= endIndex; iIndex++)
             {
                 sum += dataSeries[iIndex];
             }

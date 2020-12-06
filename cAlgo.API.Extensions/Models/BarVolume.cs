@@ -18,7 +18,7 @@
         {
             get
             {
-                return (BullishVolume / TotalVolume) * 100;
+                return BullishVolume / TotalVolume * 100;
             }
         }
 
@@ -26,7 +26,7 @@
         {
             get
             {
-                return (BearishVolume / TotalVolume) * 100;
+                return BearishVolume / TotalVolume * 100;
             }
         }
 

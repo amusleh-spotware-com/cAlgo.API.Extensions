@@ -12,11 +12,11 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double? GetStopLossInPips(this Position position, Symbol positionSymbol)
         {
-            double entryPrice = position.EntryPrice;
+            var entryPrice = position.EntryPrice;
 
-            double? stopLossPrice = position.StopLoss;
+            var stopLossPrice = position.StopLoss;
 
-            double? stopLossPips = position.TradeType == TradeType.Buy ? entryPrice - stopLossPrice : stopLossPrice - entryPrice;
+            var stopLossPips = position.TradeType == TradeType.Buy ? entryPrice - stopLossPrice : stopLossPrice - entryPrice;
 
             return stopLossPips.HasValue ? (double?)positionSymbol.ToPips(stopLossPips.Value) : null;
         }
@@ -29,11 +29,11 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double? GetTakeProfitInPips(this Position position, Symbol positionSymbol)
         {
-            double entryPrice = position.EntryPrice;
+            var entryPrice = position.EntryPrice;
 
-            double? takeProfitPrice = position.TakeProfit;
+            var takeProfitPrice = position.TakeProfit;
 
-            double? takeProfitPips = position.TradeType == TradeType.Buy ? takeProfitPrice - entryPrice : entryPrice - takeProfitPrice;
+            var takeProfitPips = position.TradeType == TradeType.Buy ? takeProfitPrice - entryPrice : entryPrice - takeProfitPrice;
 
             return takeProfitPips.HasValue ? (double?)positionSymbol.ToPips(takeProfitPips.Value) : null;
         }

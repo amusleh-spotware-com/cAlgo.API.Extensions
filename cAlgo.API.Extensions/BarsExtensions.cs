@@ -29,35 +29,35 @@ namespace cAlgo.API.Extensions
         /// <returns>List<PriceVolume></returns>
         public static List<PriceLevel> GetVolumeProfile(this Bars bars, int index, int periods, Symbol symbol)
         {
-            List<PriceLevel> result = new List<PriceLevel>();
+            var result = new List<PriceLevel>();
 
-            for (int i = index; i > index - periods; i--)
+            for (var i = index; i > index - periods; i--)
             {
-                double barRange = bars.GetBarRange(i);
+                var barRange = bars.GetBarRange(i);
 
-                double barVolume = bars.TickVolumes[i];
+                var barVolume = bars.TickVolumes[i];
 
                 if (barRange <= 0 || barVolume <= 0)
                 {
                     continue;
                 }
 
-                double percentageAboveBarClose = (bars.HighPrices[i] - bars.ClosePrices[i]) / barRange;
-                double percentageBelowBarClose = (bars.ClosePrices[i] - bars.LowPrices[i]) / barRange;
+                var percentageAboveBarClose = (bars.HighPrices[i] - bars.ClosePrices[i]) / barRange;
+                var percentageBelowBarClose = (bars.ClosePrices[i] - bars.LowPrices[i]) / barRange;
 
-                double bullishVolume = barVolume * percentageBelowBarClose;
-                double bearishVolume = barVolume * percentageAboveBarClose;
+                var bullishVolume = barVolume * percentageBelowBarClose;
+                var bearishVolume = barVolume * percentageAboveBarClose;
 
-                double barRangeInPips = symbol.ToPips(barRange);
+                var barRangeInPips = symbol.ToPips(barRange);
 
-                double bullishVolumePerPips = bullishVolume / barRangeInPips;
-                double bearishVolumePerPips = bearishVolume / barRangeInPips;
+                var bullishVolumePerPips = bullishVolume / barRangeInPips;
+                var bearishVolumePerPips = bearishVolume / barRangeInPips;
 
-                for (double level = bars.LowPrices[i]; level <= bars.HighPrices[i]; level += symbol.PipSize)
+                for (var level = bars.LowPrices[i]; level <= bars.HighPrices[i]; level += symbol.PipSize)
                 {
                     level = Math.Round(level, symbol.Digits);
 
-                    PriceLevel priceLevel = result.FirstOrDefault(pLevel => pLevel.Level == level);
+                    var priceLevel = result.FirstOrDefault(pLevel => pLevel.Level == level);
 
                     if (priceLevel == null)
                     {
@@ -149,9 +149,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetMaxBarRange(this Bars bars, int index, int periods, bool useBarBody = false)
         {
-            double maxRange = double.MinValue;
+            var maxRange = double.MinValue;
 
-            for (int i = index; i >= index - periods; i--)
+            for (var i = index; i >= index - periods; i--)
             {
                 maxRange = Math.Max(maxRange, bars.GetBarRange(i, useBarBody: useBarBody));
             }
@@ -170,9 +170,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetMaxBarRange(this Bars bars, int index, int periods, BarType barType, bool useBarBody = false)
         {
-            double maxRange = double.MinValue;
+            var maxRange = double.MinValue;
 
-            for (int i = index; i >= index - periods; i--)
+            for (var i = index; i >= index - periods; i--)
             {
                 if (bars.GetBarType(i) != barType)
                 {
@@ -195,9 +195,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetMinBarRange(this Bars bars, int index, int periods, bool useBarBody = false)
         {
-            double minRange = double.MaxValue;
+            var minRange = double.MaxValue;
 
-            for (int i = index; i >= index - periods; i--)
+            for (var i = index; i >= index - periods; i--)
             {
                 minRange = Math.Min(minRange, bars.GetBarRange(i, useBarBody: useBarBody));
             }
@@ -216,9 +216,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetMinBarRange(this Bars bars, int index, int periods, BarType barType, bool useBarBody = false)
         {
-            double minRange = double.MaxValue;
+            var minRange = double.MaxValue;
 
-            for (int i = index; i >= index - periods; i--)
+            for (var i = index; i >= index - periods; i--)
             {
                 if (bars.GetBarType(i) != barType)
                 {
@@ -265,12 +265,12 @@ namespace cAlgo.API.Extensions
 
             if (barBodyRange / barRange < 0.3 && barRange > meanBarRange)
             {
-                double barMiddle = (barRange * 0.5) + bars.LowPrices[index];
-                double barFirstQuartile = (barRange * 0.25) + bars.LowPrices[index];
-                double barThirdQuartile = (barRange * 0.75) + bars.LowPrices[index];
+                var barMiddle = barRange * 0.5 + bars.LowPrices[index];
+                var barFirstQuartile = barRange * 0.25 + bars.LowPrices[index];
+                var barThirdQuartile = barRange * 0.75 + bars.LowPrices[index];
 
-                if ((bars.OpenPrices[index] > barMiddle && bars.ClosePrices[index] > barThirdQuartile && barType == BarType.Bullish) ||
-                    (bars.OpenPrices[index] < barMiddle && bars.ClosePrices[index] < barFirstQuartile && barType == BarType.Bearish))
+                if (bars.OpenPrices[index] > barMiddle && bars.ClosePrices[index] > barThirdQuartile && barType == BarType.Bullish ||
+                    bars.OpenPrices[index] < barMiddle && bars.ClosePrices[index] < barFirstQuartile && barType == BarType.Bearish)
                 {
                     return true;
                 }
@@ -324,7 +324,7 @@ namespace cAlgo.API.Extensions
         /// <returns>bool</returns>
         public static bool IsThreeBarReversal(this Bars bars, int index)
         {
-            bool result = false;
+            var result = false;
 
             BarType barType = bars.GetBarType(index);
             BarType previousBarType = bars.GetBarType(index - 1);
@@ -361,7 +361,7 @@ namespace cAlgo.API.Extensions
         /// <returns>List<CandlePattern></returns>
         public static List<CandlePattern> GetCandlePatterns(this Bars bars, int index)
         {
-            List<CandlePattern> patterns = new List<CandlePattern>();
+            var patterns = new List<CandlePattern>();
 
             // Engulfing
             if (bars.IsEngulfingBar(index))
@@ -433,13 +433,13 @@ namespace cAlgo.API.Extensions
         /// <returns>int</returns>
         public static int GetLargestBarIndex(this Bars bars, int startIndex, int endIndex)
         {
-            double maxBarRange = double.MinValue;
+            var maxBarRange = double.MinValue;
 
-            int result = 0;
+            var result = 0;
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
-                double currentBarRange = bars.HighPrices[i] - bars.LowPrices[i];
+                var currentBarRange = bars.HighPrices[i] - bars.LowPrices[i];
 
                 if (currentBarRange > maxBarRange)
                 {
@@ -461,13 +461,13 @@ namespace cAlgo.API.Extensions
         /// <returns>int</returns>
         public static int GetSmallestBarIndex(this Bars bars, int startIndex, int endIndex)
         {
-            double minBarRange = double.MinValue;
+            var minBarRange = double.MinValue;
 
-            int result = 0;
+            var result = 0;
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
-                double currentBarRange = bars.HighPrices[i] - bars.LowPrices[i];
+                var currentBarRange = bars.HighPrices[i] - bars.LowPrices[i];
 
                 if (currentBarRange < minBarRange)
                 {
@@ -492,7 +492,7 @@ namespace cAlgo.API.Extensions
         {
             double min = double.MaxValue, max = double.MinValue;
 
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
                 double barLow, barHigh;
 
@@ -526,7 +526,7 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetRange(this Bars bars, int startIndex, int endIndex, Symbol symbol, PriceValueType returnType, bool useBarBody = false)
         {
-            double range = bars.GetRange(startIndex, endIndex, useBarBody);
+            var range = bars.GetRange(startIndex, endIndex, useBarBody);
 
             return symbol.ChangePriceValueType(range, returnType);
         }
@@ -541,8 +541,8 @@ namespace cAlgo.API.Extensions
         /// <returns>bool</returns>
         public static bool IsFlat(this Bars bars, int startIndex, int endIndex, double maxStd)
         {
-            double highStd = bars.HighPrices.GetStandardDeviation(startIndex, endIndex);
-            double lowStd = bars.LowPrices.GetStandardDeviation(startIndex, endIndex);
+            var highStd = bars.HighPrices.GetStandardDeviation(startIndex, endIndex);
+            var lowStd = bars.LowPrices.GetStandardDeviation(startIndex, endIndex);
 
             return highStd <= maxStd && lowStd <= maxStd;
         }
@@ -595,19 +595,19 @@ namespace cAlgo.API.Extensions
         /// <returns>DateTime</returns>
         public static DateTime GetOpenTime(this Bars bars, double barIndex)
         {
-            int currentIndex = bars.GetIndex();
+            var currentIndex = bars.GetIndex();
 
             TimeSpan timeDiff = bars.GetTimeDiff();
 
-            double indexDiff = barIndex - currentIndex;
+            var indexDiff = barIndex - currentIndex;
 
-            double indexDiffAbs = Math.Abs(indexDiff);
+            var indexDiffAbs = Math.Abs(indexDiff);
 
-            DateTime result = indexDiff <= 0 ? bars.OpenTimes[(int)barIndex] : bars.OpenTimes[currentIndex];
+            var result = indexDiff <= 0 ? bars.OpenTimes[(int)barIndex] : bars.OpenTimes[currentIndex];
 
             if (indexDiff > 0)
             {
-                for (int i = 1; i <= indexDiffAbs; i++)
+                for (var i = 1; i <= indexDiffAbs; i++)
                 {
                     do
                     {
@@ -617,9 +617,9 @@ namespace cAlgo.API.Extensions
                 }
             }
 
-            double barIndexFraction = barIndex % 1;
+            var barIndexFraction = barIndex % 1;
 
-            double barIndexFractionInMinutes = timeDiff.TotalMinutes * barIndexFraction;
+            var barIndexFractionInMinutes = timeDiff.TotalMinutes * barIndexFraction;
 
             result = result.AddMinutes(barIndexFractionInMinutes);
 
@@ -633,16 +633,16 @@ namespace cAlgo.API.Extensions
         /// <returns>TimeSpan</returns>
         public static TimeSpan GetTimeDiff(this Bars bars)
         {
-            int index = bars.GetIndex();
+            var index = bars.GetIndex();
 
             if (index < 4)
             {
                 throw new InvalidOperationException("Not enough data in market series to calculate the time difference");
             }
 
-            List<TimeSpan> timeDiffs = new List<TimeSpan>();
+            var timeDiffs = new List<TimeSpan>();
 
-            for (int i = index; i >= index - 4; i--)
+            for (var i = index; i >= index - 4; i--)
             {
                 timeDiffs.Add(bars.OpenTimes[i] - bars.OpenTimes[i - 1]);
             }
@@ -660,15 +660,15 @@ namespace cAlgo.API.Extensions
         /// <returns>List<PriceVolume></returns>
         public static List<PriceLevel> GetMarketProfile(this Bars bars, int index, int periods, Symbol symbol)
         {
-            List<PriceLevel> result = new List<PriceLevel>();
+            var result = new List<PriceLevel>();
 
-            for (int i = index; i > index - periods; i--)
+            for (var i = index; i > index - periods; i--)
             {
-                for (double level = bars.LowPrices[i]; level <= bars.HighPrices[i]; level += symbol.PipSize)
+                for (var level = bars.LowPrices[i]; level <= bars.HighPrices[i]; level += symbol.PipSize)
                 {
                     level = Math.Round(level, symbol.Digits);
 
-                    PriceLevel priceLevel = result.FirstOrDefault(pLevel => pLevel.Level == level);
+                    var priceLevel = result.FirstOrDefault(pLevel => pLevel.Level == level);
 
                     if (priceLevel == null)
                     {
@@ -696,10 +696,10 @@ namespace cAlgo.API.Extensions
         /// <returns>BarVolume</returns>
         public static BarVolume GetBarVolume(this Bars bars, int index)
         {
-            double barRange = bars.HighPrices[index] - bars.LowPrices[index];
+            var barRange = bars.HighPrices[index] - bars.LowPrices[index];
 
-            double percentageAboveBarClose = (bars.HighPrices[index] - bars.ClosePrices[index]) / barRange;
-            double percentageBelowBarClose = (bars.ClosePrices[index] - bars.LowPrices[index]) / barRange;
+            var percentageAboveBarClose = (bars.HighPrices[index] - bars.ClosePrices[index]) / barRange;
+            var percentageBelowBarClose = (bars.ClosePrices[index] - bars.LowPrices[index]) / barRange;
 
             return new BarVolume
             {
@@ -718,9 +718,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetAverageBarRange(this Bars bars, int index, int periods, bool useBarBody = false)
         {
-            List<double> barRanges = new List<double>();
+            var barRanges = new List<double>();
 
-            for (int iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
+            for (var iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
             {
                 double iBarRange = bars.GetBarRange(iBarIndex, useBarBody);
 
@@ -741,9 +741,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetAverageBarRange(this Bars bars, int index, int periods, BarType barType, bool useBarBody = false)
         {
-            List<double> barRanges = new List<double>();
+            var barRanges = new List<double>();
 
-            for (int iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
+            for (var iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
             {
                 if (bars.GetBarType(iBarIndex) != barType)
                 {
@@ -768,9 +768,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetMedianBarRange(this Bars bars, int index, int periods, bool useBarBody = false)
         {
-            List<double> barRanges = new List<double>();
+            var barRanges = new List<double>();
 
-            for (int iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
+            for (var iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
             {
                 double iBarRange = bars.GetBarRange(iBarIndex, useBarBody);
 
@@ -791,9 +791,9 @@ namespace cAlgo.API.Extensions
         /// <returns>double</returns>
         public static double GetMedianBarRange(this Bars bars, int index, int periods, BarType barType, bool useBarBody = false)
         {
-            List<double> barRanges = new List<double>();
+            var barRanges = new List<double>();
 
-            for (int iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
+            for (var iBarIndex = index; iBarIndex >= index - periods; iBarIndex--)
             {
                 if (bars.GetBarType(iBarIndex) != barType)
                 {
@@ -892,9 +892,9 @@ namespace cAlgo.API.Extensions
                 throw new InvalidOperationException("Invalid Direction Type");
             }
 
-            int counter = 0;
+            var counter = 0;
 
-            for (int i = firstPointIndex + 1; i <= secondPointIndex; i++)
+            for (var i = firstPointIndex + 1; i <= secondPointIndex; i++)
             {
                 counter++;
 
@@ -904,7 +904,7 @@ namespace cAlgo.API.Extensions
                 {
                     iPoint = bars.GetBarBodyLow(i);
 
-                    if (iPoint < firstPoint + (slope * counter))
+                    if (iPoint < firstPoint + slope * counter)
                     {
                         return false;
                     }
@@ -913,7 +913,7 @@ namespace cAlgo.API.Extensions
                 {
                     iPoint = bars.GetBarBodyHigh(i);
 
-                    if (iPoint > firstPoint + (slope * counter))
+                    if (iPoint > firstPoint + slope * counter)
                     {
                         return false;
                     }
@@ -954,7 +954,7 @@ namespace cAlgo.API.Extensions
         {
             var result = new List<OhlcBar>();
 
-            for (int iBarIndex = 0; iBarIndex < bars.ClosePrices.Count; iBarIndex++)
+            for (var iBarIndex = 0; iBarIndex < bars.ClosePrices.Count; iBarIndex++)
             {
                 var bar = bars.GetBar(iBarIndex);
 
