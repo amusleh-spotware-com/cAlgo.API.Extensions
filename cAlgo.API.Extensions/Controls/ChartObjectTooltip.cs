@@ -1,5 +1,8 @@
 ﻿namespace cAlgo.API.Extensions.Controls
 {
+    /// <summary>
+    /// Shows a tooltip whenever mouse is over a chart object, you can set the tooltip content to be any of the chart controls
+    /// </summary>
     public class ChartObjectTooltip : CustomControl
     {
         #region Fields
@@ -14,6 +17,8 @@
 
         #endregion Fields
 
+        /// <param name="chart">The object chart</param>
+        /// <param name="chartObject">The chart object you want to show the tooltip for</param>
         public ChartObjectTooltip(Chart chart, ChartObject chartObject)
         {
             _chart = chart;
@@ -95,6 +100,9 @@
             }
         }
 
+        /// <summary>
+        /// The tooltip content control
+        /// </summary>
         public ControlBase Content
         {
             get
