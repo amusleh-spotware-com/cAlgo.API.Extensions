@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace cAlgo.API.Extensions.Utility
 {
+    /// <summary>
+    /// Counts the TD sequential bars
+    /// </summary>
     public class TdBarCounter
     {
         #region Fields
