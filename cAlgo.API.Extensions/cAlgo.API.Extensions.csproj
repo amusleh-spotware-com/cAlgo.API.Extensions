@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DebugSymbols>true</DebugSymbols>
+    <DocumentationFile>bin\Release\cAlgo.API.Extensions.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="cAlgo.API">
