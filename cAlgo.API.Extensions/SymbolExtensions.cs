@@ -112,8 +112,8 @@ namespace cAlgo.API.Extensions
         }
 
         /// <summary>
-        /// Normalize x Pips amount decimal places to something that can be used as a stop loss or take profit for an order
-        /// For example if symbol is EURUSD and you pass to this method 10.456775 it will be rounded to 10.5
+        /// Normalize x Pips amount decimal places to something that can be used as a stop loss or take profit for an order.
+        /// For example if symbol is EURUSD and you pass to this method 10.456775 it will return back 10.5
         /// </summary>
         /// <param name="symbol">The symbol</param>
         /// <param name="pips">The amount of Pips</param>
