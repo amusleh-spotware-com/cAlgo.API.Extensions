@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BarExtensions.cs" />
     <Compile Include="BarsExtensions.cs" />
     <Compile Include="ChartExtensions.cs" />
     <Compile Include="Controls\ChartObjectTooltip.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Models\NewSignalSettings.cs" />
     <Compile Include="Models\Signal.cs" />
     <Compile Include="Models\TdReversalSetup.cs" />
+    <Compile Include="MoreEnumerable.cs" />
     <Compile Include="TimeFrameExtensions.cs" />
     <Compile Include="Utility\SignalContainer.cs" />
     <Compile Include="Models\TdBar.cs" />
